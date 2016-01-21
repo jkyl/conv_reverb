@@ -32,15 +32,10 @@ def audio_obj_to_arrays(obj):
 
 def convolve(a, b):
     '''
-    Computes the FFT convolution between the two samples, seperately for each 
+    Computes the FFT convolution between the two arrays, seperately for each 
     stereo channel. This way the spatialiazation of the original audio is 
-    preserved in the convolution. 
-
-    Input:
-        Two numpy arrays with shape (n_chans, n_samps).
-    Output: 
-        One numpy array of the convolution waveform between a and b, also with
-        shape (n_chans, n_samps). 
+    preserved in the convolution. Outputs one numpy array of the convolution 
+    waveform of a and b, with shape (n_chans, n_samps). 
     '''
     return np.array([fftconvolve(a[i], b[i]) for i in (0, 1)])
 
