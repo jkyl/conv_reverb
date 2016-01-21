@@ -6,7 +6,7 @@ import sys
 
 
 SUFFIXES = {'aif': 'aiff',
-            'wave': 'wav'}
+            'ave': 'wav'}
 
 def read_audio_file_to_obj(fname):
     '''
