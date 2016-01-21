@@ -8,7 +8,7 @@ import sys
 SUFFIXES = {'aif': 'aiff',
             'wave': 'wav'}
 
-def read_audio_file_to_object(fname):
+def read_audio_file_to_obj(fname):
     '''
     Creates an AudioSegment object of the filename. Converts filetype suffix
     if necessary. 
@@ -19,30 +19,38 @@ def read_audio_file_to_object(fname):
     return AudioSegment.from_file(fname, ftype)
 
 
+def audio_obj_to_arrays(obj):
+    '''
+    Accepts an AudioSegment object and converts to a raw format (16-bit 
+    integers in numpy arrays). If the audio is stereo, splits the object into
+    two objects, one for each stereo channel, then loads the sample data into 
+    numpy arrays.
+    '''
+    split = (obj.channels % 2 + 1) * obj.split_to_mono()
+    return np.array([s.get_array_of_samples() for s in split])
+
+
 def convolve(a, b):
     '''
-    For each input object: if the audio is stereo, splits the object in two, 
-    one for each stereo channel. Then loads the raw sample data into numpy 
-    arrays. Finally, computes the FFT convolution of the two samples seperately
-    for each stereo channel. This way the spatialiazation of the original audio
-    is preserved in the convolution. 
+    Computes the FFT convolution between the two samples, seperately for each 
+    stereo channel. This way the spatialiazation of the original audio is 
+    preserved in the convolution. 
 
     Input:
-        Two AudioSegment objects.
+        Two numpy arrays with shape (n_chans, n_samps).
     Output: 
-        A numpy array of the convolved waveform with shape (n_chans, n_samps). 
+        One numpy array of the convolution waveform between a and b, also with
+        shape (n_chans, n_samps). 
     '''
-    samples = [(s.channels % 2 + 1) * s.split_to_mono() for s in (a, b)]
-    a, b = [[np.array(c.get_array_of_samples()) for c in s] for s in samples]
     return np.array([fftconvolve(a[i], b[i]) for i in (0, 1)])
 
     
-def write_stereo_arrays_to_wav(stereo, output_fname):
+def write_stereo_arrays_to_wav(stereo_array, output_fname):
     '''
     Normalizes the convolved waveform and swaps the axes to the way the scipy
     writer likes it. Writes as a .wav to the specified filepath. 
     '''
-    norm = np.int16(32767 * stereo/float(np.max(np.abs(stereo))))
+    norm = np.int16(32767 * stereo_array/float(np.max(np.abs(stereo_array))))
     if norm.shape[0] == 2:
         norm = norm.swapaxes(0, 1)
     write(output_fname, 44100, norm)
@@ -54,7 +62,9 @@ def go(fname_a, fname_b, output_fname):
     '''
     print('~~~~~~~~~~~~~~~~~~~')
     print('reading in files...')
-    a, b = (read_audio_file_to_object(f) for f in (fname_a, fname_b))
+    a, b = (read_audio_file_to_obj(f) for f in (fname_a, fname_b))
+    print('converting to arrays...')
+    a, b = (audio_obj_to_arrays(o) for o in (a, b))
     print('convolving...')
     conv = convolve(a, b)
     print('writing to disk...')
@@ -64,7 +74,7 @@ def go(fname_a, fname_b, output_fname):
     
 
 if __name__ == '__main__':
-    usage = 'python utils.py <fname_a> <fname_b> <output_fname>'
+    usage = 'usage: python utils.py <fname_a> <fname_b> <output_fname>'
     args_len = len(sys.argv)
     if args_len == 4:
         a, b, c = sys.argv[1:]
