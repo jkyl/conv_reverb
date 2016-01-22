@@ -33,7 +33,6 @@ def audio_obj_to_arrays(obj):
 def plot_waveform(a, title, output_fname = None):
     '''
     '''
-    plt.clf()
     x_in_secs = np.arange(len(a[0]))/44100.
     fig, (ax1, ax2) = plt.subplots(2, sharex=True, sharey=True)
     fig.subplots_adjust(left=0.05, bottom=0.08, right=0.98, top=0.92)

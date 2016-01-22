@@ -15,6 +15,7 @@ class Audio:
             self._title = fname.split('.')[0]
         else:
             self._array = None
+            self._title = 'Untitled'
         
         
     @property
@@ -24,7 +25,10 @@ class Audio:
     @property
     def array(self):
         return self._array
-
+    
+    def set_title(self, title):
+        self._title = title
+        
     def set_array(self, array):
         if array.shape[0] == 2:
             self._array = array

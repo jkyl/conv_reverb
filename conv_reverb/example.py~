@@ -1,9 +1,0 @@
-import audio
-
-a = audio.Audio('samples/avril.aif')
-b = audio.Audio('samples/whoop.wav')
-c = a.pitchshift(1.2).convolve(b).ringmod(1000)
-
-(o.plot_waveform() for o in (a, b, c))
-
-c.write_to_wav('output/wtf.wav')
