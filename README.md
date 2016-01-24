@@ -1,4 +1,4 @@
-# conv_reverb
+# WIRE - Web Interfaced Reverb Engine
 
 A Web interfaced sound engine. Part of an ongoing project for CMSC 12200 at the Univerity of Chicago.
 
