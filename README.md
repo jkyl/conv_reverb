@@ -15,6 +15,10 @@ $pip install pydub
 $brew install ffmpeg --with-libvorbis --with-ffplay --with-theora
 ```
 
+## Current state of the project
+
+1/24/16: Early stages of development. Still designing what we want the project to be.
+
 ## To-do list
 
 
