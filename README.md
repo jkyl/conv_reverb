@@ -10,10 +10,10 @@ Required python modules are numpy, SciPy and, matplotlib.
 
 Additional modules and libraries required can be installed as instructed below.
 
-{% highlight sh %}
+```sh
 $pip install pydub
 $brew install ffmpeg --with-libvorbis --with-ffplay --with-theora
-{% endhighlight %}
+```
 
 ## To-do list
 
