@@ -49,7 +49,7 @@ def plot_waveform(a, title):
     ax1.set_xlim([0, x_in_secs[-1]])
     ax2.axes.get_yaxis().set_visible(False)
     plt.xlabel('Seconds')
-    plt.xticks(np.arange(0, round(x_in_secs[-1]), round(x_in_secs[-1]/10.)))
+    #plt.xticks(np.arange(0, round(x_in_secs[-1]), round(x_in_secs[-1]/10.)))
     plt.savefig('output/waveforms/' + title)
     
     
