@@ -1,4 +1,4 @@
-# ---WIRE--- Web Interfaced Reverb Engine
+# &mdash;WIRE&mdash; Web Interfaced Reverb Engine
 
 A Web interfaced reverb engine. Part of an ongoing project for CMSC 12200 at the Univerity of Chicago.
 
