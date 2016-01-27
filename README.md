@@ -1,6 +1,6 @@
-# WIRE - Web Interfaced Reverb Engine
+# ---WIRE--- Web Interfaced Reverb Engine
 
-A Web interfaced sound engine. Part of an ongoing project for CMSC 12200 at the Univerity of Chicago.
+A Web interfaced reverb engine. Part of an ongoing project for CMSC 12200 at the Univerity of Chicago.
 
 ## How to run
 
@@ -11,8 +11,8 @@ Required python modules are numpy, SciPy and, matplotlib.
 Additional modules and libraries required can be installed as instructed below.
 
 ```sh
-$pip install pydub
-$brew install ffmpeg --with-libvorbis --with-ffplay --with-theora
+$ pip install pydub
+$ brew install ffmpeg --with-libvorbis --with-ffplay --with-theora
 ```
 
 ## Current state of the project
