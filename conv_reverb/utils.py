@@ -83,7 +83,7 @@ def plot_fft(spectrum, title):
     '''
     '''
     n_freq_bins, n_time_windows = spectrum.shape
-    x_axis = np.linspace(0, n_freq_bins*n_time_windows/44100., n_time_windows)
+    x_axis = np.linspace(0, 2*n_freq_bins*n_time_windows/44100., n_time_windows)
     y_axis = np.linspace(0, 22050, n_freq_bins)
     interpolation =interp2d(x_axis, y_axis, spectrum, kind = 'cubic')
     new_x = np.linspace(0, x_axis.max(), 500)
