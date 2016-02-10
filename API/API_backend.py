@@ -35,7 +35,7 @@ def download_item(identifier):
     f = item.get_file(f_name)
 
     if f.size <= MAX_SIZE:
-        f.download('aporee_files/' + f_name)
+        f.download('../sound_engine/aporee_files/' + f_name)
     else:
         print 'File size is', f.size, 'bytes'
         print 'File size exceeds', MAX_SIZE, 'bytes'
