@@ -25,8 +25,10 @@ def download_item(identifier):
     f = item.get_item()
     f.download('aporee_files/' + identifier + '.mp3')
 
+
+
     
 
 if __name__ == "__main__":
 
-    
+    collection = "radio-aporee-maps"
