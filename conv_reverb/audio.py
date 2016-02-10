@@ -58,7 +58,7 @@ class Audio:
         shift = array_transforms.pitchshift(self._array, amt)
         rv = Audio()
         rv.set_array(shift)
-        rv.set_title(self._title + ' pitch shifted %s % '%(amt * 100))
+        rv.set_title(self._title + ' pitch shifted %s '%(amt * 100))
         return rv
 
     def ringmod(self, freq_hz):
