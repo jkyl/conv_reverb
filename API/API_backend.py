@@ -1,27 +1,36 @@
 import internetarchive as ia
 
 MAX_SIZE = 10000000 # max size of sound file in bytes
+SOUND_DIR = '../sound_engine/aporee_files/'
 
 
-def query_catalog(keywords):
+def query_catalog(args_from_ui):
     '''
     Given the dictonary args_from_ui, query the catalog of radio-aporee-maps at
     the Internet Archive (archive.org).
+
+    Inputs:
+        args_from_ui: dict of keywords provided from the ui
+    Returns:
+        query_results: Search object containing results of the query
     '''
     
     query = 'collection:"radio-aporee-maps" '
 
-    for keyword in keywords:
-        query = query + keyword + ':"' + keywords[keyword] + '" '
+    for arg in args_from_ui:
+        query = query + arg + ':"' + args_from_ui[arg] + '" '
 
     query_results = ia.search_items(query)
-    print query_results.query # 
     return query_results
 
 
 def download_item(identifier):
     '''
     Download the mp3 file associated with identifier from the catalog.
+    
+    Inputs:
+        identifier: str, identifier for an Item object
+    Returns:
     '''
 
     item = ia.get_item(identifier)
@@ -35,7 +44,7 @@ def download_item(identifier):
     f = item.get_file(f_name)
 
     if f.size <= MAX_SIZE:
-        f.download('../sound_engine/aporee_files/' + f_name)
+        f.download(SOUND_DIR + f_name)
     else:
         print 'File size is', f.size, 'bytes'
         print 'File size exceeds', MAX_SIZE, 'bytes'
@@ -43,7 +52,12 @@ def download_item(identifier):
 
 def format_output(query_results):
     '''
-    Generate a tuple of lists for the search results.
+    Generate a tuple of lists from search_results.
+    
+    Inputs:
+        query_results: Search object containing results from a query
+    Returns:
+        output: tuple
     '''
 
     attribute_fields = ['title', '']
