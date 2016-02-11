@@ -15,10 +15,15 @@ def query_catalog(args_from_ui):
         query_results: Search object containing results of the query
     '''
     
-    query = 'collection:"radio-aporee-maps" '
+    query = 'collection:radio-aporee-maps '
 
     for arg in args_from_ui:
-        query = query + arg + ':"' + args_from_ui[arg] + '" '
+
+#        keyword = args_from_ui[arg]
+#        if len(keyword.split(' ')) > 1:
+#            keyword = '"' + keyword  + '"'
+        
+        query = query + arg + ':' + args_from_ui[arg] + ' '
 
     query_results = ia.search_items(query)
     return query_results
@@ -68,7 +73,7 @@ def format_output(query_results):
 
 if __name__ == "__main__":
 
-    args_from_ui = {}
+    args_from_ui = {'title': 'berlin', 'date': '2015-04-05'}
     query_results = query_catalog(args_from_ui)
     download_item('aporee_2039_2931')
     
