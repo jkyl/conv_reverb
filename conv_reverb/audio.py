@@ -47,7 +47,7 @@ class Audio:
         return utils.get_fft(self.mono_array, window_size_in_samples)
         
     def plot_fft_spectrum(self, window_size_in_samples = 1024):
-        spectrum = utils.get_fft(self.mono_array, window_size_in_samples)
+        spectrum = self.get_fft(window_size_in_samples)
         utils.plot_fft(spectrum, self._title)
 
     def convolve(self, audio_obj):

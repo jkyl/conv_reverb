@@ -14,6 +14,7 @@ def convolve(a, b):
 
 def pitchshift(a, scale):
     '''
+    Waveform a is pitchshifted up or down by scale, where 0 < scale < inf.
     '''
     fxns = (interp1d(np.linspace(0, (len(chan) / float(scale)), len(chan)),
                      chan) for chan in a)
@@ -23,6 +24,8 @@ def pitchshift(a, scale):
 
 def ringmod(a, freq_hz):
     '''
+    Waveform a is ring modulated with a sine signal with frequency freq_hz. Resulting 
+    waveform has a metallic sound (as a bell).
     '''
     freq_samps = freq_hz / 44100.
     return np.array([np.multiply(chan, np.sin(np.arange(len(chan)) * freq_samps\

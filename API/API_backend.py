@@ -1,6 +1,6 @@
 import internetarchive as ia
 
-MAX_SIZE = 10 * (10 ** 6) # max size of sound file in megabytes
+MAX_SIZE = 20 * (10 ** 6) # max size of sound file in megabytes
 SOUND_DIR = '../conv_reverb/aporee_files/'
 
 
