@@ -1,7 +1,7 @@
 import internetarchive as ia
 
-MAX_SIZE = 10000000 # max size of sound file in bytes
-SOUND_DIR = '../sound_engine/aporee_files/'
+MAX_SIZE = 10 * (10 ** 6) # max size of sound file in megabytes
+SOUND_DIR = '../conv_reverb/aporee_files/'
 
 
 def query_catalog(args_from_ui):
@@ -19,11 +19,11 @@ def query_catalog(args_from_ui):
 
     for arg in args_from_ui:
 
-#        keyword = args_from_ui[arg]
+        keyword = args_from_ui[arg]
 #        if len(keyword.split(' ')) > 1:
 #            keyword = '"' + keyword  + '"'
         
-        query = query + arg + ':' + args_from_ui[arg] + ' '
+        query = query + arg + ':' + keyword + ' '
 
     query_results = ia.search_items(query)
     return query_results
@@ -41,6 +41,7 @@ def download_item(identifier):
     item = ia.get_item(identifier)
     f_name = ''
 
+    # This loop finds the .mp3 associated with the audio file.
     for f in item.iter_files():
         if f.name[-4:] == '.mp3':
             f_name = f.name
@@ -65,17 +66,36 @@ def format_output(query_results):
         output: tuple
     '''
 
-    attribute_fields = ['title', '']
-    output = ([],[])
+    items = []
+    item_fields = []
+    attribute_fields = ['title', 'creator', 'description']
 
-    pass
+    for result in query_results:
+        identifier = result['identifier']
+        item = ia.get_item(identifier)
+        items.append(item)
+
+    for item in items:
+        title = item.metadata['title']
+        creator = item.metadata['creator']
+        description = item.metadata['description']
+
+        item_fields.append([title, creator, description])
+    
+    output = (attribute_fields, item_fields)
+
+    print(output) #
+
+    return output
     
 
 if __name__ == "__main__":
 
-    args_from_ui = {'title': 'berlin', 'date': '2015-04-05'}
+    args_from_ui = {'title': 'berlin in snow'}
+#    args_from_ui = {'title': 'berlin', 'date': '2015-04-06'}
     query_results = query_catalog(args_from_ui)
-    download_item('aporee_2039_2931')
+    format_output(query_results)
+#    download_item('aporee_2039_2931')
     
 
     
