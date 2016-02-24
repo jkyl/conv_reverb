@@ -6,7 +6,7 @@ A Web interfaced reverb engine. Part of an ongoing project for CMSC 12200 at the
 
 <em>Instructions are based on an OS X system running Python 2.7 with pip and homebrew installed.</em>
 
-Required python modules are numpy, SciPy and, matplotlib.
+Required python modules are numpy, SciPy and, matplotlib (5.1!!!).
 
 Additional modules and libraries required can be installed as instructed below.
 
