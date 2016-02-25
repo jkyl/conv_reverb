@@ -76,9 +76,9 @@ class Audio:
         '''
         '''
         a = self.mono_array
-        titles = [i.title for i in l]
         if not type(l) in (list, tuple):
             l = [l]
+        titles = [i.title for i in l]
         l = [i.mono_array for i in l]
         l = [i/((i**2).sum()) for i in l]
         c = [array_transforms.correlate(a, i) for i in l]
