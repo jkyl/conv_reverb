@@ -81,6 +81,7 @@ class Audio:
         titles = [i.title for i in l]
         l = [i.mono_array for i in l]
         l = [i/(abs(i).sum()/i.size) for i in l]
+        l = [(i - i.mean())/i.std() for i in l]
         c = [array_transforms.correlate(a, i) for i in l]
         c = [abs(i).sum()/i.size for i in c]
         d = {titles[i]: np.log10(c[i]/max(c)) for i in range(len(c))}
