@@ -77,5 +77,5 @@ class Audio:
         a, b = self.mono_array, audio_obj.mono_array
         a, b = ((i - i.mean())/i.std() for i in (a, b))
         c = array_transforms.correlate(a, b)
-        return (c**2).sum()/c.size()
+        return (c**2).sum()/c.size
     
