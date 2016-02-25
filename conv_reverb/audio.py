@@ -1,5 +1,6 @@
 import utils
 import array_transforms
+import numpy as np
 
 class Audio:
     '''
@@ -71,11 +72,16 @@ class Audio:
         rv.set_title(self.title + ' ring modulated at %s Hz '%(freq_hz))
         return rv
 
-    def correlate(self, audio_obj):
+    def correlate(self, l):
         '''
         '''
-        a, b = self.mono_array, audio_obj.mono_array
-        a, b = ((i - i.mean())/i.std() for i in (a, b))
-        c = array_transforms.correlate(a, b)
-        return (c**2).sum()/c.size
-    
+        a = self.mono_array
+        titles = [i.title for i in l]
+        if not type(l) in (list, tuple):
+            l = [l]
+        l = [i.mono_array for i in l]
+        l = [i/((i**2).sum()) for i in l]
+        c = [array_transforms.correlate(a, i) for i in l]
+        c = [(i**2).sum() for i in c]
+        d = {titles[i]: np.log(c[i]/max(c)) for i in range(len(c))}
+        return d
