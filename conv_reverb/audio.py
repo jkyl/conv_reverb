@@ -47,26 +47,35 @@ class Audio:
         return utils.get_fft(self.mono_array, window_size_in_samples)
         
     def plot_fft_spectrum(self, window_size_in_samples = 1024):
-        spectrum = self.get_fft(window_size_in_samples)
-        utils.plot_fft(spectrum, self._title)
+        spectrum = utils.get_fft(self.mono_array, window_size_in_samples)
+        utils.plot_fft(spectrum, self.title)
 
     def convolve(self, audio_obj):
         conv = array_transforms.convolve(self._array, audio_obj.array)
         rv = Audio()
         rv.set_array(conv)
-        rv.set_title(self._title + ' convolved with ' + audio_obj.title)
+        rv.set_title(self.title + ' convolved with ' + audio_obj.title)
         return rv
         
     def pitchshift(self, amt):
         shift = array_transforms.pitchshift(self._array, amt)
         rv = Audio()
         rv.set_array(shift)
-        rv.set_title(self._title + ' pitch shifted %s '%(amt * 100))
+        rv.set_title(self.title + ' pitch shifted %s '%(amt * 100))
         return rv
 
     def ringmod(self, freq_hz):
         mod = array_transforms.ringmod(self._array, freq_hz)
         rv = Audio()
         rv.set_array(mod)
-        rv.set_title(self._title + ' ring modulated at %s Hz '%(freq_hz))
+        rv.set_title(self.title + ' ring modulated at %s Hz '%(freq_hz))
         return rv
+
+    def correlate(self, audio_obj):
+        '''
+        '''
+        a, b = self.mono_array, audio_obj.mono_array
+        a, b = ((i - i.mean())/i.std() for i in (a, b))
+        c = array_transforms.correlate(a, b)
+        return (c**2).sum()/c.size()
+    

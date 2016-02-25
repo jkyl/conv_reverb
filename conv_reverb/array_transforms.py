@@ -11,6 +11,11 @@ def convolve(a, b):
     '''
     return np.array([fftconvolve(a[i], b[i]) for i in (0, 1)])
 
+def correlate(a, b):
+    '''
+    '''
+    return fftconvolve(a, b[::-1])
+
 
 def pitchshift(a, scale):
     '''
