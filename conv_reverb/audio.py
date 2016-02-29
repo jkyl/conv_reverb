@@ -44,10 +44,10 @@ class Audio:
     def plot_waveform(self):
         utils.plot_waveform(self._array, self._title)
 
-    def get_fft(self, window_size_in_samples = 2048):
+    def get_fft(self, window_size_in_samples = 512):
         return utils.get_fft(self.mono_array, window_size_in_samples)
         
-    def plot_fft_spectrum(self, window_size_in_samples = 2048):
+    def plot_fft_spectrum(self, window_size_in_samples = 512):
         spectrum = self.get_fft(window_size_in_samples)
         utils.plot_fft(spectrum, self._title)
 
