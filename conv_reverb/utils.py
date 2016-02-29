@@ -91,7 +91,7 @@ def plot_fft(spectrum, title):
     '''
     '''
     n_bins, n_windows = spectrum.shape
-    x_axis = np.linspace(0, (n_bins - 1) * n_windows / 22050., n_windows)
+    x_axis = np.linspace(0, (n_bins - 1) * n_windows / 44100., n_windows)
     y_axis = np.linspace(0, 22050., n_bins)
     X, Y = np.meshgrid(x_axis, y_axis)
 
