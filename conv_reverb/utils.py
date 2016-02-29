@@ -7,6 +7,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
+import math
 
 
 SUFFIXES = {'aif': 'aiff',
@@ -71,21 +72,26 @@ def write_stereo_arrays_to_wav(stereo_array, title):
 def get_fft(a, step_size):
     '''
     '''
-    trunc_a = a[:(a.size - (a.size % step_size))]
-    split_into_steps = np.array_split(trunc_a, a.size / step_size)
-    fourier_coeffs = [fft(s) * blackman(s.size) for s in split_into_steps]
-    windows = np.array([[np.abs(coeff) for coeff in window[:len(window)/2]] \
-                        for window in fourier_coeffs])
-    spectrum = windows/windows.max()
-    spectrum[np.where(spectrum < .0000009)] = .0000009  # apply noise floor to 
-    return 10*np.log10(spectrum.swapaxes(0,1))          # -inf points.    
-
+    pad = step_size - (a.size % step_size)
+    zerod = np.append(a, np.zeros(pad))
+    outer = zerod.reshape(zerod.size / step_size, step_size)
+    inner = zerod[(step_size / 2):(-step_size / 2)]\
+            .reshape((zerod.size - step_size) / step_size, step_size)
+    interleaved = np.empty([outer.shape[0] + inner.shape[0], outer.shape[1]])
+    interleaved[::2,:] = outer; interleaved[1::2,:] = inner
+    windowed = blackman(step_size) * interleaved
+    coeffs = fft(windowed)[:, :(step_size / 2) + 1]
+    power_units = np.abs(np.multiply(coeffs, np.conj(coeffs)))
+    decibels = 10 * np.log10(power_units/power_units.max())
+    decibels[np.where(decibels < -130)] = -130
+    return decibels.swapaxes(0, 1)
+    
 
 def plot_fft(spectrum, title):
     '''
     '''
     n_bins, n_windows = spectrum.shape
-    x_axis = np.linspace(0, 2*n_bins*n_windows/44100., n_windows)
+    x_axis = np.linspace(0, (n_bins - 1) * n_windows / 22050., n_windows)
     y_axis = np.linspace(0, 22050., n_bins)
     X, Y = np.meshgrid(x_axis, y_axis)
 
@@ -95,13 +101,13 @@ def plot_fft(spectrum, title):
     im = ax.pcolormesh(X, Y, spectrum, cmap = 'inferno')
     plt.title(title)
     plt.xlim(0, x_axis.max())
-    plt.ylim(42, 22050)
+    plt.ylim(y_axis[1], 22050)
     plt.xlabel('Time (seconds)')
     plt.ylabel('Frequency (Hz)')
     plt.tick_params(axis='y', which='minor')
     divider = make_axes_locatable(ax)
     cax = divider.append_axes("right", size="5%", pad=0.05)
-    plt.colorbar(im, cax=cax, ticks = np.arange(0, -70, -10),
-                 label = 'Amplitude (dB)')
+    plt.colorbar(im, cax=cax, ticks = np.arange(0, -140, -20),
+                 label = 'Power (dB)')
     plt.savefig('output/spectra/' + title + '.png')
 
