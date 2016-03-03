@@ -76,6 +76,7 @@ class Audio:
         '''
         '''
         a = self.mono_array
+        a = a/(abs(a).sum()/a.size)
         if not type(l) in (list, tuple):
             l = [l]
         titles = [i.title for i in l]
