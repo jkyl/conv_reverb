@@ -1,5 +1,9 @@
 Scripts associated with connection to the Internet Archive (www.archive.org) API.
 
+Files
+
+API_backend.py: script that searches the Internet Archive database through its API and downloads a specified file from the results.
+
 To-do
 
 >Consider the case where you get >1000 results found. How are you going to manage that?
