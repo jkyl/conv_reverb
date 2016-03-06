@@ -30,6 +30,7 @@ $ brew install ffmpeg --with-libvorbis --with-ffplay --with-theora
 * Make sure everything runs in a CS 122 Virtual Machine.
 * Prep for the final presentation.
 * Reference some website that explains the signal processing concepts that this project uses.
+* Record real wet sounds across campus spaces for analysis.
 
 ## Known issues
 
