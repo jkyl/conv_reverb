@@ -5,6 +5,7 @@ Directories
 aporee_files: audio files downloaded from the Internet Archive database.
 impulses: impulse response audio files for physical spaces around UChicago campus.
 output: output audio files and visualization files.
+samples: audio files to test sound transformations with.
 
 Files
 
