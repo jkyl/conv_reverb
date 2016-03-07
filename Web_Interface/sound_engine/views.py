@@ -4,14 +4,16 @@ from django import forms
 import json
 import traceback
 from io import StringIO
-import sys
 import csv
 import os
 #from operator import and_ ???
-#from API_backend import query_catalog
 from functools import reduce
-
-NOPREF_STR = '- - - - - - - -'
+import sys
+#'/home/student/WIRE/conv_reverb/Web_Interface/API/API/API_backend.py'
+sys.path.append('/home/student/WIRE/conv_reverb/Web_Interface/API/')
+from Backend_API import query_catalog
+ 
+NOPREF_STR = '- - - - - - - - -'
 SOUND_FILES_DIR = os.path.join(os.path.dirname(__file__), '..', 'sound_files')
 COLUMN_NAMES = dict(
         dept='Deptartment',
@@ -47,9 +49,8 @@ def _valid_military_time(time):
 def _load_column(filename, col=0):
     """Loads single column from csv file"""
     with open(filename) as f:
-        col = list(zip(*csv.reader(f)))[0]
+        col = list(zip(*csv.reader(f)))
         return list(col)
-
 
 def _load_res_column(filename, col=0):
     """Load column from resource directory"""
@@ -60,16 +61,11 @@ def _build_dropdown(options):
     """Converts a list to (value, caption) tuples"""
     return [(x, x) if x is not None else ('', NOPREF_STR) for x in options]
 
-
-#BUILDINGS = _build_dropdown([None] + _load_res_column('building_list.csv'))
-#DAYS = _build_dropdown(_load_res_column('day_list.csv'))
-#DEPTS = _build_dropdown([None] + _load_res_column('dept_list.csv'))
-DATE = _build_dropdown([None, '1', '2', '3','4', '5', '6','7', '8', '9','10','11','12','13','14',
+DATE = _build_dropdown([None, '01', '02', '03','04', '05', '06','07', '08', '09','10','11','12','13','14',
         '15','16','17','18', '19','20', '21','22','23','24','25','26','27','28','29','30','31'])
-MONTH = _build_dropdown([None,'January','February','March','April', 'May', 'June','July', 'August',
-        'September','October','November','December'])
+MONTH = _build_dropdown([None,'01', '02', '03','04', '05', '06','07', '08', '09','10','11','12'])
+YEAR = _build_dropdown([None] + _load_res_column('year_list.csv'))
 IMPULSE = _build_dropdown([None] + _load_res_column('impulses.csv'))
-
 
 '''
 
@@ -132,8 +128,9 @@ class BuildingWalkingTime(forms.MultiValueField):
 
 class PickDate(forms.MultiValueField):
     def __init__(self, *args, **kwargs):
-        fields = (forms.ChoiceField(label='Date', choices=DATE, required=False), 
-                forms.ChoiceField(label='Month', choices=MONTH, required=False))
+        fields = (forms.ChoiceField(label='Year', choices=YEAR, required=False),
+                  forms.ChoiceField(label='Month', choices=MONTH, required=False), 
+                  forms.ChoiceField(label='Date', choices=DATE, required=False))
         super(PickDate, self).__init__(fields=fields,*args,**kwargs)
     def compress(self, values):
         if len(values) == 2:
@@ -145,28 +142,34 @@ class PickDate(forms.MultiValueField):
 
 
 class SearchForm(forms.Form):
-    title = forms.CharField(
+    Title = forms.CharField(
             label='Title',
             help_text='e.g. Argentinian National Anthem',
             required=False)
-    creator = forms.CharField(
+    Creator = forms.CharField(
             label='Creator',
             help_text='e.g. Esteban',
             required=False)
-    from_date = PickDate(
+    Description = forms.CharField(
+            label='Description',
+            help_text='e.g. Sexy baritone with Latin American accent',
+            required=False)
+    From_date = PickDate(
             label='From',
             help_text='e.g. 31 January',
             required=False,
             widget=forms.widgets.MultiWidget(
-                widgets=(forms.widgets.Select(choices=DATE),
-                         forms.widgets.Select(choices=MONTH))))
-    to_date = PickDate(
+                widgets=(forms.widgets.Select(choices=YEAR),
+                         forms.widgets.Select(choices=MONTH),
+                         forms.widgets.Select(choices=DATE))))
+    To_date = PickDate(
             label='To',
             help_text='e.g. 27 December',
             required=False,
             widget=forms.widgets.MultiWidget(
-                widgets=(forms.widgets.Select(choices=DATE),
-                         forms.widgets.Select(choices=MONTH))))
+                widgets=(forms.widgets.Select(choices=YEAR),
+                         forms.widgets.Select(choices=MONTH),
+                         forms.widgets.Select(choices=DATE))))
 
 class ProcessForm(forms.Form):
     impulses = forms.ChoiceField(label='Impulse Response', choices=IMPULSE, required=False)
@@ -210,18 +213,18 @@ def home(request):
         if form1.is_valid():
             # Convert form data to an args dictionary for API_backend
             args = {}
-            if form1.cleaned_data['title']:
-                args['title'] = form1.cleaned_data['title']
-            if form1.cleaned_data['creator']:
-                args['creator'] = form1.cleaned_data['creator']
-            from_date = form1.cleaned_data['from_date']
-            if from_date:
-                args['from_day'] = from_date[0]
-                args['from_month'] = from_month[1]
-            to_date = form1.cleaned_data['to_date']
-            if to_date:
-                args['to_day'] = to_date[0]
-                args['to_month'] = to_month[1]    
+            if form1.cleaned_data['Title']:
+                args['Title'] = form1.cleaned_data['Title']
+            if form1.cleaned_data['Creator']:
+                args['Creator'] = form1.cleaned_data['Creator']
+            From_date = form1.cleaned_data['From_date']
+            if From_date:
+                args['From_day'] = From_date[0]
+                args['From_month'] = From_date[1]
+            To_date = form1.cleaned_data['To_date']
+            if To_date:
+                args['To_day'] = To_date[0]
+                args['To_month'] = To_month[1]    
             '''
             time = form.cleaned_data['time']
             if time:
@@ -244,7 +247,7 @@ def home(request):
                 context['args'] = 'args_to_ui = ' + json.dumps(args, indent=2)
 
             try:
-                res = find_courses(args)
+                res = catalog_query(args)
             except Exception as e:
                 print('Exception caught')
                 bt = traceback.format_exception(*sys.exc_info()[:3])
