@@ -1,0 +1,86 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>W.I.R.E. - Web Interfaced Reverb Engine</title>
+        <link rel="stylesheet" type="text/css" href="{% static "/static/main.css" %}" />
+    </head>
+    
+    <body>
+        <div id="header">
+            <h1>W.I.R.E. - Web Interfaced Reverb Engine</h1>
+        </div>
+        <div >
+            <center>
+            <h2>Search for audio files</h2>
+            </center>
+        </div>
+        <div class="frame">
+            <form method="get">
+                {% csrf_token %}
+                <table class="form">
+                {{ form1 }}
+                </table>
+                <input type="submit" value="Search" />
+            </form>
+            <hr />
+            <center>
+            <h2>Choose from Results</h2>
+            </center>
+            <form method="get">
+                {% csrf_token %}
+                <table class="form">
+
+                </table>
+                <input type="submit" value="Submit" />
+            </form>
+            <hr />
+            <center>
+            <h2>Select Sound Transformations</h2>
+            </center>
+            <form method="get">
+                {% csrf_token %}
+                <table class="form">
+                {{ form2 }}
+                </table>
+                <input type="submit" value="Search" />
+            </form>
+        </div>
+
+        {% if args %}
+        <div class="args">
+            <pre>{{ args }}</pre>
+        </div>
+        {% endif %}
+
+        {% if err %}
+        <div class="error">
+            {{ err|safe }}
+        </div>
+        {% endif %}
+
+
+
+        <div class="frame">
+            {% if result != None %}
+            <div class="results">
+                <table class="courses">
+                    <tr>
+                        {% for col in columns %}
+                        <th>{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                    {% for entry in result %}
+                    <tr>
+                        {% for col in entry %}
+                        <td>{{ col }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <p class="num_results">Results: {{ num_results }}</p>
+            {% endif %}
+        </div>
+    </body>
+</html>

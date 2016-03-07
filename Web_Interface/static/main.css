@@ -1,0 +1,130 @@
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Verdana;
+}
+
+div#header {
+    background: rgb(120, 20, 0);
+    margin: 0;
+    padding: 0;
+}
+
+div#header h1 {
+    font-size: 18px;
+    color: #f5f5f5;
+    margin: 0;
+    padding: 7px;
+}
+
+div.frame {
+    margin: 15px;
+}
+
+div.args {
+    padding-left: 15px;
+    padding-right: 15px;
+    background: #ffe;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+div.error {
+    padding: 15px;
+    background: #eee;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+fieldset {
+    padding: 3px;
+    margin: 1px;
+    border: 1px solid #ddd;
+}
+
+fieldset legend {
+    font-weight: bold;
+    font-size: 12px;
+}
+
+input.query {
+    font-size: 18px;
+}
+
+label {
+    font-size: 12px;
+}
+
+p.num_results {
+    margin-left: 5px;
+    font-size: 12px;
+}
+
+table.form {
+    text-align: left;
+}
+
+table.form tr td,
+table.form tr th {
+    vertical-align: top;
+}
+
+table.form input {
+    margin-right: 5px;
+}
+
+table.form input#id_query {
+    font-size: 18px;
+}
+
+table.form ul#id_days {
+    margin: 0px;
+    padding: 0px;
+}
+
+table.form ul#id_days li {
+    display: block;
+    float: left;
+    margin: 0px;
+    padding: 0px;
+}
+
+table.courses {
+    border: 1px solid #ddd;
+    padding: 0px;
+    margin: 0px;
+}
+
+table.courses tr th {
+    text-align: left;
+}
+
+table.courses tr td,
+table.courses tr th {
+    padding: 3px;
+    font-size: 12px;
+}
+
+table.courses tr:nth-child(even) {
+    background: #eee;
+}
+
+ul.errorlist {
+    margin: 0px;
+    padding: 0px;
+    padding-top: 5px;
+
+}
+
+ul.errorlist li {
+    font-size: 12px;
+    color: red;
+    margin: 0px;
+    padding: 0px;
+}
+
+span.helptext {
+    font-size: 11px;
+    color: gray;
+}
