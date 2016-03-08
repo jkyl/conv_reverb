@@ -12,6 +12,8 @@ import matplotlib.pyplot as plt
 
 
 IMPULSES_DIR = '../impulses/'
+FREQ_BINS = [5,10,15,20,25] # these are low frequency bins for which the reverb
+                            # signature of each IR is most clear
 
 def read_csv(impulses_fname):
     '''
@@ -76,12 +78,10 @@ def go(impulses_fname):
     impulses_audio = get_audio(impulses)
     impulses_fft = get_fft(impulses_audio)
 
-    freq_bins = [5,10,15,20,25]
-
     for impulse_fft in impulses_fft:
         processed_impulse = []
         
-        for freq_bin in freq_bins:
+        for freq_bin in FREQ_BINS:
             freq_fft = impulses_fft[impulse_fft][freq_bin]
             filtered_fft = filter_decibels(freq_fft)
             plot(filtered_fft, '{}_bin_{}'.format(impulse_fft, freq_bin)) #
