@@ -76,19 +76,22 @@ def format_output(query_results):
     attribute_fields = ['Title', 'Creator', 'Description']
 
     # restrict query restults to 100 items
-    for i in range(query_results.num_found % 100):
-
-        for result in query_results:
+    i = 100
+    for result in query_results:
+        if i <= 0:
+            break
+        else:
             identifier = result['identifier']
             item = ia.get_item(identifier)
             items.append(item)
+            i += -1
 
-        for item in items:
-            title = item.metadata['title']
-            creator = item.metadata['creator']
-            description = item.metadata['description']
+    for item in items:
+        title = item.metadata['title']
+        creator = item.metadata['creator']
+        description = item.metadata['description']
 
-            item_fields.append([Title, Creator, Description])
+        item_fields.append([Title, Creator, Description])
     
     output = (attribute_fields, item_fields)
 
