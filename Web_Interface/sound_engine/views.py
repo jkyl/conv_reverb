@@ -10,8 +10,8 @@ import os
 from functools import reduce
 import sys
 #'/home/student/WIRE/conv_reverb/Web_Interface/API/API/API_backend.py'
-sys.path.append('/home/student/WIRE/conv_reverb/Web_Interface/API/')
-from Backend_API import query_catalog
+sys.path.insert(0,'/home/student/WIRE/conv_reverb/Web_Interface/API/')
+from Backend_API import query_catalog, format_output
  
 NOPREF_STR = '- - - - - - - - -'
 SOUND_FILES_DIR = os.path.join(os.path.dirname(__file__), '..', 'sound_files')
@@ -49,8 +49,9 @@ def _valid_military_time(time):
 def _load_column(filename, col=0):
     """Loads single column from csv file"""
     with open(filename) as f:
-        col = list(zip(*csv.reader(f)))
-        return list(col)
+        reader = csv.reader(f)
+        col = [row[0] for row in reader]
+        return col 
 
 def _load_res_column(filename, col=0):
     """Load column from resource directory"""
@@ -64,8 +65,9 @@ def _build_dropdown(options):
 DATE = _build_dropdown([None, '01', '02', '03','04', '05', '06','07', '08', '09','10','11','12','13','14',
         '15','16','17','18', '19','20', '21','22','23','24','25','26','27','28','29','30','31'])
 MONTH = _build_dropdown([None,'01', '02', '03','04', '05', '06','07', '08', '09','10','11','12'])
-YEAR = _build_dropdown([None] + _load_res_column('year_list.csv'))
 IMPULSE = _build_dropdown([None] + _load_res_column('impulses.csv'))
+YEAR = _build_dropdown([None] + _load_res_column('year_list.csv'))
+
 
 '''
 
@@ -133,11 +135,11 @@ class PickDate(forms.MultiValueField):
                   forms.ChoiceField(label='Date', choices=DATE, required=False))
         super(PickDate, self).__init__(fields=fields,*args,**kwargs)
     def compress(self, values):
-        if len(values) == 2:
-            if values[0] == '31' and (values[1] in ['February', 'April', 'June', 'September','November']):
-                raise forms.ValidationError('Selected month does not have 31 days')
-            if values[0] == '30' and values[1] == 'February':
-                raise forms.ValidationError('Selected month does not have 30 days')
+        
+        #if values[2] == '31' and (values[1] in ['February', 'April', 'June', 'September','November']):
+            #raise forms.ValidationError('Selected month does not have 31 days')
+        #if values[2] == '30' and values[1] == 'February':
+            #raise forms.ValidationError('Selected month does not have 30 days')    
         return values        
 
 
@@ -156,7 +158,7 @@ class SearchForm(forms.Form):
             required=False)
     From_date = PickDate(
             label='From',
-            help_text='e.g. 31 January',
+            help_text='e.g. For 31 January 2014 select 2014 01 31',
             required=False,
             widget=forms.widgets.MultiWidget(
                 widgets=(forms.widgets.Select(choices=YEAR),
@@ -164,12 +166,13 @@ class SearchForm(forms.Form):
                          forms.widgets.Select(choices=DATE))))
     To_date = PickDate(
             label='To',
-            help_text='e.g. 27 December',
+            help_text='Select date as YYYY MM DD',
             required=False,
             widget=forms.widgets.MultiWidget(
                 widgets=(forms.widgets.Select(choices=YEAR),
                          forms.widgets.Select(choices=MONTH),
                          forms.widgets.Select(choices=DATE))))
+
 
 class ProcessForm(forms.Form):
     impulses = forms.ChoiceField(label='Impulse Response', choices=IMPULSE, required=False)
@@ -197,8 +200,6 @@ class ProcessForm(forms.Form):
                                      choices=DAYS,
                                      widget=forms.CheckboxSelectMultiple,
                                      required=False)
-    show_args = forms.BooleanField(label='Show args_to_ui',
-                                   required=False)
     '''
 
 
@@ -207,58 +208,43 @@ def home(request):
     res = None
     if request.method == 'GET':
         # create a form instance and populate it with data from the request:
-        form1 = SearchForm(request.GET)
+        query_API = SearchForm(request.GET)
         form2 = ProcessForm(request.GET)
         # check whether it's valid:
-        if form1.is_valid():
+        if query_API.is_valid():
             # Convert form data to an args dictionary for API_backend
             args = {}
-            if form1.cleaned_data['Title']:
-                args['Title'] = form1.cleaned_data['Title']
-            if form1.cleaned_data['Creator']:
-                args['Creator'] = form1.cleaned_data['Creator']
-            From_date = form1.cleaned_data['From_date']
+            if query_API.cleaned_data['Title']:
+                args['Title'] = query_API.cleaned_data['Title']
+            if query_API.cleaned_data['Creator']:
+                args['Creator'] = query_API.cleaned_data['Creator']
+            if query_API.cleaned_data['Description']:
+                args['Description'] = query_API.cleaned_data['Description']
+            From_date = query_API.cleaned_data['From_date']
             if From_date:
-                args['From_day'] = From_date[0]
+                args['From_day'] = From_date[2]
                 args['From_month'] = From_date[1]
-            To_date = form1.cleaned_data['To_date']
+                args['From_year'] = From_date[0]
+            To_date = query_API.cleaned_data['To_date']
             if To_date:
-                args['To_day'] = To_date[0]
-                args['To_month'] = To_month[1]    
-            '''
-            time = form.cleaned_data['time']
-            if time:
-                args['time_start'] = time[0]
-                args['time_end'] = time[1]
-
-            days = form.cleaned_data['days']
-            if days:
-                args['day'] = days
-            dept = form.cleaned_data['dept']
-            if dept:
-                args['dept'] = dept
-
-            time_and_building = form.cleaned_data['time_and_building']
-            if time_and_building:
-                args['walking_time'] = time_and_building[0]
-                args['building'] = time_and_building[1]
-
-            if form.cleaned_data['show_args']:
-                context['args'] = 'args_to_ui = ' + json.dumps(args, indent=2)
-
+                args['To_day'] = To_date[2]
+                args['To_month'] = To_date[1]
+                args['To_year'] = To_date[0] 
             try:
-                res = catalog_query(args)
+                res = query_catalog(args)
+                res = format_output(res)
+                #print(res)
             except Exception as e:
                 print('Exception caught')
                 bt = traceback.format_exception(*sys.exc_info()[:3])
                 context['err'] = """
                 An exception was thrown in find_courses:
                 <pre>{}
-{}</pre>
+                {}</pre>
                 """.format(e, '\n'.join(bt))
-        '''        
+          
     else:
-        form1 = SearchForm()
+        query_API = SearchForm()
     if form2.is_valid():
         args2 = {}
     else:
@@ -290,7 +276,7 @@ def home(request):
         context['num_results'] = len(result)
         context['columns'] = [COLUMN_NAMES.get(col, col) for col in columns]
     ''' 
-    context['form1'] = form1
+    context['query_API'] = query_API
     context['form2'] = form2
     return render(request, 'index.html', context)
     

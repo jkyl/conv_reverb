@@ -1,3 +1,7 @@
+import sys
+import os
+#'/home/student/WIRE/conv_reverb/Web_Interface/internetarchive'
+sys.path.insert(0,'/home/student/WIRE/conv_reverb/Web_Interface/')
 import internetarchive as ia
 
 MAX_SIZE = 20 * (10 ** 6) # max size of sound file in megabytes
@@ -14,7 +18,7 @@ def query_catalog(args_from_ui):
     Returns:
         query_results: Search object containing results of the query
     '''
-    print(args_from_ui)
+    #print(args_from_ui)
     
     query = 'collection:radio-aporee-maps '
 
@@ -53,8 +57,8 @@ def download_item(identifier):
     if f.size <= MAX_SIZE:
         f.download(SOUND_DIR + f_name)
     else:
-        print 'File size is', f.size, 'bytes'
-        print 'File size exceeds', MAX_SIZE, 'bytes'
+        print ('File size is', f.size, 'bytes')
+        print ('File size exceeds', MAX_SIZE, 'bytes')
 
 
 def format_output(query_results):
@@ -66,10 +70,10 @@ def format_output(query_results):
     Returns:
         output: tuple
     '''
-
+    print('this') 
     items = []
     item_fields = []
-    attribute_fields = ['title', 'creator', 'description']
+    attribute_fields = ['Title', 'Creator', 'Description']
 
     for result in query_results:
         identifier = result['identifier']
@@ -81,7 +85,7 @@ def format_output(query_results):
         creator = item.metadata['creator']
         description = item.metadata['description']
 
-        item_fields.append([title, creator, description])
+        item_fields.append([Title, Creator, Description])
     
     output = (attribute_fields, item_fields)
 
