@@ -68,7 +68,7 @@ def format_output(query_results):
 
     items = []
     item_fields = []
-    attribute_fields = ['title', 'creator', 'description']
+    attribute_fields = ['ID', 'Title', 'Creator', 'Description']
 
     # restrict query to 30 results
     i = 30
@@ -84,6 +84,8 @@ def format_output(query_results):
     for item in items:
         keys = item.metadata.keys()
 
+        identifier = item.metadata['identifier']
+        
         if 'title' in keys:
             title = item.metadata['title']
         else:
@@ -99,10 +101,10 @@ def format_output(query_results):
         else:
             description = ''
 
-        item_fields.append([title, creator, description])
+        item_fields.append([identifier, title, creator, description])
     
     output = (attribute_fields, item_fields)
-
+    
     return output
     
 
