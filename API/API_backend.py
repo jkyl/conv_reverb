@@ -82,9 +82,22 @@ def format_output(query_results):
             i += -1
 
     for item in items:
-        title = item.metadata['title']
-        creator = item.metadata['creator']
-        description = item.metadata['description']
+        keys = item.metadata.keys()
+
+        if 'title' in keys:
+            title = item.metadata['title']
+        else:
+            title = ''
+
+        if 'creator' in keys:
+            creator = item.metadata['creator']
+        else:
+            creator = ''
+
+        if 'description' in keys:
+            description = item.metadata['description']
+        else:
+            description = ''
 
         item_fields.append([title, creator, description])
     
