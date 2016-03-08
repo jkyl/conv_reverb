@@ -9,13 +9,13 @@ import csv
 import audio
 import numpy as np
 import matplotlib.pyplot as plt
+from IR_processing import FREQ_BINS # list of low frequency bins for which the reverb
+                                    # signature of each IR is most clear and on
+                                    # which analysis is conducted
+from IR_processing import IMPULSES_DIR
 
-
-IMPULSES_DIR = '../impulses/'
 PROCESSED_IMPULSES_DIR = 'output/processed_IRs/'
 PROCESSED_IMPULSES = PROCESSED_IMPULSES_DIR + 'processed_IRs.csv'
-FREQ_BINS = [5,10,15,20,25] # these are low frequency bins for which the reverb
-                            # signature of each IR is most clear
 
 
 class ProcessedImpulses:
@@ -65,13 +65,96 @@ class ProcessedImpulses:
         return impulses
         
 
+class ReverbAudio:
+    '''
+    '''
+    def __init__(self, audio_fname):
+        '''
+        '''
+        self.__audio = audio.Audio(audio_fname)
+        self.__fft = self.__audio.get_fft()
+        self.__processed_fft = self.process_fft()
+        self.__reverb_signature = self.extract_reverb_signature()
+
+
+    @property
+    def fft(self):
+        '''
+        '''
+        return self.__fft
+
+    @property
+    def processed_fft(self):
+        '''
+        '''
+        return self.__processed_fft
+
+    @property
+    def reverb_signature(self):
+        '''
+        '''
+        return self.__reverb_signature
+
+    def process_fft(self):
+        '''
+        '''
+        processed_fft = {}
+        
+        for freq_bin in FREQ_BINS:
+            freq_fft = self.fft[freq_bin]
+            filtered_fft = self.filter_decibels(freq_fft)
+            processed_fft[str(freq_bin)] = filtered_fft
+
+        return processed_fft
+        
+    def filter_decibels(self, fft):
+        '''
+        '''
+        len_fft = len(fft)
+        ten_percent = len_fft / 10
+
+        # filter out low decibel points (below -80 dB) from end of audio
+        for i in range(-1, -(len_fft+1), -1):
+            if fft[i] >= -80 and abs(i) >= ten_percent:
+                fft = fft[:i]
+                break
+
+        return fft
+
+    def extract_reverb_signature(self):
+        '''
+        '''
+        reverb_signature = {}
+
+        for freq_bin in FREQ_BINS:
+
+            len_fft = len(self.processed_fft[str(freq_bin)])
+
+            while len_fft >= 20:
+            
+                cluster_1 = 
+                cluster_2 =
+                
+                mean = 
+
+    def plot(self, fft, title):
+        '''
+        '''
+        X = np.linspace(0, 2*len(fft)/44100., len(fft))
+
+        plt.cla()
+        ax = plt.axes()
+        ax.set_yscale('linear')
+        ax.set_title(title)
+        ax.scatter(X, fft, c='brown')
+        plt.savefig('output/plots/{}.png'.format(title))    
+
 
 def go(audio_fname):
     '''
     '''
     processed_impulses = ProcessedImpulses()
-    print processed_impulses.impulses
-    return processed_impulses
+    pass
 
 
 if __name__=='__main__':
