@@ -10,20 +10,12 @@ import os
 from functools import reduce
 import sys
 #'/home/student/WIRE/conv_reverb/Web_Interface/API/API/API_backend.py'
-sys.path.insert(0,'/home/student/WIRE/conv_reverb/Web_Interface/API/')
-from Backend_API import query_catalog, format_output
+sys.path.insert(0,'/home/student/WIRE/conv_reverb/API/')
+from API_backend import query_catalog, format_output
  
 NOPREF_STR = '- - - - - - - - -'
 SOUND_FILES_DIR = os.path.join(os.path.dirname(__file__), '..', 'sound_files')
-COLUMN_NAMES = dict(
-        dept='Deptartment',
-        course_num='Course',
-        section_num='Section',
-        day='Day',
-        time_start='Time (start)',
-        time_end='Time (end)',
-        enroll='Enrollment',
-)
+
 
 '''
 def _valid_result(res):
@@ -144,12 +136,12 @@ class PickDate(forms.MultiValueField):
 
 
 class SearchForm(forms.Form):
-    Title = forms.CharField(
+    title = forms.CharField(
             label='Title',
             help_text='e.g. Argentinian National Anthem',
             required=False)
-    Creator = forms.CharField(
-            label='Creator',
+    uploader = forms.CharField(
+            label='Uploader',
             help_text='e.g. Esteban',
             required=False)
     Description = forms.CharField(
@@ -230,18 +222,18 @@ def home(request):
                 args['To_day'] = To_date[2]
                 args['To_month'] = To_date[1]
                 args['To_year'] = To_date[0] 
-            try:
-                res = query_catalog(args)
-                res = format_output(res)
-                #print(res)
-            except Exception as e:
-                print('Exception caught')
-                bt = traceback.format_exception(*sys.exc_info()[:3])
-                context['err'] = """
-                An exception was thrown in find_courses:
-                <pre>{}
-                {}</pre>
-                """.format(e, '\n'.join(bt))
+            #try:
+            res = query_catalog(args)
+            res = format_output(res)
+            print(res)
+            #except Exception as e:
+            #    print('Exception caught')
+            #    bt = traceback.format_exception(*sys.exc_info()[:3])
+            #    context['err'] = """
+            #    An exception was thrown in find_courses:
+            #    <pre>{}
+            #    {}</pre>
+            #    """.format(e, '\n'.join(bt))
           
     else:
         query_API = SearchForm()
