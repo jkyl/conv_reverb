@@ -42,8 +42,7 @@ def download_item(identifier):
     f_name = ''
 
     # This loop finds the .mp3 associated with the audio file.
-    print(item.files)
-    for f in item.files:
+    for f in item.iter_files():
         if f.name[-4:] == '.mp3':
             f_name = f.name
             break
@@ -53,8 +52,8 @@ def download_item(identifier):
     if f.size <= MAX_SIZE:
         f.download(SOUND_DIR + f_name)
     else:
-        print('File size is', f.size, 'bytes')
-        print('File size exceeds', MAX_SIZE, 'bytes')
+        print ('File size is', f.size, 'bytes')
+        print ('File size exceeds', MAX_SIZE, 'bytes')
 
 
 def format_output(query_results):
@@ -71,34 +70,15 @@ def format_output(query_results):
     item_fields = []
     attribute_fields = ['title', 'creator', 'description']
 
-    # restrict query restults to 30 items
-    i = 30
     for result in query_results:
-        if i <= 0:
-            break
-        else:
-            identifier = result['identifier']
-            item = ia.get_item(identifier)
-            items.append(item)
-            i += -1
+        identifier = result['identifier']
+        item = ia.get_item(identifier)
+        items.append(item)
 
     for item in items:
-        keys = item.metadata.keys()
-        
-        if 'title' in keys:
-            title = item.metadata['title']
-        else:
-            title = ''
-            
-        if 'uploader' in keys:
-            creator = item.metadata['uploader']
-        else:
-            creator = ''
-            
-        if 'description' in keys:
-            description = item.metadata['description']
-        else:
-            description = ''
+        title = item.metadata['title']
+        creator = item.metadata['creator']
+        description = item.metadata['description']
 
         item_fields.append([title, creator, description])
     
@@ -111,12 +91,11 @@ def format_output(query_results):
 
 if __name__ == "__main__":
 
-#    args_from_ui = {}
-#    args_from_ui = {'title': 'berlin in snow'}
+    args_from_ui = {'title': 'berlin in snow'}
 #    args_from_ui = {'title': 'berlin', 'date': '2015-04-06'}
-#    query_results = query_catalog(args_from_ui)
-#    format_output(query_results)
-    download_item('aporee_2039_2931')
+    query_results = query_catalog(args_from_ui)
+    format_output(query_results)
+#    download_item('aporee_2039_2931')
     
 
     
