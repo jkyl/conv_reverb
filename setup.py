@@ -38,15 +38,15 @@ if PLATFORM == 'darwin':
         unix_command('sudo -H pip{} install --upgrade matplotlib'.format(PIP_SUFFIX))
 
 if 'linux' in PLATFORM:
-    out, err = unix_command('apt-cache policy libav-tools')
-    if 'Unable to locate' in out:
+    out, err = unix_command('dpkg -s libav-tools')
+    if 'is not installed' in err:
         print('Installing libav...')
-        unix_command('sudo -H apt-get install libav-tools')
+        unix_command('sudo -H apt-get -y install libav-tools')
 
-    out, err = unix_command('apt-cache policy libav-tools')
+    out, err = unix_command('apt-cache policy freetype')
     if 'Unable to locate' in out:
         print('Installing freetype...')
-        unix_command('sudo -H apt-get install freetype*')
+        unix_command('sudo -H apt-get -y install freetype*')
 
     out, err = unix_command('pip{} show matplotlib'.format(PIP_SUFFIX))
     if not 'Version: 1.5.1' in out:
