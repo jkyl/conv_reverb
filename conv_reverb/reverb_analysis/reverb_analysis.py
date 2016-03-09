@@ -76,7 +76,12 @@ class ReverbAudio:
         self.__processed_fft = self.process_fft()
         self.__reverb_signature = self.extract_reverb_signature()
 
-
+    @property
+    def audio(self):
+        '''
+        '''
+        return self.__audio
+    
     @property
     def fft(self):
         '''
@@ -115,11 +120,16 @@ class ReverbAudio:
 
         # filter out low decibel points (below -80 dB) from end of audio
         for i in range(-1, -(len_fft+1), -1):
-            if fft[i] >= -80 and abs(i) >= ten_percent:
+            if fft[i] >= -80: #and abs(i) >= ten_percent:
                 fft = fft[:i]
                 break
 
         return fft
+
+    def assess_reverb_quality(self, reverb_fft):
+        '''
+        '''
+        pass
 
     def extract_reverb_signature(self):
         '''
@@ -128,33 +138,64 @@ class ReverbAudio:
 
         for freq_bin in FREQ_BINS:
 
-            len_fft = len(self.processed_fft[str(freq_bin)])
-
+            fft = self.processed_fft[str(freq_bin)]
+            len_fft = len(fft)
+            reverb = None
+        
+            i = -10
             while len_fft >= 20:
             
-                cluster_1 = 
-                cluster_2 =
+                cluster_1 = fft[i:i+10]
+                cluster_2 = fft[i-10:i]
+                mean_1 = abs(np.mean(cluster_1))
+                mean_2 = abs(np.mean(cluster_2))
+                norm_std_1 = abs(np.std(cluster_1) / mean_1)
+                norm_std_2 = abs(np.std(cluster_2) / mean_2)
                 
-                mean = 
+                if norm_std_1 < 0.7 and norm_std_2 < 0.7:
 
-    def plot(self, fft, title):
-        '''
-        '''
-        X = np.linspace(0, 2*len(fft)/44100., len(fft))
+                    if mean_2 < (0.95 * mean_1) and len(fft[i:]) > 170: # min time
+                        reverb = fft[i:]
+                        break
+                    else:
+                        i += -10
+                        len_fft += -10
+                        
+                else:
+                    i += -1
+                    len_fft += -1
 
-        plt.cla()
-        ax = plt.axes()
-        ax.set_yscale('linear')
-        ax.set_title(title)
-        ax.scatter(X, fft, c='brown')
-        plt.savefig('output/plots/{}.png'.format(title))    
+            if reverb != None and len(reverb) > 300:
+                reverb = None
+
+            reverb_signature[str(freq_bin)] = reverb
+
+        return reverb_signature
+                
+
+def plot(fft, title):
+    '''
+    '''
+    X = np.linspace(0, 2*257*len(fft)/44100., len(fft))
+
+    plt.cla()
+    ax = plt.axes()
+    ax.set_yscale('linear')
+    ax.set_title(title)
+    ax.scatter(X, fft, c='brown')
+    plt.savefig('output/plots/{}.png'.format(title))    
 
 
 def go(audio_fname):
     '''
     '''
     processed_impulses = ProcessedImpulses()
-    pass
+    reverb_audio = ReverbAudio(audio_fname)
+    for freq in FREQ_BINS:
+        reverb_signature = reverb_audio.reverb_signature[str(freq)]
+#        print(reverb_signature)
+        if reverb_signature != None:
+            plot(reverb_signature, reverb_audio.audio.title + '_bin_' + str(freq))
 
 
 if __name__=='__main__':

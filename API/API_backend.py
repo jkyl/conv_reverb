@@ -52,8 +52,8 @@ def download_item(identifier):
     if f.size <= MAX_SIZE:
         f.download(SOUND_DIR + f_name)
     else:
-        print ('File size is', f.size, 'bytes')
-        print ('File size exceeds', MAX_SIZE, 'bytes')
+        print('File size is', f.size, 'bytes')
+        print('File size exceeds', MAX_SIZE, 'bytes')
 
 
 def format_output(query_results):

@@ -61,7 +61,7 @@ def filter_decibels(impulse_fft):
 def plot(fft, title):
     '''
     '''
-    X = np.linspace(0, 2*len(fft)/44100., len(fft))
+    X = np.linspace(0, 2*257*len(fft)/44100., len(fft))
 
     plt.cla()
     ax = plt.axes()
