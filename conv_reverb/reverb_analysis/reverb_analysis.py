@@ -129,7 +129,24 @@ class ReverbAudio:
     def assess_reverb_quality(self, reverb_fft):
         '''
         '''
-        pass
+        len_fft = len(reverb_fft)
+        stds = []
+
+        i = -20
+        while len_fft >= 20:
+
+            cluster = reverb_fft[i:i+20]
+            std = abs(np.std(cluster))
+
+            if not np.isnan(std):
+                stds.append(std)
+            i += -20
+            len_fft += -20
+            
+        print np.mean(stds)
+        print np.mean(stds/np.mean(reverb_fft))
+        return np.mean(stds) < 0.15
+        
 
     def extract_reverb_signature(self):
         '''
@@ -165,7 +182,8 @@ class ReverbAudio:
                     i += -1
                     len_fft += -1
 
-            if reverb != None and len(reverb) > 300:
+            print 'freq_bin', freq_bin
+            if reverb != None and (not self.assess_reverb_quality(reverb) or len(reverb) > 300):
                 reverb = None
 
             reverb_signature[str(freq_bin)] = reverb
