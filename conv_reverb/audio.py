@@ -62,14 +62,14 @@ class Audio:
         shift = array_transforms.pitchshift(self._array, amt)
         rv = Audio()
         rv.set_array(shift)
-        rv.set_title(self.title + ' pitch shifted %s '%(amt * 100))
+        rv.set_title(self.title + ' pitch shifted {}%'.format(int(amt * 100)))
         return rv
 
     def ringmod(self, freq_hz):
         mod = array_transforms.ringmod(self._array, freq_hz)
         rv = Audio()
         rv.set_array(mod)
-        rv.set_title(self.title + ' ring modulated at %s Hz '%(freq_hz))
+        rv.set_title(self.title + ' ring modulated at {} Hz '.format(int(freq_hz)))
         return rv
 
     def correlate(self, l):
