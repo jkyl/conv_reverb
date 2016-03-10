@@ -1,2 +1,7 @@
 # ignore generated compiled python code
 *.pyc
+
+*.png
+*.py~
+*.wav
+.DS_Store

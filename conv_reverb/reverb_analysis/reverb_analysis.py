@@ -13,6 +13,7 @@ from IR_processing import FREQ_BINS # list of low frequency bins for which the r
                                     # signature of each IR is most clear and on
                                     # which analysis is conducted
 from IR_processing import IMPULSES_DIR
+import k_neighbors
 
 PROCESSED_IMPULSES_DIR = 'output/processed_IRs/'
 PROCESSED_IMPULSES = PROCESSED_IMPULSES_DIR + 'processed_IRs.csv'
@@ -116,11 +117,11 @@ class ReverbAudio:
         '''
         '''
         len_fft = len(fft)
-        ten_percent = len_fft / 10
+        five_percent = len_fft / 5
 
         # filter out low decibel points (below -80 dB) from end of audio
         for i in range(-1, -(len_fft+1), -1):
-            if fft[i] >= -80: #and abs(i) >= ten_percent:
+            if fft[i] >= -80: # and abs(i) >= five_percent:
                 fft = fft[:i]
                 break
 
@@ -132,20 +133,19 @@ class ReverbAudio:
         len_fft = len(reverb_fft)
         stds = []
 
-        i = -20
-        while len_fft >= 20:
+        i = -3
+        while len_fft >= 3:
 
-            cluster = reverb_fft[i:i+20]
-            std = abs(np.std(cluster))
+            cluster = reverb_fft[i:i+3]
+            std = np.std(cluster)
 
             if not np.isnan(std):
                 stds.append(std)
-            i += -20
-            len_fft += -20
-            
-        print np.mean(stds)
-        print np.mean(stds/np.mean(reverb_fft))
-        return np.mean(stds) < 0.15
+                
+            i += -1
+            len_fft += -1
+
+        return np.mean(stds) < 3.1 # change it 
         
 
     def extract_reverb_signature(self):
@@ -166,10 +166,14 @@ class ReverbAudio:
                 cluster_2 = fft[i-10:i]
                 mean_1 = abs(np.mean(cluster_1))
                 mean_2 = abs(np.mean(cluster_2))
-                norm_std_1 = abs(np.std(cluster_1) / mean_1)
-                norm_std_2 = abs(np.std(cluster_2) / mean_2)
+                std_1 = np.std(cluster_1)
+                std_2 = np.std(cluster_2)
+
+#                print 'std1', std_1 #
+#                print 'std2', std_2 #
                 
-                if norm_std_1 < 0.7 and norm_std_2 < 0.7:
+                if std_1 < 7 and std_2 < 7 and not (np.isnan(std_1)
+                                                    or np.isnan(std_2)):
 
                     if mean_2 < (0.95 * mean_1) and len(fft[i:]) > 170: # min time
                         reverb = fft[i:]
@@ -182,8 +186,8 @@ class ReverbAudio:
                     i += -1
                     len_fft += -1
 
-            print 'freq_bin', freq_bin
-            if reverb != None and (not self.assess_reverb_quality(reverb) or len(reverb) > 300):
+            if reverb != None and (not self.assess_reverb_quality(reverb)
+                                   or len(reverb) > 300):
                 reverb = None
 
             reverb_signature[str(freq_bin)] = reverb
@@ -209,12 +213,17 @@ def go(audio_fname):
     '''
     processed_impulses = ProcessedImpulses()
     reverb_audio = ReverbAudio(audio_fname)
-    for freq in FREQ_BINS:
-        reverb_signature = reverb_audio.reverb_signature[str(freq)]
+#    print reverb_audio.reverb_signature
+    analysis = k_neighbors.KNeighbors(processed_impulses.impulses, reverb_audio.reverb_signature)
+    
+    print analysis.do_analysis()
+    
+    
+#    for freq in FREQ_BINS:
+#        reverb_signature = reverb_audio.reverb_signature[str(freq)]
 #        print(reverb_signature)
-        if reverb_signature != None:
-            plot(reverb_signature, reverb_audio.audio.title + '_bin_' + str(freq))
-
+#        if reverb_signature != None:
+#            plot(reverb_signature, reverb_audio.audio.title + '_bin_' + str(freq))
 
 if __name__=='__main__':
 
