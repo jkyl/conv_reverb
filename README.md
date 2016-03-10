@@ -13,6 +13,7 @@ Additional modules and libraries required can be installed as instructed below.
 ```sh
 $ pip install pydub
 $ brew install ffmpeg --with-libvorbis --with-ffplay --with-theora
+$ pip install -Iv internetarchive==0.9.8
 ```
 
 ## Current state of the project
@@ -25,12 +26,7 @@ $ brew install ffmpeg --with-libvorbis --with-ffplay --with-theora
 
 * Add lots of documentation.
 * Create bash script that installs dependencies.
-* Create a master script that communicates front-end to backend.
-* Make API script save files to samples/
 * Make sure everything runs in a CS 122 Virtual Machine.
-* Prep for the final presentation.
-* Reference some website that explains the signal processing concepts that this project uses.
-* Record real wet sounds across campus spaces for analysis.
 
 ## Known issues
 

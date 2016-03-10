@@ -1,9 +1,11 @@
-Directory for reverb analysis.
+Directory for reverb recognition analysis scripts and output files.
 
-Folders
+DIRECTORIES
 
+output: Directory containing exported reverb signature for impulse responses.
 
+FILES
 
-Files
-
-IR_processing.py: script to process and export reverb signature of impulse responses.
+IR_processing.py: Script to process and export reverb signature of impulse responses.
+k_neighbors.py: 
+reverb_analysis.py: 
