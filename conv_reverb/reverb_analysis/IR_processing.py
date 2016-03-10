@@ -1,62 +1,86 @@
 #
-# This script...
+# This script is extracts the necessary information from the impulse responses
+# (IRs) and exports them to disk for further analysis.
 #
 
 import sys
 sys.path.append('../')
 
 import csv
-import audio
 import numpy as np
 import matplotlib.pyplot as plt
 
+import audio
+from reverb_analysis import FREQ_BINS
+
 
 IMPULSES_DIR = '../impulses/'
-FREQ_BINS = [5,10,15,20,25] # these are low frequency bins for which the reverb
-                            # signature of each IR is most clear
+IMPULSES_CSV = IMPULSES_DIR + 'impulses.csv'
 
-def read_csv(impulses_fname):
-    '''
-    '''
-    reader = csv.reader(open(impulses_fname))
-    impulses = [row[0] for row in reader]
-    return impulses
+# make it automatically generate a csv file of the exported filenames
 
-def get_audio(impulses):
+class ImpulseResponses:
     '''
+    Class to represent IRs, apply filtering and export.
     '''
-    impulses_audio = []
+
+    def __init__(self, impulses_csv):
+        '''
+        '''
+        self.__impulse_fnames = self.read_csv(impulses_csv)
+
+        
+    def read_csv(self, impulses_csv):
+        '''
+        '''
+        reader = csv.reader(open(impulses_csv))
+        impulse_fnames = [row[0] for row in reader]
+        return impulse_fnames
+
     
-    for impulse in impulses:
-        impulse = audio.Audio(IMPULSES_DIR + impulse)
-        impulses_audio.append(impulse)
+    def get_audio(self, impulse_fnames):
+        '''
+        '''
+        impulses_audio = []
 
-    return impulses_audio
+        for impulse in impulse_fnames:
+            impulse = audio.Audio(IMPULSES_DIR + impulse)
+            impulses_audio.append(impulse)
 
-def get_fft(impulses_audio):
-    '''
-    '''
-    impulses_fft = {}
+        return impulses_audio
 
-    for impulse in impulses_audio:
-        fft = impulse.get_fft()
-        impulses_fft[impulse.title] = fft
+    
+    def filter_decibels(self, impulse_fft):
+        '''
+        '''
+        len_fft = len(impulse_fft)
+        ten_percent = len_fft / 10
 
-    return impulses_fft
+        # filter out low decibel points (below -80 dB) from end of impulse
+        for i in range(-1, -(len_fft+1), -1):
+            if impulse_fft[i] >= -80 and abs(i) >= ten_percent:
+                impulse_fft = impulse_fft[:i]
+                break
 
-def filter_decibels(impulse_fft):
-    '''
-    '''
-    len_fft = len(impulse_fft)
-    ten_percent = len_fft / 10
+        return impulse_fft
 
-    # filter out low decibel points (below -80 dB) from end of impulse
-    for i in range(-1, -(len_fft+1), -1):
-        if impulse_fft[i] >= -80 and abs(i) >= ten_percent:
-            impulse_fft = impulse_fft[:i]
-            break
 
-    return impulse_fft
+    def get_freq_fft(self, impulses_audio):
+        '''
+        '''
+        impulses_fft = {}
+
+        for impulse in impulses_audio:
+            impulses_fft[impulse.title] = {}
+            impulse_fft = impulse.get_fft()
+
+            for freq_bin in FREQ_BINS:
+                filtered_fft = self.filter_decibels(impulse_fft[freq_bin])
+                impulses_fft[impulse.title][str(freq_bin)] = filtered_fft
+
+        return impulses_fft
+
+    
 
 def plot(fft, title):
     '''
@@ -71,9 +95,12 @@ def plot(fft, title):
     plt.savefig('output/plots/{}.png'.format(title))
     
     
-def go(impulses_fname):
+def go():
     '''
     '''
+
+    impulses = ImpulseResponses(IMPULSES_CSV)
+    
     impulses = read_csv(impulses_fname)
     impulses_audio = get_audio(impulses)
     impulses_fft = get_fft(impulses_audio)
@@ -93,8 +120,8 @@ def go(impulses_fname):
 
 if __name__=='__main__':
 
-    if len(sys.argv) != 2:
-        print "usage: python2 {} <impulses filename>".format(sys.argv[0])
+    if len(sys.argv) != 1:
+        print "usage: python2 {}".format(sys.argv[0])
         sys.exit(1)
     
-    go(sys.argv[1])
+    go()

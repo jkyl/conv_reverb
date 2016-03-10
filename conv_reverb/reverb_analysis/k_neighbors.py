@@ -1,5 +1,5 @@
 #
-# This script...
+# This script performs our own flavor of k nearest neighbors analysis.
 #
 
 import sys

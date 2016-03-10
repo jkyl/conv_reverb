@@ -1,22 +1,28 @@
 #
-# This script...
+# This script has the classes necessary to perform reverb analysis in the frequency
+# domain.
 #
 
 import sys
 sys.path.append('../')
 
 import csv
-import audio
 import numpy as np
 import matplotlib.pyplot as plt
-from IR_processing import FREQ_BINS # list of low frequency bins for which the reverb
-                                    # signature of each IR is most clear and on
-                                    # which analysis is conducted
-from IR_processing import IMPULSES_DIR
+
+import audio
 import k_neighbors
+from IR_processing import FREQ_BINS
+
 
 PROCESSED_IMPULSES_DIR = 'output/processed_IRs/'
-PROCESSED_IMPULSES = PROCESSED_IMPULSES_DIR + 'processed_IRs.csv'
+PROCESSED_IMPULSES_CSV = PROCESSED_IMPULSES_DIR + 'processed_IRs.csv'
+
+FREQ_BINS = [5,10,15,20,25] # frequency bins for which the reverb
+                            # signature of each IR is most clear and on
+                            # which analysis is conducted
+                            
+
 
 
 class ProcessedImpulses:
