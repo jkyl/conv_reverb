@@ -72,6 +72,10 @@ class ImpulseResponses:
             impulse = audio.Audio(IMPULSES_DIR + impulse)
             impulses_audio.append(impulse)
 
+            # remove initial part of title
+            if impulse.title[:7] == 'impulse' and len(impulse.title)>7:
+                impulse.title = impulse.title[8:]
+
         return impulses_audio
 
     
