@@ -17,52 +17,18 @@
         </div>
         <div class="frame">
             <form method="get">
-                {% csrf_token %}
                 <table class="form">
                 {{ query_API }}
                 </table>
-                <input type="submit" value="Search" />
+                <input name="Search" type="submit" value="Search" />
             </form>
             <hr />
             <center>
             <h2>Choose from Results</h2>
             </center>
-            <form method="get">
-                {% csrf_token %}
-                <table class="form">
-
-                </table>
-                <input type="submit" value="Submit" />
-            </form>
-            <hr />
-            <center>
-            <h2>Select Sound Transformations</h2>
-            </center>
-            <form method="get">
-                {% csrf_token %}
-                <table class="form">
-                {{ form2 }}
-                </table>
-                <input type="submit" value="Search" />
-            </form>
-        </div>
-
-        {% if args %}
-        <div class="args">
-            <pre>{{ args }}</pre>
-        </div>
-        {% endif %}
-
-        {% if err %}
-        <div class="error">
-            {{ err|safe }}
-        </div>
-        {% endif %}
-
-
-
         <div class="frame">
             {% if result != None %}
+            <p class="num_results">Results: {{ num_results }}</p>
             <div class="results">
                 <table class="courses">
                     <tr>
@@ -79,8 +45,35 @@
                     {% endfor %}
                 </table>
             </div>
-            <p class="num_results">Results: {{ num_results }}</p>
             {% endif %}
+        </div>    
+            <form method="get">
+                <table class="form">
+                {{ resform }}
+                </table>
+                <input name="Download" type="submit" value="Download" />
+            </form>
+            <hr />
+            <center>
+            <h2>Select Sound Transformations</h2>
+            </center>
+            <form method="get">
+                <table class="form">
+                {{ form2 }}
+                </table>
+                <input type="submit" value="Search" />
+            </form>
         </div>
+
+
+        {% if err %}
+        <div class="error">
+            {{ err|safe }}
+        </div>
+        {% endif %}
+
+
+
+        
     </body>
 </html>

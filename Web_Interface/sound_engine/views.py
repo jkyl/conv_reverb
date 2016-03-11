@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django import forms
 import json
@@ -6,37 +6,19 @@ import traceback
 from io import StringIO
 import csv
 import os
-#from operator import and_ ???
-from functools import reduce
 import sys
 #'/home/student/WIRE/conv_reverb/Web_Interface/API/API/API_backend.py'
 sys.path.insert(0,'/home/student/WIRE/conv_reverb/API/')
-from API_backend import query_catalog, format_output
+from API_backend import query_catalog, format_output, download_item
  
 NOPREF_STR = '- - - - - - - - -'
 SOUND_FILES_DIR = os.path.join(os.path.dirname(__file__), '..', 'sound_files')
-
-
-'''
-def _valid_result(res):
-    """Validates results returned by find_courses"""
-    (HEADER, RESULTS) = [0,1]
-    ok = (isinstance(res, (tuple, list)) and 
-          len(res) == 2 and
-          isinstance(res[HEADER], (tuple, list)) and
-          isinstance(res[RESULTS], (tuple, list)))
-    if not ok:
-        return False
-
-    n = len(res[HEADER])
-    def _valid_row(row):
-        return isinstance(row, (tuple, list)) and len(row) == n
-    return reduce(and_, (_valid_row(x) for x in res[RESULTS]), True)
-
-
-def _valid_military_time(time):
-    return (0 <= time < 2400) and (time % 100 < 60)
-'''
+COLUMN_NAMES = dict(
+        title ='Title',
+        id ='ID',
+        creator ='Creator',
+        description ='Description',
+)
 
 def _load_column(filename, col=0):
     """Loads single column from csv file"""
@@ -61,64 +43,6 @@ IMPULSE = _build_dropdown([None] + _load_res_column('impulses.csv'))
 YEAR = _build_dropdown([None] + _load_res_column('year_list.csv'))
 
 
-'''
-
-class IntegerRange(forms.MultiValueField):
-    def __init__(self, *args, **kwargs):
-        fields = (forms.IntegerField(),
-                  forms.IntegerField())
-        super(IntegerRange, self).__init__(fields=fields,
-                                           *args, **kwargs)
-
-    def compress(self, values):
-        if values and (values[0] is None or values[1] is None):
-            raise forms.ValidationError('Must specify both lower and upper '
-                                        'bound, or leave both blank.')
-
-        return values
-
-
-class EnrollmentRange(IntegerRange):
-    def compress(self, values):
-        super(EnrollmentRange, self).compress(values)
-        for v in values:
-            if not (1 <= v <= 1000):
-                raise forms.ValidationError('Enrollment bounds must be in the range 1 to 1000.')
-        if values and (values[1] < values[0]):
-            raise forms.ValidationError('Lower bound must not exceed upper bound.')
-        return values
-
-
-class TimeRange(IntegerRange):
-    def compress(self, values):
-        super(TimeRange, self).compress(values)
-        for v in values:
-            if not _valid_military_time(v):
-                raise forms.ValidationError('The value {:04} is not a valid military time.'.format(v))
-        if values and (values[1] < values[0]):
-            raise forms.ValidationError('Lower bound must not exceed upper bound.')
-        return values
-
-RANGE_WIDGET = forms.widgets.MultiWidget(widgets=(forms.widgets.NumberInput,
-                                                  forms.widgets.NumberInput))
-
-
-class BuildingWalkingTime(forms.MultiValueField):
-    def __init__(self, *args, **kwargs):
-        fields = (forms.IntegerField(),
-                  forms.ChoiceField(label='Building', choices=BUILDINGS, required=False),)
-        super(BuildingWalkingTime, self).__init__(
-                                           fields=fields,
-                                           *args, **kwargs)
-
-    def compress(self, values):
-        if len(values) == 2:
-            if values[0] is None or not values[1]:
-                raise forms.ValidationError('Must specify both minutes and building together.')
-            if values[0] < 0:
-                raise forms.ValidationError('Walking time must be a non-negative integer.')
-        return values
-'''
 
 class PickDate(forms.MultiValueField):
     def __init__(self, *args, **kwargs):
@@ -136,21 +60,22 @@ class PickDate(forms.MultiValueField):
 
 
 class SearchForm(forms.Form):
-    title = forms.CharField(
+    Title = forms.CharField(
             label='Title',
             help_text='e.g. Argentinian National Anthem',
             required=False)
-    uploader = forms.CharField(
-            label='Uploader',
+    Creator = forms.CharField(
+            label='Creator',
             help_text='e.g. Esteban',
             required=False)
     Description = forms.CharField(
             label='Description',
             help_text='e.g. Sexy baritone with Latin American accent',
             required=False)
+    '''
     From_date = PickDate(
             label='From',
-            help_text='e.g. For 31 January 2014 select 2014 01 31',
+            help_text='Select date in YYYY MM DD format',
             required=False,
             widget=forms.widgets.MultiWidget(
                 widgets=(forms.widgets.Select(choices=YEAR),
@@ -158,49 +83,30 @@ class SearchForm(forms.Form):
                          forms.widgets.Select(choices=DATE))))
     To_date = PickDate(
             label='To',
-            help_text='Select date as YYYY MM DD',
+            help_text='Select date in YYYY MM DD format',
             required=False,
             widget=forms.widgets.MultiWidget(
                 widgets=(forms.widgets.Select(choices=YEAR),
                          forms.widgets.Select(choices=MONTH),
                          forms.widgets.Select(choices=DATE))))
+    '''
 
+class PickResForm(forms.Form):
+    ids = forms.CharField(label='Enter ID to download file', help_text='aporee_27258_31409', required=False)
 
 class ProcessForm(forms.Form):
     impulses = forms.ChoiceField(label='Impulse Response', choices=IMPULSE, required=False)
 
-    '''
-    enrollment = EnrollmentRange(
-            label='Enrollment (lower/upper)',
-            help_text='e.g. 1 and 40',#filter top results?
-            widget=RANGE_WIDGET,
-            required=False)
-    time = TimeRange(
-            label='Time (start/end)',
-            help_text='e.g. 1000 and 1430 (meaning 10am-2:30pm)',
-            widget=RANGE_WIDGET,
-            required=False)
-    time_and_building = BuildingWalkingTime(
-            label='Walking time:', 
-            help_text='e.g. 10 and RY (meaning at most a 10-minute walk from Ryerson).',
-            required=False, 
-            widget=forms.widgets.MultiWidget(
-                widgets=(forms.widgets.NumberInput,
-                         forms.widgets.Select(choices=BUILDINGS))))
-    dept = forms.ChoiceField(label='Department', choices=DEPTS, required=False)
-    days = forms.MultipleChoiceField(label='Days',
-                                     choices=DAYS,
-                                     widget=forms.CheckboxSelectMultiple,
-                                     required=False)
-    '''
-
-
 def home(request):
+    print('see')
     context = {}
+    global res
     res = None
-    if request.method == 'GET':
+    if request.method == 'GET' and 'Search' in request.GET:
+        print('koi')
         # create a form instance and populate it with data from the request:
         query_API = SearchForm(request.GET)
+        #resform = PickResForm(request.GET)
         form2 = ProcessForm(request.GET)
         # check whether it's valid:
         if query_API.is_valid():
@@ -212,6 +118,7 @@ def home(request):
                 args['Creator'] = query_API.cleaned_data['Creator']
             if query_API.cleaned_data['Description']:
                 args['Description'] = query_API.cleaned_data['Description']
+            '''
             From_date = query_API.cleaned_data['From_date']
             if From_date:
                 args['From_day'] = From_date[2]
@@ -221,55 +128,66 @@ def home(request):
             if To_date:
                 args['To_day'] = To_date[2]
                 args['To_month'] = To_date[1]
-                args['To_year'] = To_date[0] 
-            #try:
-            res = query_catalog(args)
-            res = format_output(res)
-            print(res)
-            #except Exception as e:
-            #    print('Exception caught')
-            #    bt = traceback.format_exception(*sys.exc_info()[:3])
-            #    context['err'] = """
-            #    An exception was thrown in find_courses:
-            #    <pre>{}
-            #    {}</pre>
-            #    """.format(e, '\n'.join(bt))
-          
+                args['To_year'] = To_date[0]  
+            '''       
+            try:
+                res = query_catalog(args)
+                res = format_output(res)
+                #res = res = (['ID', 'Title', 'Creator', 'Description'], [['aporee_27258_31409', 'Vallendar, Deutschland - church bells in distance', 'aporee@greg...', 'TASCAM DR-100mkII with integrated Mics'], ['aporee_16095_18673', 'Golzheim, Düsseldorf, Deutschland - Düsseldorf. Robert Schumann Hochschule, Krypta', 'Frank Schulte', 'Inside a basement chamber of the music school building which has been turned into a Krypta by the artist work of Emil Schult in five years work from 1995 to 2000. More information about the artist work and Krypta can be found here:http://www.emilschult.eu/<br />The sounds of the room heating and ventilation and music coming from the rehearsal chambers of the floor above. <br /><br />This recording is part of the exhibition project - sonic states <br />soundmap nrw - sonic states, topographic field recordings and art places'], ['aporee_8205_9978', 'Cnr Lorne St & Wellesley St', 'grant_n_is@hotma...', 'Atmospheric sounds emitted during construction of Auckland Art Gallery'], ['aporee_1391_17012', 'Berlin: Vermessungspunkt Maybachufer / Bürknerstraße - Klangvermessung Kreuzkölln ::: 12.07.2012 ::: 04:09', 'henrik schröder', ''], ['aporee_8627_10425', 'neoscenes: hip-hop dancers', 'John Hopkins', ''], ['aporee_5078_6501', 'friedelstraße: kids garden - the city, the country & me: percussion group at 10 years kids garden party', 'henrik schröder', 'the city, the country & me: september 30, 2009'], ['aporee_12635_14808', 'neoscenes: Nieuwmarkt', 'John Hopkins', ''], ['aporee_28866_33241', '泰順公園, Da’an Dist.,Taipei City - Market and Park', 'Wu,Tsan-Cheng', 'Traffic Sound, Sitting in the park, Near the traditional markets, Bird calls ,,<br />Binaural recordings ,Best with Headphone, Proposal to turn up the volume ,<br />Sony PCM D100+ Soundman OKM II ( SoundMap20150721-7) , recorded by Wu,Tsan-Cheng 吳燦政'], ['aporee_9458_11360', 'Czech Rep., Olomouc, Litovelska str., grade crossing', 'yankrticka@gma...', 'a grade crossing at night'], ['aporee_8579_10370', 'Island Hvar, helicopters above Stari Grad -  low flight', 'ranka mesaric', 'poeple in the street and cafes, crickets, helicopters'], ['aporee_14269_16609', 'Jefferson Park, Chicago, IL, USA - CTA Blue Line train from Jefferson Park to Addison', 'thaighaudio@gma...', 'Part of my morning commute on a Blue Line train beginning at Jefferson Park CTA station, through Addison station. Each station on this excerpt sits in the meridian of Interstate 90, known locally as the Kennedy Expressway.<br /><br />Tascam DR-40.'], ['aporee_8016_9783', 'Wroclaw, Cinema Hostel, backstreet parking lot', 'maciej janasik', 'taken form a window facing backyard of the building, parking lot and some construction'], ['aporee_19147_22233', 'Beitou, Taipei City - Traditional Ceremony', 'Wu,Tsan-Cheng', 'Temple Traditional Ceremony,Zoom H4n+ Soundman OKM II , ,Best with Headphone( SoundMap20130812-27) , recorded by Wu,Tsancheng'], ['aporee_18937_21969', '130724_01 - Arles In Black', 'Brice Maire', 'Arles In Black, 01<br />Audio tour of the exhibition of photographs by Sergio Larrain<br />Recording by Brice Maire'], ['aporee_8262_10035', 'Khartourm Pl', '365921437@...', 'water fall'], ['aporee_16756_19498', 'Norwich Cathedral Cloisters UK - The Cloisters', 'Richard Fair', "I thought it was peaceful outside sitting in the Cloisters. But I could hear the sounds of extractor fans from the cafe.<br />I don't know who or what made the sound just before yo hear the bells ring, but it spooked me!<br />Recorded on Olympus LS-11 with Roland CS-10EM binaural microphones.<br />Best heard with headphones."], ['aporee_19885_23137', 'Sintra, trail towards Castelo dos Mouros - rain in the forest', 'maciej janasik', 'heavy rain in the forest + birds. construction works sounds in the distance'], ['aporee_19271_22389', 'Yangmei Station - Station hall', 'Wu,Tsan-Cheng', 'in the Station hall , Sony PCM D50 + Soundman OKM II ,Best with Headphone( SoundMap20130814-28) , recorded by Wu,Tsancheng'], ['aporee_6196_7723', 'wind in the other dome', 'patrick mcginley', 'wind through a decaying geodesic dome, teufelsberg, berlin'], ['aporee_20849_24195', 'Jiaotong University Station,Shanghai - walking in the station', 'Wu,Tsan-Cheng', 'walking in the station, Binaural recording,Best with the Headphone ,Zoom H6+ Soundman OKM II ( SoundMap20131203-15) , recorded by 吳燦政 Wu,Tsancheng'], ['aporee_26061_30144', 'Jimowzod, Koto island - the waves', 'Wu,Tsan-Cheng', 'In the beach, Sound of the waves, <br />Best with Headphone, Proposal to turn up the volume ,<br />Zoom H2n MS +XY ( SoundMap20141029-38) , recorded by Wu,Tsan-Cheng 吳燦政'], ['aporee_26685_30788', '杉福漁港,Liuqiu Township - Waves and tides', 'Wu,Tsan-Cheng', 'Birds singing, Chicken sounds, Small fishing port,Small beach, Waves and tides<br />Best with Headphone, Proposal to turn up the volume ,<br />Zoom H2n MS+XY ( SoundMap20141102-43) , recorded by Wu,Tsan-Cheng 吳燦政'], ['aporee_3421_4697', 'Robert Schumanplein Brussels, Klanklandschap#2 (BAS)', 'basdecaluwe@hotma...', 'sent by basdecaluwe@hotma... at 28.03.2009 00:28'], ['aporee_28555_32903', 'Milwaukee20150628-2057 - Silent reflection for each of the victims of violence within the city - female, 44, shot', 'The Green Lama', 'Project - A Moment Of Silence Milwaukee 2015<br />http://aporee.org/maps/work/projects.php?project=amomentofsilencemke2015<br /><br />0628 Party at incident location, Wright & 35th SE.'], ['aporee_28340_32660', 'Zhongshan N. Rd., Tamsui Dist. - Traditional temple festivals', 'Wu,Tsan-Cheng', 'Traditional temple festivals, Firecrackers<br />Binaural recordings ,Best with Headphone, Proposal to turn up the volume ,<br />Sony PCM D100+ Soundman OKM II ( SoundMap20150621-2) , recorded by Wu,Tsan-Cheng 吳燦政'], ['aporee_25611_29667', 'Vauville, France - Galets Vauville', 'Nicolas Germain', 'People on the beach with little water streaming and smooth stones'], ['aporee_5570_7029', 'stromboli, ginostra - lots of birds in a tree', 'udo noll', 'early evening, lot of birds in a tree'], ['aporee_22819_26482', 'Watermael-Boitsfort, Belgique - Cité Floréal, un peu de chocolat?', 'Flavien Gillié', 'A woman at a window is giving chocolate to some workers on a construction site.<br />Tech Note : SD-702, AT-BP4025.'], ['aporee_16296_18896', '左岸八里碼頭, New Taipei City - Standing on the wave', 'Wu,Tsan-Cheng', 'Standing on the wave,Binaural recordings (SoundMap20120701-15), recorded by Wu,Tsancheng(http://www.soundandtaiwan.com)'], ['aporee_1390_10692', 'Berlin: Vermessungspunkt Friedelstraße / Maybachufer - Klangvermessung Kreuzkölln ::: 02.12.2010 ::: 19:26', 'henrik schröder', '']])
+                resform = PickResForm()
+                print(resform) 
+            except Exception as e:
+                print('Exception caught')
+                bt = traceback.format_exception(*sys.exc_info()[:3])
+                context['err'] = """
+                An exception was thrown in API_backend:
+                <pre>{}
+{}</pre>
+                """.format(e, '\n'.join(bt))
+                res = None     
+             
     else:
         query_API = SearchForm()
-    if form2.is_valid():
-        args2 = {}
-    else:
-        form2 = ProcessForm()        
+        resform = PickResForm()
+    if request.method == 'GET' and 'Download' in request.GET:
+        print('ok')
+        resform = PickResForm(request.GET)
+        print(resform)
+        if resform.is_valid():
+            file_id =resform.cleaned_data['ids']
+            download = download_item(file_id)   
+
     
+
     # Handle different responses of res
     if res is None:
         context['result'] = None
-    '''
 
-    elif isinstance(res, str):
-        context['result'] = None
-        context['err'] = res
-        result = None
-        cols = None
-    
-    elif not _valid_result(res):
-        context['result'] = None
-        context['err'] = ('Return of find_courses has the wrong data type. '
-                         'Should be a tuple of length 4 with one string and three lists.')
     else:
         columns, result = res
 
         # Wrap in tuple if result is not already
         if result and isinstance(result[0], str):
             result = [(r,) for r in result]
-
+         
         context['result'] = result
         context['num_results'] = len(result)
         context['columns'] = [COLUMN_NAMES.get(col, col) for col in columns]
-    ''' 
-    context['query_API'] = query_API
-    context['form2'] = form2
-    return render(request, 'index.html', context)
-    
+        #if resform.cleaned_data['ids']:
+            #args2 = resform.cleaned_data['ids']
+        #id_list = []
+        #for item in result:
+            #id_list.append(str(item[0]))
+        #id_list = id_list.sort()
+        #IDS = _build_dropdown([None] + id_list)
 
+    context['query_API'] = query_API
+    #context['form2'] = form2
+    context['resform'] = resform
+    print(query_API['Title'])
+    print ('help?')
+    return render(request, 'index.html', context)
+
+   
+
+    
