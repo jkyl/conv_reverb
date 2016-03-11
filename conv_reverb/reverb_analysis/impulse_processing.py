@@ -20,8 +20,6 @@ from reverb_analysis import FREQ_BINS, FFT_WINDOW_SIZE, PROCESSED_IMPULSES_DIR,\
 IMPULSES_DIR = '../impulses/'
 IMPULSES_CSV = IMPULSES_DIR + 'impulses.csv'
 
-# NOTES
-
 
 class ImpulseResponses:
     '''

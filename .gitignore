@@ -5,3 +5,4 @@
 *.py~
 *.wav
 .DS_Store
+*.npz

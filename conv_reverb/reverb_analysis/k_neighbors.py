@@ -14,6 +14,13 @@ from reverb_analysis import FREQ_BINS # list of low frequency bins for which the
                                     # signature of each IR is most clear and on
                                     # which analysis is conducted
 
+
+# NOTES
+#
+# make it work with 'k' neighbors
+# make sure you are implementing the 'k' neighbors analysis right
+# normalize position based on center of mass from cluster of initial points
+                                    
 class KNeighbors:
     '''
     '''

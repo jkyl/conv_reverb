@@ -24,7 +24,13 @@ FREQ_BINS = [5,10,15,20,25] # frequency bins for which the reverb
                             # signature of each IR is most clear and on
                             # which analysis is conducted
                             
-
+# NOTES
+#
+# solve the problem of the imports, which module imports which module
+# make plots have a good title, good axis labels, be scaled properly
+# make sure that you are getting a reverb signature with a good length
+# make sure you are discarding reverb signature with too much fluctuation effectively
+# make the standard deviation be a proportion of the range of values
 
 
 class ProcessedImpulses:
