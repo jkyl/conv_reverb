@@ -80,13 +80,13 @@ class ImpulseResponses:
     
     def filter_low_decibels(self, impulse_fft):
         '''
+        Filter out low decibel points (below -80 dB) from end of impulse.
         '''
         len_fft = len(impulse_fft)
-        five_percent = len_fft / 20
+        five_percent = len_fft / 20.
 
-        # filter out low decibel points (below -80 dB) from end of impulse
         for i in range(-1, -(len_fft+1), -1):
-            if impulse_fft[i] >= -80 and abs(i) >= five_percent:
+            if impulse_fft[i] > -80 and abs(i) >= five_percent:
                 impulse_fft = impulse_fft[:i]
                 break
 
