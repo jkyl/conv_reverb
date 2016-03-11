@@ -1,4 +1,6 @@
 #
+# PYTHON 2.7
+#
 # This script has the classes necessary to perform reverb analysis in the frequency
 # domain.
 #
@@ -11,13 +13,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import audio
-import k_neighbors
-from IR_processing import FREQ_BINS
+#import k_neighbors
 
 
-PROCESSED_IMPULSES_DIR = 'output/processed_IRs/'
-PROCESSED_IMPULSES_CSV = PROCESSED_IMPULSES_DIR + 'processed_IRs.csv'
+PROCESSED_IMPULSES_DIR = 'output/processed_impulses/'
+PROCESSED_IMPULSES_CSV = PROCESSED_IMPULSES_DIR + 'processed_impulses.csv'
 
+FFT_WINDOW_SIZE = 512
 FREQ_BINS = [5,10,15,20,25] # frequency bins for which the reverb
                             # signature of each IR is most clear and on
                             # which analysis is conducted
@@ -199,7 +201,25 @@ class ReverbAudio:
             reverb_signature[str(freq_bin)] = reverb
 
         return reverb_signature
-                
+
+
+def plot_2(fft, title):
+    '''
+    '''
+    num_freq_bins = (FFT_WINDOW_SIZE / 2) + 1
+    len_fft = len(fft)
+    X = np.linspace(0, 2 * num_freq_bins * len_fft/44100., len_fft)
+
+    # normalize the scale for the plots
+
+    plt.cla()
+    ax = plt.axes()
+    ax.set_yscale('linear')
+    ax.set_title(title)
+    ax.scatter(X, fft, c='brown')
+    plt.savefig('output/plots/{}.png'.format(title))
+
+    
 
 def plot(fft, title):
     '''

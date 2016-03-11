@@ -1,4 +1,6 @@
 #
+# PYTHON 2.7
+#
 # This script performs our own flavor of k nearest neighbors analysis.
 #
 
@@ -8,7 +10,7 @@ sys.path.append('../')
 import audio
 import numpy as np
 import matplotlib.pyplot as plt
-from IR_processing import FREQ_BINS # list of low frequency bins for which the reverb
+from reverb_analysis import FREQ_BINS # list of low frequency bins for which the reverb
                                     # signature of each IR is most clear and on
                                     # which analysis is conducted
 

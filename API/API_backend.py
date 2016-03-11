@@ -1,3 +1,10 @@
+#
+# PYTHON 3
+#
+# This script has the necessary functions to communicated with the 
+# Internet Archive API to query their database and download files.
+#
+
 import internetarchive as ia
 
 MAX_SIZE = 20 * (10 ** 6) # max size of sound file in megabytes
