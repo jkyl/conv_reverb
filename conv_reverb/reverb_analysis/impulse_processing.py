@@ -10,15 +10,16 @@ sys.path.append('../')
 
 import csv
 import numpy as np
-import matplotlib.pyplot as plt
 
+# Project modules
 import audio
-from reverb_analysis import FREQ_BINS, FFT_WINDOW_SIZE, PROCESSED_IMPULSES_DIR,\
-                            PROCESSED_IMPULSES_CSV, plot
+from k_neighbors import FREQ_BINS, FFT_WINDOW_SIZE, plot
 
 
 IMPULSES_DIR = '../impulses/'
 IMPULSES_CSV = IMPULSES_DIR + 'impulses.csv'
+PROCESSED_IMPULSES_DIR = 'output/processed_impulses/'
+PROCESSED_IMPULSES_CSV = PROCESSED_IMPULSES_DIR + 'processed_impulses.csv'
 
 
 class ImpulseResponses:
@@ -81,11 +82,11 @@ class ImpulseResponses:
         '''
         '''
         len_fft = len(impulse_fft)
-        ten_percent = len_fft / 10
+        five_percent = len_fft / 20
 
         # filter out low decibel points (below -80 dB) from end of impulse
         for i in range(-1, -(len_fft+1), -1):
-            if impulse_fft[i] >= -80 and abs(i) >= ten_percent:
+            if impulse_fft[i] >= -80 and abs(i) >= five_percent:
                 impulse_fft = impulse_fft[:i]
                 break
 

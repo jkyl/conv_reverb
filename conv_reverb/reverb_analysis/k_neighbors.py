@@ -7,19 +7,24 @@
 import sys
 sys.path.append('../')
 
-import audio
 import numpy as np
 import matplotlib.pyplot as plt
-from reverb_analysis import FREQ_BINS # list of low frequency bins for which the reverb
-                                    # signature of each IR is most clear and on
-                                    # which analysis is conducted
 
+# Project modules
+import audio
+                                    
+FFT_WINDOW_SIZE = 512
+FREQ_BINS = [5,10,15,20,25] # frequency bins for which the reverb
+                            # signature of each IR is most clear and on
+                            # which analysis is conducted                                    
 
 # NOTES
 #
+# make plots have a good title, good axis labels, be scaled properly
 # make it work with 'k' neighbors
 # make sure you are implementing the 'k' neighbors analysis right
 # normalize position based on center of mass from cluster of initial points
+# do analysis should return a dictionary of the top three most likely spaces
                                     
 class KNeighbors:
     '''
@@ -152,7 +157,7 @@ class KNeighbors:
         return best_IR
                     
 
-def plot(fft_1, fft_2, title):
+def plot_1(fft_1, fft_2, title):
     '''
     '''
     X = np.linspace(0, 2*257*len(fft_1)/44100., len(fft_1))
@@ -163,6 +168,36 @@ def plot(fft_1, fft_2, title):
     ax.set_title(title)
     ax.scatter(X, fft_1, c='brown')
     ax.scatter(X, fft_2, c='blue')
-    plt.savefig('output/plots/{}.png'.format(title))       
+    plt.savefig('output/plots/{}.png'.format(title))
+
+def plot_2(fft, title):
+    '''
+    '''
+    num_freq_bins = (FFT_WINDOW_SIZE / 2) + 1
+    len_fft = len(fft)
+    X = np.linspace(0, 2 * num_freq_bins * len_fft/44100., len_fft)
+
+    # normalize the scale for the plots
+
+    plt.cla()
+    ax = plt.axes()
+    ax.set_yscale('linear')
+    ax.set_title(title)
+    ax.scatter(X, fft, c='brown')
+    plt.savefig('output/plots/{}.png'.format(title))
+
+    
+
+def plot_3(fft, title):
+    '''
+    '''
+    X = np.linspace(0, 2*257*len(fft)/44100., len(fft))
+
+    plt.cla()
+    ax = plt.axes()
+    ax.set_yscale('linear')
+    ax.set_title(title)
+    ax.scatter(X, fft, c='brown')
+    plt.savefig('output/plots/{}.png'.format(title))  
 
         

@@ -10,24 +10,18 @@ sys.path.append('../')
 
 import csv
 import numpy as np
-import matplotlib.pyplot as plt
 
+# Project modules
 import audio
-#import k_neighbors
+import k_neighbors
+from k_neighbors import FREQ_BINS, FFT_WINDOW_SIZE, plot
+from impulse_processing import PROCESSED_IMPULSES_DIR, PROCESSED_IMPULSES_CSV
 
-
-PROCESSED_IMPULSES_DIR = 'output/processed_impulses/'
-PROCESSED_IMPULSES_CSV = PROCESSED_IMPULSES_DIR + 'processed_impulses.csv'
-
-FFT_WINDOW_SIZE = 512
-FREQ_BINS = [5,10,15,20,25] # frequency bins for which the reverb
-                            # signature of each IR is most clear and on
-                            # which analysis is conducted
+MIN_LENGTH = 171 # minimum freq_fft time length required for analysis, 2 sec
+GUESS_LENGTH = 310 # guess time length of 3.6 sec for reverb signature extraction
                             
 # NOTES
 #
-# solve the problem of the imports, which module imports which module
-# make plots have a good title, good axis labels, be scaled properly
 # make sure that you are getting a reverb signature with a good length
 # make sure you are discarding reverb signature with too much fluctuation effectively
 # make the standard deviation be a proportion of the range of values
@@ -35,14 +29,14 @@ FREQ_BINS = [5,10,15,20,25] # frequency bins for which the reverb
 
 class ProcessedImpulses:
     '''
-    Class for dictionary of each impulse response with a dictionary of each frequency
+    Class to represent processed impulse responses with a dictionary of each frequency
     bin studied.
     '''
-    def __init__(self):
+    def __init__(self, impulses_fname):
         '''
         '''
-        self.__filenames = self.build_filenames()
-        self.__impulses = self.import_processed_IRs()
+        self.__fnames = self.build_fnames(impulses_fname)
+        self.__impulses = self.import_impulses()
 
     @property
     def impulses(self):
@@ -52,30 +46,33 @@ class ProcessedImpulses:
         return self.__impulses
 
     @property
-    def filenames(self):
+    def fnames(self):
         '''
         '''
-        return self.__filenames
+        return self.__fnames
 
-    def build_filenames(self):
+    
+    def build_fnames(self, impulses_fname):
         '''
         '''
-        reader = csv.reader(open(PROCESSED_IMPULSES))
-        filenames = [row[0] for row in reader]
-        return filenames
+        reader = csv.reader(open(impulses_fname))
+        fnames = [row[0] for row in reader]
+        return fnames
 
-    def import_processed_IRs(self):
+    
+    def import_impulses(self):
         '''
         '''
         impulses = {}
-        for filename in self.filenames:
-            key = filename[:-4] # remove .npz extension from filename
-            impulses[key] = {}
-            tmp = np.load(PROCESSED_IMPULSES_DIR + filename)
+        for fname in self.fnames:
+            fname = fname[:-4] # remove .npz extension from filename
+            impulses[fname] = {}
+            tmp = np.load(PROCESSED_IMPULSES_DIR + fname + '.npz')
 
-            # freq_fft arrays are saved as single array within 'arr_0' key in tmp
-            for freq_fft, bin_num in zip(tmp['arr_0'], FREQ_BINS):
-                impulses[key][str(bin_num)] = freq_fft
+            # freq_fft arrays are saved as a single array within the key 'arr_0'
+            # in tmp
+            for freq_fft, freq_bin in zip(tmp['arr_0'], FREQ_BINS):
+                impulses[fname][str(freq_bin)] = freq_fft
                 
         return impulses
         
@@ -87,7 +84,7 @@ class ReverbAudio:
         '''
         '''
         self.__audio = audio.Audio(audio_fname)
-        self.__fft = self.__audio.get_fft()
+        self.__fft = self.audio.get_fft(window_size_in_samples=FFT_WINDOW_SIZE)
         self.__processed_fft = self.process_fft()
         self.__reverb_signature = self.extract_reverb_signature()
 
@@ -115,6 +112,21 @@ class ReverbAudio:
         '''
         return self.__reverb_signature
 
+
+    def filter_low_decibels(self, freq_fft):
+        '''
+        '''
+        len_fft = len(freq_fft)
+
+        # filter out low decibel points (below -80 dB) from end of audio
+        for i in range(-1, -(len_fft+1), -1):
+            if freq_fft[i] >= -80:
+                freq_fft = freq_fft[:i]
+                break
+
+        return freq_fft
+
+    
     def process_fft(self):
         '''
         '''
@@ -122,44 +134,42 @@ class ReverbAudio:
         
         for freq_bin in FREQ_BINS:
             freq_fft = self.fft[freq_bin]
-            filtered_fft = self.filter_decibels(freq_fft)
+            filtered_fft = self.filter_low_decibels(freq_fft)
             processed_fft[str(freq_bin)] = filtered_fft
 
         return processed_fft
-        
-    def filter_decibels(self, fft):
-        '''
-        '''
-        len_fft = len(fft)
-        five_percent = len_fft / 5
 
-        # filter out low decibel points (below -80 dB) from end of audio
-        for i in range(-1, -(len_fft+1), -1):
-            if fft[i] >= -80: # and abs(i) >= five_percent:
-                fft = fft[:i]
-                break
-
-        return fft
-
-    def assess_reverb_quality(self, reverb_fft):
+    
+    def assess_reverb_quality(self, freq_fft):
         '''
-        '''
-        len_fft = len(reverb_fft)
+        '''        
+        len_fft = len(freq_fft)
+        _range = np.max(freq_fft) - np.min(freq_fft)
         stds = []
 
         i = -3
         while len_fft >= 3:
 
-            cluster = reverb_fft[i:i+3]
-            std = np.std(cluster)
+            if i == -3:
+                cluster = freq_fft[i:]
+            else:
+                cluster = freq_fft[i:i+3]
 
-            if not np.isnan(std):
-                stds.append(std)
-                
-            i += -1
-            len_fft += -1
+            # normalize std
+            std = np.std(cluster) / (0.5 * _range)
+            stds.append(std)
 
-        return np.mean(stds) < 3.1 # change it 
+            # penalize large std
+            if std:
+                i +=
+                len_fft +=
+
+            else:
+                i += -1
+                len_fft += -1
+
+        print np.mean(stds) #
+        return np.mean(stds) < 
         
 
     def extract_reverb_signature(self):
@@ -189,7 +199,7 @@ class ReverbAudio:
                 if std_1 < 7 and std_2 < 7 and not (np.isnan(std_1)
                                                     or np.isnan(std_2)):
 
-                    if mean_2 < (0.95 * mean_1) and len(fft[i:]) > 170: # min time
+                    if mean_2 < (0.95 * mean_1) and len(fft[i:]) > 170: 
                         reverb = fft[i:]
                         break
                     else:
@@ -200,52 +210,20 @@ class ReverbAudio:
                     i += -1
                     len_fft += -1
 
-            if reverb != None and (not self.assess_reverb_quality(reverb)
-                                   or len(reverb) > 300):
+            if reverb != None and not self.assess_reverb_quality(reverb):                                   
                 reverb = None
 
             reverb_signature[str(freq_bin)] = reverb
 
         return reverb_signature
+  
 
 
-def plot_2(fft, title):
+def go(audio_fname, impulses_fname=PROCESSED_IMPULSES_CSV):
     '''
     '''
-    num_freq_bins = (FFT_WINDOW_SIZE / 2) + 1
-    len_fft = len(fft)
-    X = np.linspace(0, 2 * num_freq_bins * len_fft/44100., len_fft)
-
-    # normalize the scale for the plots
-
-    plt.cla()
-    ax = plt.axes()
-    ax.set_yscale('linear')
-    ax.set_title(title)
-    ax.scatter(X, fft, c='brown')
-    plt.savefig('output/plots/{}.png'.format(title))
-
-    
-
-def plot(fft, title):
-    '''
-    '''
-    X = np.linspace(0, 2*257*len(fft)/44100., len(fft))
-
-    plt.cla()
-    ax = plt.axes()
-    ax.set_yscale('linear')
-    ax.set_title(title)
-    ax.scatter(X, fft, c='brown')
-    plt.savefig('output/plots/{}.png'.format(title))    
-
-
-def go(audio_fname):
-    '''
-    '''
-    processed_impulses = ProcessedImpulses()
+    processed_impulses = ProcessedImpulses(impulses_fname)
     reverb_audio = ReverbAudio(audio_fname)
-#    print reverb_audio.reverb_signature
     analysis = k_neighbors.KNeighbors(processed_impulses.impulses, reverb_audio.reverb_signature)
     
     print analysis.do_analysis()
@@ -259,8 +237,12 @@ def go(audio_fname):
 
 if __name__=='__main__':
 
-    if len(sys.argv) != 2:
+    if len(sys.argv) not in (2, 3):
         print "usage: python2 {} <audio_file>".format(sys.argv[0])
+        print "alternative usage: python2 {} <audio_file> <impulses.csv>".format(sys.argv[0])
         sys.exit(1)
-    
-    go(sys.argv[1])
+
+    if len(sys.argv) == 3:
+        go(sys.argv[1], impulses_fname=sys.argv[2])
+    else:
+        go(sys.argv[1])
