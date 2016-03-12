@@ -82,8 +82,10 @@ def get_fft(a, step_size):
     windowed = blackman(step_size) * interleaved
     coeffs = fft(windowed)[:, :(step_size / 2) + 1]
     power_units = np.abs(np.multiply(coeffs, np.conj(coeffs)))
-    decibels = 10 * np.log10(power_units/power_units.max())
-    decibels[np.where(decibels < -130)] = -130
+    power_units = power_units/power_units.max()
+    power_units[np.where(power_units < 1e-13)] = 1e-13
+    decibels = 10 * np.log10(power_units)
+    
     return decibels.swapaxes(0, 1)
     
 
