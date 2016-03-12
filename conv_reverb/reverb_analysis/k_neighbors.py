@@ -65,7 +65,7 @@ class KNeighbors:
         return self.__analysis
     
     
-    def process_ffts(self, reverb, impulse):
+    def process_ffts(self, reverb, impulse, cluster_size=CLUSTER_SIZE):
         '''
         Processing involves matching both ffts to begin at roughly the same
         decibel level and truncate to be the same length.
@@ -168,7 +168,7 @@ class KNeighbors:
         return results
     
 
-    def do_analysis(self, k=3, num_results=3):
+    def do_analysis(self, cluster_size=CLUSTER_SIZE, k=3, num_results=3):
         '''
         Performs k nearest neighbors analysis and returns the three most
         likely impulses to generate the reverb signature.
@@ -181,7 +181,8 @@ class KNeighbors:
             
             for freq_bin in FREQ_BINS:
                 reverb, impulse = self.process_ffts(self.reverb[str(freq_bin)],
-                                                    self.impulses[impulse][str(freq_bin)])
+                                                    self.impulses[impulse][str(freq_bin)],
+                                                    cluster_size=cluster_size)
                 result = self.k_neighbors(reverb, impulse, k=k)
                 plot([reverb, impulse], impulse + '_bin_' + str(freq_bin)) # for visual testing
                 
