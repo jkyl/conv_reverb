@@ -14,18 +14,13 @@ import numpy as np
 # Project modules
 import audio
 import k_neighbors
-from k_neighbors import FREQ_BINS, FFT_WINDOW_SIZE, plot
+from k_neighbors import FREQ_BINS, FFT_WINDOW_SIZE, MIN_LENGTH, plot
 from impulse_processing import PROCESSED_IMPULSES_DIR, PROCESSED_IMPULSES_CSV
 
-MIN_LENGTH = 171 # minimum freq_fft time length required for analysis, 2 sec
+MIN_LENGTH = MIN_LENGTH * 2 # minimum pre_processed freq_fft time length for
+                            # effective reverb analysis, 2 sec
 GUESS_LENGTH = 310 # guess time length of 3.6 sec for reverb signature extraction
 CLUSTER_SIZE = 50 # number of samples used to compute statistics
-                            
-# NOTES
-#
-# make sure that you are getting a reverb signature with a good length
-# make sure you are discarding reverb signature with too much fluctuation effectively
-# make the standard deviation be a proportion of the range of values
 
 
 class ProcessedImpulses:
@@ -255,8 +250,9 @@ def go(audio_fname, impulses_fname=PROCESSED_IMPULSES_CSV):
     '''
     processed_impulses = ProcessedImpulses(impulses_fname)
     reverb_audio = ReverbAudio(audio_fname)
-#    analysis = k_neighbors.KNeighbors(processed_impulses.impulses, reverb_audio.reverb_signature)   
-#    print analysis.do_analysis()
+    analysis = k_neighbors.KNeighbors(processed_impulses.impulses, reverb_audio.reverb_signature)
+#    return analysis.analysis
+    print analysis.analysis
 
     # generate plots for visual testing
     for freq_bin in FREQ_BINS:

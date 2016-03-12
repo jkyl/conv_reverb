@@ -13,11 +13,13 @@ import matplotlib.cm as cm
 
 # Project modules
 import audio
-                                    
+
+MIN_LENGTH = 86 # minimum post_processed freq_fft time length for effective reverb analysis, 1 sec
+CLUSTER_SIZE = 10 # number of samples used to compute statistics
 FFT_WINDOW_SIZE = 512
 FREQ_BINS = [5,10,15,20,25] # frequency bins for which the reverb
-                            # signature of each IR is most clear and on
-                            # which analysis is conducted                                    
+                            # signature of each impulse is most clear and on
+                            # which analysis is conducted
 
 # NOTES
 #
@@ -25,22 +27,30 @@ FREQ_BINS = [5,10,15,20,25] # frequency bins for which the reverb
 # make sure you are implementing the 'k' neighbors analysis right
 # normalize position based on center of mass from cluster of initial points
 # do analysis should return a dictionary of the top three most likely spaces
-                                    
+
+
 class KNeighbors:
     '''
     '''
-    def __init__(self, IRs, reverb_audio):
+    def __init__(self, impulses, reverb_audio):
         '''
         '''
-        self.__IRs = IRs
+        self.__def_val = None
+        self.__impulses = impulses
         self.__reverb_audio = reverb_audio
-        self.__analysis = self.do_analysis()
+        self.__analysis = self.do_analysis(k=3)
 
     @property
-    def IRs(self):
+    def def_val(self):
         '''
         '''
-        return self.__IRs
+        return self.__def_val
+        
+    @property
+    def impulses(self):
+        '''
+        '''
+        return self.__impulses
 
     @property
     def reverb_audio(self):
@@ -53,9 +63,12 @@ class KNeighbors:
         '''
         '''
         return self.__analysis
-
-    def truncate_fft(self, reverb_audio, impulse, title): #remove title
+    
+    
+    def process_fft(self, reverb_audio, impulse):
         '''
+        Processing involves matching both ffts to begin at roughly the same
+        decibel level and truncate to be the same length.
         '''
         if reverb_audio == None or impulse == None:
             return None, None
@@ -90,9 +103,10 @@ class KNeighbors:
                 plot(reverb_audio[:len(impulse)], impulse, title) #
                 return reverb_audio[:len(impulse)], impulse
 
+            
     def distance(self, point_1, point_2):
         '''
-        point_1 and point_2 are tuples (x,y)
+        Euclidean distance where point_1 and point_2 are tuples (x,y).
         '''
         dist = np.sqrt((point_1[0]-point_2[0])**2+(point_1[1]-point_2[1])**2)
         return dist
@@ -104,8 +118,6 @@ class KNeighbors:
         if reverb_audio == None or impulse == None:
             return None
         else:
-            # it is harcoded for k=3 at the moment, make it variable
-            # this code is shit
 
             distances = []
 
@@ -135,26 +147,26 @@ class KNeighbors:
         '''
         analysis_results = {}
         
-        for IR in self.IRs:
+        for impulse in self.impulses:
             results = []
             for freq_bin in FREQ_BINS:
-                reverb_audio, impulse = self.truncate_fft(self.reverb_audio[str(freq_bin)],
-                                                          self.IRs[IR][str(freq_bin)], IR + '_bin_' + str(freq_bin))
+                reverb_audio, impulse = self.process_fft(self.reverb_audio[str(freq_bin)],
+                                                         self.impulses[impulse][str(freq_bin)], impulse + '_bin_' + str(freq_bin))
                 result = self.k_neighbors(reverb_audio, impulse)
                 if result != None:
                     results.append(result)
 
-            analysis_results[IR] = sum(results)
+            analysis_results[impulse] = sum(results)
 
         min_result = np.float('inf')
-        best_IR = ''
+        best_impulse = ''
 
-        for IR in analysis_results:
-            if analysis_results[IR] < min_result:
-                min_result = analysis_results[IR]
-                best_IR = IR
+        for impulse in analysis_results:
+            if analysis_results[impulse] < min_result:
+                min_result = analysis_results[impulse]
+                best_impulse = impulse
 
-        return best_IR
+        return best_impulse
 
 
 # Function get_nice_colors and documentation extracted from CMSC 12100 2015
@@ -193,5 +205,11 @@ def plot(ffts, title):
     
     ax.set_xlim([-0.25, max_time+0.25])
     plt.savefig('output/plots/{}.png'.format(title))
+
+    
+if __name__=='__main__':
+
+    print "This script contains the class and methods to perform k nearest neighbors analysis."
+    print "The script is called within reverb_analysis.py"
 
         
