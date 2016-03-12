@@ -164,13 +164,15 @@ def plot(fft, title):
     len_fft = len(fft)
     X = np.linspace(0, 2 * num_freq_bins * len_fft/44100., len_fft)
 
-    # normalize the scale for the plots
-    # add labels to the axis
-
     plt.cla()
     ax = plt.axes()
+    
     ax.set_yscale('linear')
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Intensity (dB)')
     ax.set_title(title)
+
+    ax.set_xlim([-0.25,X.max()+0.25])
     ax.scatter(X, fft, c='brown')
     plt.savefig('output/plots/{}.png'.format(title))
     

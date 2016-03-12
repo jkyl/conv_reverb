@@ -191,8 +191,7 @@ class ReverbAudio:
             i += -step_size
             len_fft += -step_size
 
-        print np.mean(stds) #
-        return np.mean(stds) < 0.3
+        return np.mean(stds) < 0.15
         
 
     def extract_reverb_signature(self, cluster_size=CLUSTER_SIZE):
@@ -240,9 +239,6 @@ class ReverbAudio:
                         i = 0
                         final_i = len_guess - 2 * cluster_size
                         continue
-                    else:
-                        reverb = np.array([self.def_val])
-                        break
 
                 i += cluster_size
 
