@@ -9,6 +9,7 @@ sys.path.append('../')
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 
 # Project modules
 import audio
@@ -20,7 +21,6 @@ FREQ_BINS = [5,10,15,20,25] # frequency bins for which the reverb
 
 # NOTES
 #
-# make plots have a good title, good axis labels, be scaled properly
 # make it work with 'k' neighbors
 # make sure you are implementing the 'k' neighbors analysis right
 # normalize position based on center of mass from cluster of initial points
@@ -155,52 +155,41 @@ class KNeighbors:
                 best_IR = IR
 
         return best_IR
-                    
 
-def plot(fft, title):
+# Function and documentation extracted from CMSC 12100 2015 PA7 debate_tweets.py
+def get_nice_colors(n_colors):
+    '''
+    This function generates colors that can be passed to matplotlib functions
+    that accept a list of colors. The function takes one parameter: the number
+    of colors to generate. Using this function should result in the same colors
+    shown in the assignment writeup.
+    '''
+    return cm.Accent([1 - (i/float(n_colors)) for i in range(n_colors)])
+
+    
+def plot(ffts, title):
     '''
     '''
     num_freq_bins = (FFT_WINDOW_SIZE / 2) + 1
-    len_fft = len(fft)
-    X = np.linspace(0, 2 * num_freq_bins * len_fft/44100., len_fft)
-
+    
     plt.cla()
     ax = plt.axes()
-    
     ax.set_yscale('linear')
     ax.set_xlabel('Time (s)')
     ax.set_ylabel('Intensity (dB)')
     ax.set_title(title)
 
-    ax.set_xlim([-0.25,X.max()+0.25])
-    ax.scatter(X, fft, c='brown')
+    max_time = 0
+    colors = get_nice_colors(len(ffts))
+
+    for fft, color in zip(ffts, colors):
+        len_fft = len(fft)
+        X = np.linspace(0, 2 * num_freq_bins * len_fft/44100., len_fft)
+        if np.max(X) > max_time:
+            max_time = np.max(X)
+        ax.scatter(X, fft, c=color)
+    
+    ax.set_xlim([-0.25, max_time+0.25])
     plt.savefig('output/plots/{}.png'.format(title))
-    
-    
-def plot_2(fft_1, fft_2, title):
-    '''
-    '''
-    X = np.linspace(0, 2*257*len(fft_1)/44100., len(fft_1))
-
-    plt.cla()
-    ax = plt.axes()
-    ax.set_yscale('linear')
-    ax.set_title(title)
-    ax.scatter(X, fft_1, c='brown')
-    ax.scatter(X, fft_2, c='blue')
-    plt.savefig('output/plots/{}.png'.format(title))
-    
-
-def plot_3(fft, title):
-    '''
-    '''
-    X = np.linspace(0, 2*257*len(fft)/44100., len(fft))
-
-    plt.cla()
-    ax = plt.axes()
-    ax.set_yscale('linear')
-    ax.set_title(title)
-    ax.scatter(X, fft, c='brown')
-    plt.savefig('output/plots/{}.png'.format(title))  
 
         
