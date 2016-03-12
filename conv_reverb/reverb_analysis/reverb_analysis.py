@@ -248,17 +248,17 @@ class ReverbAudio:
 def go(audio_fname, impulses_fname=PROCESSED_IMPULSES_CSV):
     '''
     '''
-    processed_impulses = ProcessedImpulses(impulses_fname)
-    reverb_audio = ReverbAudio(audio_fname)
-    analysis = k_neighbors.KNeighbors(processed_impulses.impulses, reverb_audio.reverb_signature)
+    impulses = ProcessedImpulses(impulses_fname)
+    reverb = ReverbAudio(audio_fname)
+    analysis = k_neighbors.KNeighbors(impulses.impulses, reverb.reverb_signature)
 #    return analysis.analysis
     print analysis.analysis
 
     # generate plots for visual testing
     for freq_bin in FREQ_BINS:
-        reverb_signature = reverb_audio.reverb_signature[str(freq_bin)]
+        reverb_signature = reverb.reverb_signature[str(freq_bin)]
         if reverb_signature[0] != None:
-            plot([reverb_signature], reverb_audio.audio.title + '_bin_' + str(freq_bin))
+            plot([reverb_signature], reverb.audio.title + '_bin_' + str(freq_bin))
 
 
 if __name__=='__main__':

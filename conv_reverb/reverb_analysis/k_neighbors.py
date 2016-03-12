@@ -32,13 +32,13 @@ FREQ_BINS = [5,10,15,20,25] # frequency bins for which the reverb
 class KNeighbors:
     '''
     '''
-    def __init__(self, impulses, reverb_audio):
+    def __init__(self, impulses, reverb):
         '''
         '''
         self.__def_val = None
         self.__impulses = impulses
-        self.__reverb_audio = reverb_audio
-        self.__analysis = self.do_analysis(k=3)
+        self.__reverb = reverb
+        self.__analysis = self.do_analysis()
 
     @property
     def def_val(self):
@@ -53,10 +53,10 @@ class KNeighbors:
         return self.__impulses
 
     @property
-    def reverb_audio(self):
+    def reverb(self):
         '''
         '''
-        return self.__reverb_audio
+        return self.__reverb
 
     @property
     def analysis(self):
@@ -65,27 +65,27 @@ class KNeighbors:
         return self.__analysis
     
     
-    def process_fft(self, reverb_audio, impulse):
+    def process_ffts(self, reverb, impulse):
         '''
         Processing involves matching both ffts to begin at roughly the same
         decibel level and truncate to be the same length.
         '''
-        if reverb_audio == None or impulse == None:
+        if (reverb[0] or impulse[0]) == None:
             return None, None
         else:
-            if reverb_audio[0] > impulse[0]:
+            if reverb[0] > impulse[0]:
                 i = 0
-                while len(reverb_audio) > i:
-                    if reverb_audio[i] <= impulse[i]:
-                        reverb_audio = reverb_audio[i:]
+                while len(reverb) > i:
+                    if reverb[i] <= impulse[i]:
+                        reverb = reverb[i:]
                         break
                     else:
                         i += 1
 
-            elif reverb_audio[0] < impulse[0]:
+            elif reverb[0] < impulse[0]:
                 i = 0
-                while len(reverb_audio) > i:
-                    if reverb_audio[i] >= impulse[i]:
+                while len(reverb) > i:
+                    if reverb[i] >= impulse[i]:
                         impulse = impulse[i:]
                         break
                     else:
@@ -93,80 +93,104 @@ class KNeighbors:
 
             # you need to check it has the min required length
 
-            if len(reverb_audio) < 170 or len(impulse) < 170:
+            if len(reverb) < 170 or len(impulse) < 170:
                 return None, None
             
-            if len(reverb_audio) < len(impulse):
-                plot(reverb_audio, impulse[:len(reverb_audio)], title) #
-                return reverb_audio, impulse[:len(reverb_audio)]
+            if len(reverb) < len(impulse):
+                plot(reverb, impulse[:len(reverb)], title) #
+                return reverb, impulse[:len(reverb)]
             else:
-                plot(reverb_audio[:len(impulse)], impulse, title) #
-                return reverb_audio[:len(impulse)], impulse
+                plot(reverb[:len(impulse)], impulse, title) #
+                return reverb[:len(impulse)], impulse
 
             
     def distance(self, point_1, point_2):
         '''
         Euclidean distance where point_1 and point_2 are tuples (x,y).
         '''
-        dist = np.sqrt((point_1[0]-point_2[0])**2+(point_1[1]-point_2[1])**2)
+        diff_1 = point_1[0] - point_2[0]
+        diff_2 = point_1[1] - point_2[1]
+        dist = np.sqrt((diff_1)**2 + (diff_2)**2)
         return dist
 
 
-    def k_neighbors(self, reverb_audio, impulse):
+    def k_neighbors(self, reverb, impulse, k=3):
         '''
         '''
-        if reverb_audio == None or impulse == None:
+        if reverb == None or impulse == None:
             return None
         else:
 
             distances = []
 
-            for i in range(len(reverb_audio)):
+            for i in range(len(reverb)):
                 sub_distances = []
                 if i == 0:
-                    sub_distances.append(self.distance((reverb_audio[i],i),
+                    sub_distances.append(self.distance((reverb[i],i),
                                                        (impulse[i],i)))
-                    sub_distances.append(self.distance((reverb_audio[i],i),
+                    sub_distances.append(self.distance((reverb[i],i),
                                                        (impulse[i+1],i+1)))
-                elif i == len(reverb_audio) - 1:
+                elif i == len(reverb) - 1:
                     break
                 else:
-                    sub_distances.append(self.distance((reverb_audio[i],i),
+                    sub_distances.append(self.distance((reverb[i],i),
                                                        (impulse[i],i)))
-                    sub_distances.append(self.distance((reverb_audio[i],i),
+                    sub_distances.append(self.distance((reverb[i],i),
                                                        (impulse[i+1],i+1)))
-                    sub_distances.append(self.distance((reverb_audio[i],i),
+                    sub_distances.append(self.distance((reverb[i],i),
                                                        (impulse[i-1],i-1)))
                 distances.append(np.mean(sub_distances))
 
             return np.mean(distances)
 
 
-    def do_analysis(self):
+    def format_results(self, analysis, num_results=3):
         '''
         '''
-        analysis_results = {}
+        assert num_results < len(analysis), \
+            'Number of results should be {} or less'.format(len(analysis))
+        
+        min_results = [np.float('inf')] * num_results
+        best_impulses = [''] * num_results
+
+        for impulse in analysis:
+            for i in range(num_results):
+                if analysis[impulse] < min_results[i]:
+                    min_result[i] = analysis[impulse]
+                    best_impulses[i] = impulse
+                    break
+
+        results = {}
+
+        for i in range(num_results):
+            results[best_impulse[i]] = min_results[i]
+
+        return results
+    
+
+    def do_analysis(self, k=3, num_results=3):
+        '''
+        Performs k nearest neighbors analysis and returns the three most
+        likely impulses to generate the reverb signature.
+        k defaults to 3.
+        '''
+        analysis = {}
         
         for impulse in self.impulses:
             results = []
+            
             for freq_bin in FREQ_BINS:
-                reverb_audio, impulse = self.process_fft(self.reverb_audio[str(freq_bin)],
-                                                         self.impulses[impulse][str(freq_bin)], impulse + '_bin_' + str(freq_bin))
-                result = self.k_neighbors(reverb_audio, impulse)
+                reverb, impulse = self.process_ffts(self.reverb[str(freq_bin)],
+                                                    self.impulses[impulse][str(freq_bin)])
+                result = self.k_neighbors(reverb, impulse, k=k)
+                plot([reverb, impulse], impulse + '_bin_' + str(freq_bin)) # for visual testing
+                
                 if result != None:
                     results.append(result)
 
-            analysis_results[impulse] = sum(results)
+            analysis[impulse] = np.mean(results)
 
-        min_result = np.float('inf')
-        best_impulse = ''
-
-        for impulse in analysis_results:
-            if analysis_results[impulse] < min_result:
-                min_result = analysis_results[impulse]
-                best_impulse = impulse
-
-        return best_impulse
+        return self.format_results(analysis, num_results=num_results)
 
 
 # Function get_nice_colors and documentation extracted from CMSC 12100 2015
