@@ -156,7 +156,9 @@ class KNeighbors:
 
         return best_IR
 
-# Function and documentation extracted from CMSC 12100 2015 PA7 debate_tweets.py
+
+# Function get_nice_colors and documentation extracted from CMSC 12100 2015
+# PA7 debate_tweets.py
 def get_nice_colors(n_colors):
     '''
     This function generates colors that can be passed to matplotlib functions
