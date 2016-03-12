@@ -138,7 +138,10 @@ class ReverbAudio:
             mean = np.mean(cluster)
 
             if mean > -80:
-                freq_fft = freq_fft[:i+cluster_size]
+                if i == -cluster_size:
+                    freq_fft = freq_fft[:]
+                else:
+                    freq_fft = freq_fft[:i+cluster_size]
                 break
             
             i += -step_size
@@ -218,7 +221,7 @@ class ReverbAudio:
             final_i = len_guess - 2 * cluster_size
             
             while len_guess >= 2 * cluster_size:
-                
+
                 len_guess += -cluster_size
                 
                 if i == final_i:
@@ -234,6 +237,9 @@ class ReverbAudio:
                 if mean_1 < (0.95 * mean_2):
                     if len_guess > MIN_LENGTH:
                         reverb = reverb[i+cluster_size:]
+                        i = 0
+                        final_i = len_guess - 2 * cluster_size
+                        continue
                     else:
                         reverb = np.array([self.def_val])
                         break

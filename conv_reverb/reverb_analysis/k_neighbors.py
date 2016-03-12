@@ -165,6 +165,7 @@ def plot(fft, title):
     X = np.linspace(0, 2 * num_freq_bins * len_fft/44100., len_fft)
 
     # normalize the scale for the plots
+    # add labels to the axis
 
     plt.cla()
     ax = plt.axes()
