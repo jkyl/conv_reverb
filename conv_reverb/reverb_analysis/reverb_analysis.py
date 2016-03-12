@@ -19,7 +19,7 @@ from impulse_processing import PROCESSED_IMPULSES_DIR, PROCESSED_IMPULSES_CSV
 
 MIN_LENGTH = 171 # minimum freq_fft time length required for analysis, 2 sec
 GUESS_LENGTH = 310 # guess time length of 3.6 sec for reverb signature extraction
-CLUSTER_SIZE = 10 # number of samples used to compute statistics
+CLUSTER_SIZE = 50 # number of samples used to compute statistics
                             
 # NOTES
 #
@@ -84,11 +84,11 @@ class ReverbAudio:
     def __init__(self, audio_fname):
         '''
         '''
+        self.__def_val = None
         self.__audio = audio.Audio(audio_fname)
         self.__fft = self.audio.get_fft(window_size_in_samples=FFT_WINDOW_SIZE)
         self.__processed_fft = self.process_fft()
         self.__reverb_signature = self.extract_reverb_signature()
-        self.__def_val = np.array([None])
 
     @property
     def audio(self):
@@ -121,25 +121,28 @@ class ReverbAudio:
         return self.__def_val
 
 
-    def filter_low_decibels(self, freq_fft):
+    def filter_low_decibels(self, freq_fft, cluster_size=5, step_size=1):
         '''
         Filter out low decibel points (below -80 dB) from end of audio.
         '''
         len_fft = len(freq_fft)
-        i = - (CLUSTER_SIZE/2 + 1)
+        i = -cluster_size
 
-        while len_fft >= CLUSTER_SIZE:
+        while len_fft >= cluster_size:
 
-            if i == -CLUSTER_SIZE:
+            if i == -cluster_size:
                 cluster = freq_fft[i:]
             else:
-                cluster = freq_fft[i:i+10]
+                cluster = freq_fft[i:i+cluster_size]
 
             mean = np.mean(cluster)
 
             if mean > -80:
-                freq_fft = freq_fft[:i]
+                freq_fft = freq_fft[:i+cluster_size]
                 break
+            
+            i += -step_size
+            len_fft += -step_size
             
         return freq_fft
 
@@ -155,14 +158,14 @@ class ReverbAudio:
             if len(freq_fft) >= MIN_LENGTH:
                 filtered_fft = self.filter_low_decibels(freq_fft)
             else:
-                filtered_fft = self.def_val
+                filtered_fft = np.array([self.def_val])
 
             processed_fft[str(freq_bin)] = filtered_fft
 
         return processed_fft
 
     
-    def assess_reverb_quality(self, freq_fft, cluster_size=3, step_size=1):
+    def little_spread(self, freq_fft, cluster_size=3, step_size=1):
         '''
         '''        
         len_fft = len(freq_fft)
@@ -186,11 +189,12 @@ class ReverbAudio:
             len_fft += -step_size
 
         print np.mean(stds) #
-        return np.mean(stds) < 0.05
+        return np.mean(stds) < 0.3
         
 
     def extract_reverb_signature(self, cluster_size=CLUSTER_SIZE):
         '''
+        Extracts a reverb signature.
         '''
         reverb_signature = {}
 
@@ -205,77 +209,57 @@ class ReverbAudio:
             elif len_fft >= MIN_LENGTH:
                 reverb = freq_fft[:]
             else:
-                reverb = self.def_val
+                reverb = np.array([self.def_val])
+                reverb_signature[str(freq_bin)] = reverb
+                continue
 
             i = 0
             len_guess = len(reverb)
             final_i = len_guess - 2 * cluster_size
             
             while len_guess >= 2 * cluster_size:
-
+                
+                len_guess += -cluster_size
+                
                 if i == final_i:
-                    cluster_1 = freq_fft[i:i+cluster_size]
-                    cluster_2 = freq_fft[i+cluster_size:i+(2*cluster_size)]
-                    
+                    cluster_1 = reverb[i:i+cluster_size]
+                    cluster_2 = reverb[i+cluster_size:]
+                else:
+                    cluster_1 = reverb[i:i+cluster_size]
+                    cluster_2 = reverb[i+cluster_size:i+(2*cluster_size)]
 
-
-
-----------
-        reverb_signature = {}
-
-        for freq_bin in FREQ_BINS:
-
-            fft = self.processed_fft[str(freq_bin)]
-            len_fft = len(fft)
-            reverb = None
-        
-            i = -10
-            while len_fft >= 20:
-            
-                cluster_1 = fft[i:i+10]
-                cluster_2 = fft[i-10:i]
                 mean_1 = abs(np.mean(cluster_1))
                 mean_2 = abs(np.mean(cluster_2))
-                std_1 = np.std(cluster_1)
-                std_2 = np.std(cluster_2)
 
-                
-                if std_1 < 7 and std_2 < 7 and not (np.isnan(std_1)
-                                                    or np.isnan(std_2)):
-
-                    if mean_2 < (0.95 * mean_1) and len(fft[i:]) > 170: 
-                        reverb = fft[i:]
-                        break
+                if mean_1 < (0.95 * mean_2):
+                    if len_guess > MIN_LENGTH:
+                        reverb = reverb[i+cluster_size:]
                     else:
-                        i += -10
-                        len_fft += -10
-                        
-                else:
-                    i += -1
-                    len_fft += -1
+                        reverb = np.array([self.def_val])
+                        break
 
-            if reverb != None and not self.assess_reverb_quality(reverb):                                   
-                reverb = None
+                i += cluster_size
 
-            reverb_signature[str(freq_bin)] = reverb
+            if reverb[0] != self.def_val and self.little_spread(reverb):
+                reverb_signature[str(freq_bin)] = reverb
+            else:
+                reverb_signature[str(freq_bin)] = np.array([self.def_val])
 
         return reverb_signature
----------- 
-
+                    
 
 def go(audio_fname, impulses_fname=PROCESSED_IMPULSES_CSV):
     '''
     '''
     processed_impulses = ProcessedImpulses(impulses_fname)
     reverb_audio = ReverbAudio(audio_fname)
-#    analysis = k_neighbors.KNeighbors(processed_impulses.impulses, reverb_audio.reverb_signature)
-    
-    print analysis.do_analysis()
+#    analysis = k_neighbors.KNeighbors(processed_impulses.impulses, reverb_audio.reverb_signature)   
+#    print analysis.do_analysis()
         
-#    for freq_bin in FREQ_BINS:
-#        reverb_signature = reverb_audio.reverb_signature[str(freq)]
-#        if reverb_signature != None:
-#            plot(reverb_signature, reverb_audio.audio.title + '_bin_' + str(freq))
+    for freq_bin in FREQ_BINS:
+        reverb_signature = reverb_audio.reverb_signature[str(freq_bin)]
+        if reverb_signature[0] != None:
+            plot(reverb_signature, reverb_audio.audio.title + '_bin_' + str(freq_bin))
 
 
 if __name__=='__main__':

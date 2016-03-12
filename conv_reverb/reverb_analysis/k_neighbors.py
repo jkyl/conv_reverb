@@ -157,20 +157,7 @@ class KNeighbors:
         return best_IR
                     
 
-def plot_1(fft_1, fft_2, title):
-    '''
-    '''
-    X = np.linspace(0, 2*257*len(fft_1)/44100., len(fft_1))
-
-    plt.cla()
-    ax = plt.axes()
-    ax.set_yscale('linear')
-    ax.set_title(title)
-    ax.scatter(X, fft_1, c='brown')
-    ax.scatter(X, fft_2, c='blue')
-    plt.savefig('output/plots/{}.png'.format(title))
-
-def plot_2(fft, title):
+def plot(fft, title):
     '''
     '''
     num_freq_bins = (FFT_WINDOW_SIZE / 2) + 1
@@ -185,7 +172,20 @@ def plot_2(fft, title):
     ax.set_title(title)
     ax.scatter(X, fft, c='brown')
     plt.savefig('output/plots/{}.png'.format(title))
+    
+    
+def plot_2(fft_1, fft_2, title):
+    '''
+    '''
+    X = np.linspace(0, 2*257*len(fft_1)/44100., len(fft_1))
 
+    plt.cla()
+    ax = plt.axes()
+    ax.set_yscale('linear')
+    ax.set_title(title)
+    ax.scatter(X, fft_1, c='brown')
+    ax.scatter(X, fft_2, c='blue')
+    plt.savefig('output/plots/{}.png'.format(title))
     
 
 def plot_3(fft, title):
