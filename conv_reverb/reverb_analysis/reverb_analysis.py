@@ -21,6 +21,8 @@ MIN_LENGTH = MIN_LENGTH * 2 # minimum pre_processed freq_fft time length for
                             # effective reverb analysis, 2 sec
 GUESS_LENGTH = 310 # guess time length of 3.6 sec for reverb signature extraction
 CLUSTER_SIZE = 50 # number of samples used to compute statistics
+MEAN_THRESHOLD = 0.95 # proportion about which mean_1 can fluctuate from mean_2
+STD_THRESHOLD = 0.15 # minimum permitted standard deviation
 
 
 class ProcessedImpulses:
@@ -177,7 +179,7 @@ class ReverbAudio:
             if i == -cluster_size:
                 cluster = freq_fft[i:]
             else:
-                cluster = freq_fft[i:i+3]
+                cluster = freq_fft[i:i+cluster_size]
 
             # normalize std
             std = np.std(cluster) / (0.5 * _range)
@@ -186,7 +188,7 @@ class ReverbAudio:
             i += -step_size
             len_fft += -step_size
 
-        return np.mean(stds) < 0.15
+        return np.mean(stds) < STD_THRESHOLD
         
 
     def extract_reverb_signature(self, cluster_size=CLUSTER_SIZE):
@@ -210,29 +212,23 @@ class ReverbAudio:
                 reverb_signature[str(freq_bin)] = reverb
                 continue
 
-            i = 0
             len_guess = len(reverb)
-            final_i = len_guess - 2 * cluster_size
+            i = 0
             
             while len_guess >= 2 * cluster_size:
 
                 len_guess += -cluster_size
                 
-                if i == final_i:
-                    cluster_1 = reverb[i:i+cluster_size]
-                    cluster_2 = reverb[i+cluster_size:]
-                else:
-                    cluster_1 = reverb[i:i+cluster_size]
-                    cluster_2 = reverb[i+cluster_size:i+(2*cluster_size)]
+                cluster_1 = reverb[i:i+cluster_size]
+                cluster_2 = reverb[i+cluster_size:i+(2*cluster_size)]
 
                 mean_1 = abs(np.mean(cluster_1))
                 mean_2 = abs(np.mean(cluster_2))
 
-                if mean_1 < (0.95 * mean_2):
+                if mean_1 < (MEAN_THRESHOLD * mean_2):
                     if len_guess > MIN_LENGTH:
                         reverb = reverb[i+cluster_size:]
                         i = 0
-                        final_i = len_guess - 2 * cluster_size
                         continue
 
                 i += cluster_size

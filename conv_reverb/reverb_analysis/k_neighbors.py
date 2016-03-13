@@ -20,6 +20,8 @@ FFT_WINDOW_SIZE = 512
 FREQ_BINS = [5,10,15,20,25] # frequency bins for which the reverb
                             # signature of each impulse is most clear and on
                             # which analysis is conducted
+MEAN_THRESHOLD = 0.97 # proportion about which reverb_mean can fluctuate from reverb_impulse
+                      # or vice versa
 
 # NOTES
 #
@@ -70,38 +72,33 @@ class KNeighbors:
         Processing involves matching both ffts to begin at roughly the same
         decibel level and truncate to be the same length.
         '''
-        if (reverb[0] or impulse[0]) == None:
-            return None, None
+        # does this actually matter?
+        assert cluster_size <= MIN_LENGTH,
+            'cluster_size={} is larger than MIN_LENGTH={}'.format(cluster_size,\
+                                                                  MIN_LENGTH)
+        if reverb[0] == self.def_val or impulse[0] == self.def_val:
+            return self.def_val, self.def_val
+        elif len(reverb) < MIN_LENGTH or len(impulse) < MIN_LENGTH:
+            return self.def_val, self.def_val
         else:
-            if reverb[0] > impulse[0]:
-                i = 0
-                while len(reverb) > i:
-                    if reverb[i] <= impulse[i]:
-                        reverb = reverb[i:]
-                        break
-                    else:
-                        i += 1
-
-            elif reverb[0] < impulse[0]:
-                i = 0
-                while len(reverb) > i:
-                    if reverb[i] >= impulse[i]:
-                        impulse = impulse[i:]
-                        break
-                    else:
-                        i += 1
-
-            # you need to check it has the min required length
-
-            if len(reverb) < 170 or len(impulse) < 170:
-                return None, None
+            len_reverb = len(reverb)
+            len_impulse = len(impulse)
             
-            if len(reverb) < len(impulse):
-                plot(reverb, impulse[:len(reverb)], title) #
-                return reverb, impulse[:len(reverb)]
-            else:
-                plot(reverb[:len(impulse)], impulse, title) #
-                return reverb[:len(impulse)], impulse
+            while len(reverb) >= MIN_LENGTH and len(impulse) >= MIN_LENGTH:
+                reverb_cluster = reverb[:cluster_size]
+                impulse_cluster = impulse[:cluster_size]
+
+                reverb_mean = np.mean(reverb_cluster)
+                impulse_mean = np.mean(impulse_cluster)
+
+                if (MEAN_THRESHOLD * reverb_mean) > impulse_mean:
+                    reverb = reverb[cluster_size:]
+                elif (MEAN_THRESHOLD * impulse_mean) > reverb_mean:
+                    impulse = impulse[cluster_size:]
+                    
+
+                    
+
 
             
     def distance(self, point_1, point_2):
@@ -117,8 +114,8 @@ class KNeighbors:
     def k_neighbors(self, reverb, impulse, k=3):
         '''
         '''
-        if reverb == None or impulse == None:
-            return None
+        if reverb[0] == self.def_val or impulse[0] == self.def_val:
+            return self.def_val
         else:
 
             distances = []
@@ -186,7 +183,7 @@ class KNeighbors:
                 result = self.k_neighbors(reverb, impulse, k=k)
                 plot([reverb, impulse], impulse + '_bin_' + str(freq_bin)) # for visual testing
                 
-                if result != None:
+                if result != self.def_val:
                     results.append(result)
 
             analysis[impulse] = np.mean(results)
