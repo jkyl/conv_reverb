@@ -104,7 +104,6 @@ class ImpulseResponses:
 
             for freq_bin in FREQ_BINS:
                 filtered_fft = self.filter_low_decibels(impulse_fft[freq_bin])
-#                plot(filtered_fft, '{}_bin_{}'.format(impulse.title, freq_bin)) #
                 impulses_fft[impulse.title][str(freq_bin)] = filtered_fft
 
         return impulses_fft
@@ -149,6 +148,11 @@ def go(impulses_csv):
     else:
         impulses = ImpulseResponses(impulses_csv)
         impulses.export_to_npz()
+
+    # generate plots for visual testing
+    for freq_bin in FREQ_BINS:
+        plot([impulses.impulses_ffts[impulse][str(freq_bin)] for impulse in
+              impulses.impulses_ffts.keys()], 'processed_impulses_bin_{}'.format(freq_bin))
 
 
 if __name__=='__main__':
