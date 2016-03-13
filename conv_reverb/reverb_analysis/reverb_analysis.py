@@ -205,7 +205,7 @@ class ReverbAudio:
             # make an initial guess for where the reverb is
             if len_fft >= GUESS_LENGTH:
                 reverb = freq_fft[-GUESS_LENGTH:]
-            elif len_fft >= MIN_LENGTH:
+            elif len_fft > MIN_LENGTH:
                 reverb = freq_fft[:]
             else:
                 reverb = np.array([self.def_val])
