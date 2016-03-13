@@ -72,19 +72,12 @@ class KNeighbors:
         Processing involves matching both ffts to begin at roughly the same
         decibel level and truncate to be the same length.
         '''
-        # does this actually matter?
-        assert cluster_size <= MIN_LENGTH,
-            'cluster_size={} is larger than MIN_LENGTH={}'.format(cluster_size,\
-                                                                  MIN_LENGTH)
         if reverb[0] == self.def_val or impulse[0] == self.def_val:
             return self.def_val, self.def_val
         elif len(reverb) < MIN_LENGTH or len(impulse) < MIN_LENGTH:
             return self.def_val, self.def_val
         else:
-            len_reverb = len(reverb)
-            len_impulse = len(impulse)
-            
-            while len(reverb) >= MIN_LENGTH and len(impulse) >= MIN_LENGTH:
+            while len(reverb) >= cluster_size and len(impulse) >= cluster_size:
                 reverb_cluster = reverb[:cluster_size]
                 impulse_cluster = impulse[:cluster_size]
 
@@ -95,10 +88,13 @@ class KNeighbors:
                     reverb = reverb[cluster_size:]
                 elif (MEAN_THRESHOLD * impulse_mean) > reverb_mean:
                     impulse = impulse[cluster_size:]
-                    
+                else:
+                    break
 
-                    
-
+            if len(reverb) >= MIN_LENGTH and len(impulse) >= MIN_LENGTH:
+                return reverb, impulse
+            else:
+                return self.def_val, self.def_val
 
             
     def distance(self, point_1, point_2):
@@ -177,11 +173,12 @@ class KNeighbors:
             results = []
             
             for freq_bin in FREQ_BINS:
+                impulse_name = impulse # for visual testing
                 reverb, impulse = self.process_ffts(self.reverb[str(freq_bin)],
                                                     self.impulses[impulse][str(freq_bin)],
                                                     cluster_size=cluster_size)
                 result = self.k_neighbors(reverb, impulse, k=k)
-                plot([reverb, impulse], impulse + '_bin_' + str(freq_bin)) # for visual testing
+                plot([reverb, impulse], impulse_name + '_bin_' + str(freq_bin)) # for visual testing
                 
                 if result != self.def_val:
                     results.append(result)

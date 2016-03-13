@@ -251,10 +251,10 @@ def go(audio_fname, impulses_fname=PROCESSED_IMPULSES_CSV):
     print analysis.analysis
 
     # generate plots for visual testing
-    for freq_bin in FREQ_BINS:
-        reverb_signature = reverb.reverb_signature[str(freq_bin)]
-        if reverb_signature[0] != None:
-            plot([reverb_signature], reverb.audio.title + '_bin_' + str(freq_bin))
+#    for freq_bin in FREQ_BINS:
+#        reverb_signature = reverb.reverb_signature[str(freq_bin)]
+#        if reverb_signature[0] != None:
+#            plot([reverb_signature], reverb.audio.title + '_bin_' + str(freq_bin))
 
 
 if __name__=='__main__':
