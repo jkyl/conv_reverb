@@ -191,7 +191,7 @@ class ReverbAudio:
         return np.mean(stds) < STD_THRESHOLD
         
 
-    def extract_reverb_signature(self, cluster_size=CLUSTER_SIZE):
+    def extract_reverb_signature(self, cluster_size=CLUSTER_SIZE, step_size=CLUSTER_SIZE):
         '''
         Extracts a reverb signature.
         '''
@@ -217,21 +217,23 @@ class ReverbAudio:
             
             while len_guess >= 2 * cluster_size:
 
-                len_guess += -cluster_size
+                len_guess += -step_size
                 
                 cluster_1 = reverb[i:i+cluster_size]
                 cluster_2 = reverb[i+cluster_size:i+(2*cluster_size)]
 
-                mean_1 = abs(np.mean(cluster_1))
-                mean_2 = abs(np.mean(cluster_2))
+                mean_1 = np.mean(cluster_1) 
+                mean_2 = np.mean(cluster_2)
 
-                if mean_1 < (MEAN_THRESHOLD * mean_2):
+                if (MEAN_THRESHOLD * mean_1) < mean_2:
                     if len_guess > MIN_LENGTH:
-                        reverb = reverb[i+cluster_size:]
+                        reverb = reverb[i+step_size:]
                         i = 0
                         continue
+                    else:
+                        break
 
-                i += cluster_size
+                i += step_size
 
             if reverb[0] != self.def_val and self.little_spread(reverb):
                 reverb_signature[str(freq_bin)] = reverb

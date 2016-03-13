@@ -67,7 +67,7 @@ class KNeighbors:
         return self.__analysis
     
     
-    def process_ffts(self, reverb, impulse, cluster_size=CLUSTER_SIZE):
+    def process_ffts(self, reverb, impulse, cluster_size=CLUSTER_SIZE, step_size=1):
         '''
         Processing involves matching both ffts to begin at roughly the same
         decibel level and truncate to be the same length.
@@ -84,10 +84,13 @@ class KNeighbors:
                 reverb_mean = np.mean(reverb_cluster)
                 impulse_mean = np.mean(impulse_cluster)
 
-                if (MEAN_THRESHOLD * reverb_mean) > impulse_mean:
-                    reverb = reverb[cluster_size:]
-                elif (MEAN_THRESHOLD * impulse_mean) > reverb_mean:
-                    impulse = impulse[cluster_size:]
+#                print 'reverb_mean', reverb_mean ###
+#                print 'impulse_mean', impulse_mean ###
+
+                if reverb_mean > (MEAN_THRESHOLD * impulse_mean):
+                    reverb = reverb[step_size:]
+                elif impulse_mean > (MEAN_THRESHOLD * reverb_mean):
+                    impulse = impulse[step_size:]
                 else:
                     break
 
@@ -97,6 +100,8 @@ class KNeighbors:
             else:
                 impulse = impulse[:len(reverb)]
 
+#            print 'len reverb', len(reverb) ###
+            
             if len(reverb) >= MIN_LENGTH:
                 return reverb, impulse
             else:
@@ -119,7 +124,6 @@ class KNeighbors:
         if reverb[0] == self.def_val or impulse[0] == self.def_val:
             return self.def_val
         else:
-
             distances = []
 
             for i in range(len(reverb)):
@@ -155,7 +159,7 @@ class KNeighbors:
         for impulse in analysis:
             for i in range(num_results):
                 if analysis[impulse] < min_results[i]:
-                    min_result[i] = analysis[impulse]
+                    min_results[i] = analysis[impulse]
                     best_impulses[i] = impulse
                     break
 
@@ -180,6 +184,8 @@ class KNeighbors:
             impulse_name = impulse
             
             for freq_bin in FREQ_BINS:
+#                print 'impulse_name', impulse_name ###
+#                print 'freq bin', freq_bin ###
                 reverb, impulse = self.process_ffts(self.reverb[str(freq_bin)],\
                                                     self.impulses[impulse_name][str(freq_bin)],\
                                                     cluster_size=cluster_size)
