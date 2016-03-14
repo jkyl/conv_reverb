@@ -32,14 +32,7 @@ def query_catalog(args_from_ui):
     query = 'collection:radio-aporee-maps '
 
     for arg in args_from_ui:
-
         keyword = args_from_ui[arg]
-
-        # several search terms need to be delimited
-        # with an openning " and a closing "
-#        if len(keyword.split(' ')) > 1:
-#            keyword = '"' + keyword  + '"'
-        
         query = query + arg + ':' + keyword + ' '
 
     query_results = ia.search_items(query)
@@ -143,15 +136,14 @@ if __name__ == "__main__":
     # allowed search field can be found here
     # https://archive.org/advancedsearch.php
     args_from_ui = {'title': 'berlin in snow'}
-#    args_from_ui = {'title': 'berlin', 'date': '2015-04-06'}
 
     # query_catalog returns a search object which can
     # be iterated over to get each item matching the search
     query_results = query_catalog(args_from_ui)
 
     # format_output returns a tuple containing the results
+    # this can be printed out to the terminal
     output = format_output(query_results)
-    print(output)
 
     # download_item downloads the .mp3 file associated
     # with the identifier
