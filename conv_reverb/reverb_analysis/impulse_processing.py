@@ -4,6 +4,7 @@
 # This script is extracts the necessary information from the impulse responses
 # (IRs) and exports them to disk for further analysis.
 #
+# All code in this script represents original code unless otherwise specified.
 
 import sys
 sys.path.append('../')
@@ -149,8 +150,14 @@ def go(impulses_csv=IMPULSES_CSV, make_plots=False):
     # generate plots of the processed impulse response
     if make_plots:
         for freq_bin in FREQ_BINS:
-            plot([impulses.impulses_ffts[impulse][str(freq_bin)] for impulse in
-                  impulses.impulses_ffts.keys()], 'processed_impulses_bin_{}'.format(freq_bin))
+            freq_impulses = []
+            for impulse in impulses.impulses_ffts.keys():
+                freq_impulse = impulses.impulses_ffts[impulse][str(freq_bin)]
+                freq_impulses.append(freq_impulse)
+                # plot each impulse at given frequency separately
+                plot([freq_impulse], impulse + 'bin_{}'.format(freq_bin))
+            # plot all impulses at given frequency together
+            plot(freq_impulses, 'processed_impulses_bin_{}'.format(freq_bin))
 
 
 if __name__=='__main__':
@@ -163,15 +170,13 @@ if __name__=='__main__':
         sys.exit(1)
 
     if len(sys.argv) == 2:
-        assert sys.argv[1] in ('True', 'False'),
+        assert sys.argv[1] in ('True', 'False'),\
             '<make_plots> should be set to either True or False and not {}.'.format(sys.argv[1])
-            sys.exit(1)
 
         go(make_plots=bool(sys.argv[1]))
             
     elif len(sys.argv) == 3:
-        assert sys.argv[2] in ('True', 'False'),
+        assert sys.argv[2] in ('True', 'False'),\
             '<make_plots> should be set to either True or False and not {}.'.format(sys.argv[2])
-            sys.exit(1)
 
         go(make_plots=bool(sys.argv[2]))

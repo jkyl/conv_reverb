@@ -4,12 +4,14 @@
 # This script has the classes necessary to perform reverb analysis in the frequency
 # domain.
 #
+# All code in this script represents original code unless otherwise specified.
 
 import sys
 sys.path.append('../')
 
 import csv
 import numpy as np
+from types import *
 
 # Project modules
 import audio
@@ -271,19 +273,19 @@ if __name__=='__main__':
 
 
     if len(sys.argv) == 4:
-        assert type(sys.argv[2]) is IntType,
+        assert type(int(sys.argv[2])) is IntType,\
             '<k_neighbors> should be a positive integer and not {}'.format(sys.argv[2])
 
-        assert sys.argv[3] in ('True', 'False'),
+        assert sys.argv[3] in ('True', 'False'),\
             '<make_plots> should be set to either True or False and not {}.'.format(sys.argv[3])
             
         go(sys.argv[1], k=int(sys.argv[2]), make_plots=bool(sys.argv[3]))
         
     elif len(sys.argv) == 5:
-        assert type(sys.argv[3]) is IntType,
+        assert type(int(sys.argv[3])) is IntType,\
             '<k_neighbors> should be a positive integer and not {}'.format(sys.argv[3])
 
-        assert sys.argv[4] in ('True', 'False'),
+        assert sys.argv[4] in ('True', 'False'),\
             '<make_plots> should be set to either True or False and not {}.'.format(sys.argv[4])
         
         go(sys.argv[1], impulses_fname=sys.argv[2], k=int(sys.argv[3]), make_plots=bool(sys.argv[4]))

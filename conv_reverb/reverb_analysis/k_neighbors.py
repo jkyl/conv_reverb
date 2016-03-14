@@ -3,6 +3,7 @@
 #
 # This script performs our own flavor of k nearest neighbors analysis.
 #
+# All code in this script represents original code unless otherwise specified.
 
 import sys
 sys.path.append('../')
@@ -20,7 +21,7 @@ FFT_WINDOW_SIZE = 512
 FREQ_BINS = [5,10,15,20,25] # frequency bins for which the reverb
                             # signature of each impulse is most clear and on
                             # which analysis is conducted
-MEAN_THRESHOLD = 0.97 # proportion about which reverb_mean can fluctuate from reverb_impulse
+MEAN_THRESHOLD = 0.98 # proportion about which reverb_mean can fluctuate from reverb_impulse
                       # or vice versa
 K_NEIGHBORS = 3 # default number of k-neighbors to analyze
 
@@ -171,8 +172,7 @@ class KNeighbors:
             impulse_name = impulse
             
             for freq_bin in FREQ_BINS:
-#                print 'impulse_name', impulse_name ###
-#                print 'freq bin', freq_bin ###
+                
                 reverb, impulse = self.process_ffts(self.reverb[str(freq_bin)],\
                                                     self.impulses[impulse_name][str(freq_bin)],\
                                                     cluster_size=cluster_size)
