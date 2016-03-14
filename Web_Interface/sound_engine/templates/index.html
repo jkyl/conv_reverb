@@ -64,12 +64,13 @@
             <hr />
             <center>
             <h2>Choose Sound Transformation</h2>
-        <div class="frame">    
-            <form method="get">
-                <input name="Convolution" type="submit" value= "Convolution"/> <input name="Correlation" type="submit" value="Correlation"/> <input name = "Pitch" type="submit" value="Pitch Shift"/> <input name="Ring" type="submit" value="Ring Modulation"/>
-            </form>
             </center>
             <br>
+            <p> For Convolution, choose only 2 sounds from the lists below <br>
+                For Pitch Shift or Ring Modulation choose 1 sound and input 1 number <br>
+                The number input for Ring Modulation will be treated as desired frequency in Hz <br>
+                The number input for Pitch Shift is treated as a percent with .5 representing 50% and 2 representing 200%. 
+            </p>
         </div>    
         <div class="frame">    
             <form method="get">        
@@ -80,10 +81,7 @@
                 </table>
                 <input name= "{{ name1 }}" type="submit" value="Transform" />
                 <br>
-                <br>
-                <p> Try another transformation by clicking a sound transformation button above!<br>
-                    To use the newly transformed file in a transformation restart the server.
-                </p>    
+                <br>    
             </form>      
         </div>
 

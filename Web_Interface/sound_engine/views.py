@@ -61,7 +61,7 @@ class PickResForm(forms.Form):
     '''
     ids = forms.CharField(label='Enter ID to download file', help_text='e.g. aporee_27258_31409', required=False)
 
-class SoundChoice(forms.Form):
+class Transform_Input(forms.Form):
     '''
     '''
     download_files = os.listdir(Dload_path)
@@ -69,14 +69,12 @@ class SoundChoice(forms.Form):
     download_list = _build_dropdown(download_files)
     impulse_files = os.listdir(Impulse_path)
     impulse_files.sort()
+    process_list = ['Convolution', 'Pitch Shift', 'Ring Modulation']
+    process_ops = _build_dropdown(process_list)
     impulse_list = _build_dropdown(impulse_files)
+    process = forms.ChoiceField(label='Transformation', choices=process_ops)
     downloads = forms.MultipleChoiceField(label='Downloads from archive.org', choices=download_list, required=False, widget= forms.CheckboxSelectMultiple)
     impulses = forms.MultipleChoiceField(label='U Chicago Impulse Responses', choices=impulse_list, required=False, widget= forms.CheckboxSelectMultiple)
-    transform_name = forms.CharField(label='Save transformed file as', help_text='e.g. conv_Booth_zoo', required=False)
-
-class NumInput(forms.Form):
-    '''
-    '''
     num = forms.FloatField(label='Enter Number', min_value=0.0)     
      
 def home(request):
@@ -126,6 +124,9 @@ def home(request):
                 else:
                     message1 = "Sorry, download failed: file size is too large"  
             context['message1'] = message1
+    
+    trans_form = trans
+
     #generate form when user selects Convolution 
     if request.method == 'GET' and 'Convolution' in request.GET:
         conv_form = SoundChoice(request.GET)
@@ -135,7 +136,11 @@ def home(request):
         name1 = 'convolve'
         context['name1'] = name1
     if request.method == 'GET' and 'convolve' in request.GET:
-        print('Manage Convolution')
+        if conv_form.is_valid():
+            sound = conv_form.cleaned_data['downloads']
+            print(sound)
+            sound2 = conv_form.cleaned_data['impulses']
+            print(sound2)
     #generate form when user selects Correlation    
     if request.method == 'GET' and 'Correlation' in request.GET:
         cor_form = SoundChoice(request.GET)
