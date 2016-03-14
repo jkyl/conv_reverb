@@ -1,14 +1,20 @@
 import subprocess
 from sys import platform as PLATFORM
 
-
 def unix_command(string):
     cmd = string.split(' ')
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     return p.communicate()
 
 print('Installing pip...')
-unix_command('sudo python get-pip.py')
+unix_command('sudo python3 -m pip uninstall -y pip setuptools')
+unix_command('sudo python3 get-pip.py')
+
+print('Installing Internet Archive API...')
+unix_command('sudo pip install -Iv internetarchive==0.9.8')
+
+print('Installing Django...')
+unix_command('sudo pip install django')
 
 print('Installing PyDub...')
 if unix_command('pip show pydub')[0].decode('utf-8') != '':
