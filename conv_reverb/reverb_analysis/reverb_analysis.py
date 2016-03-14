@@ -251,7 +251,7 @@ def go(audio_fname, impulses_fname=PROCESSED_IMPULSES_CSV, k=K_NEIGHBORS, make_p
     impulses = ProcessedImpulses(impulses_fname)
     reverb = ReverbAudio(audio_fname)
     analysis = k_neighbors.KNeighbors(impulses.impulses, reverb.reverb_signature)
-#    return analysis.do_analysis(k=k, make_plots=make_plots)
+    return analysis.do_analysis(k=k, make_plots=make_plots)
     print analysis.do_analysis(k=k, make_plots=make_plots)
 
     # generate plots of the reverb signature at each frequency bin
