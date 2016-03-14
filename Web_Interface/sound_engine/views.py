@@ -20,6 +20,7 @@ from array_transforms import convolve, correlate, pitchshift, ringmod
 from audio import Audio  
 Dload_path = Transform_path + '/download_files'
 Impulse_path = Transform_path + '/impulses'
+Trans_aud_path = os.path.abspath(__file__)[:-35] + 'Web_Interface/output/transformed_wavs'
 
  
 context = {}
@@ -32,6 +33,7 @@ COLUMN_NAMES = dict(
         description ='Description',
 )
 
+#Directly from Gustav's ui/search/views.py in pa3
 def _build_dropdown(options):
     '''
     Converts a list to (value, caption) tuples
@@ -40,6 +42,7 @@ def _build_dropdown(options):
 
 class SearchForm(forms.Form):
     '''
+    Django form designed to accept search criteria from the user to query the API 
     '''
     Title = forms.CharField(
             label='Title',
@@ -57,11 +60,15 @@ class SearchForm(forms.Form):
 
 class PickResForm(forms.Form):
     '''
+    Django form class designed to accept user input of file id needed to download files through the API based on 
+    search results.   
     '''
     ids = forms.CharField(label='Enter ID to download file', help_text='e.g. aporee_27258_31409', required=False)
 
 class Transform_Input(forms.Form):
     '''
+    Django form class customized to provide the user with options for different sound transformations and choices for 
+    different sound files and values to implement the sound transformations
     '''
     download_files = os.listdir(Dload_path)
     download_files.sort()
@@ -72,11 +79,15 @@ class Transform_Input(forms.Form):
     process_list = ['Convolution', 'Pitch Shift', 'Ring Modulation']
     process_ops = _build_dropdown(process_list)
     impulse_list = _build_dropdown(impulse_files)
+    trans_aud_list = os.listdir(Trans_aud_path)
+    trans_aud_ops = _build_dropdown(trans_aud_list)
     process = forms.ChoiceField(label='Transformation', choices=process_ops, required=True)
     downloads = forms.MultipleChoiceField(label='Downloads', choices=download_list, required=False, widget= forms.CheckboxSelectMultiple)
     impulses = forms.MultipleChoiceField(label='U Chicago Impulse Responses', choices=impulse_list, required=False, widget= forms.CheckboxSelectMultiple)
+    trans = forms.MultipleChoiceField(label='Transformed Audio', choices=trans_aud_ops, required=False, widget= forms.CheckboxSelectMultiple)
     num = forms.FloatField(label='Enter Number', min_value=0.0, required=False)     
-     
+
+#heavily modified from Gustav's ui/search/views.py home function     
 def home(request):
     res = None
     if request.method == 'GET' and 'Search' in request.GET:
@@ -120,7 +131,7 @@ def home(request):
             else:    
                 download = download_item(file_id)
                 if download != None:
-                    message1 = "File " + download + " downloaded to conv_reverb/conv_reverb/aporee_files. Restart server to access this file for sound transformations."
+                    message1 = "File " + download + " downloaded to conv_reverb/conv_reverb/download_files. Restart server to access this file for sound transformations."
                 else:
                     message1 = "Sorry, download failed: file size is too large"  
             context['message1'] = message1
@@ -131,20 +142,31 @@ def home(request):
         trans_form = Transform_Input(request.GET)
         impulse_files = os.listdir(Impulse_path)
         download_files = os.listdir(Dload_path)
+        trans_aud_list = os.listdir(Trans_aud_path)
         if trans_form.is_valid():
-            sound_in = trans_form.cleaned_data['downloads'] + trans_form.cleaned_data['impulses']
+            sound_in = trans_form.cleaned_data['downloads'] + trans_form.cleaned_data['impulses'] + trans_form.cleaned_data['trans']
             num_in = trans_form.cleaned_data['num']
             for i in range(len(sound_in)):
                 if sound_in[i] in impulse_files:
                     sound_in[i] = Impulse_path + '/' + sound_in[i] 
+                elif sound_in[i] in download_files:
+                    sound_in[i] = Dload_path + '/' + sound_in[i]
                 else:
-                    sound_in[i] = Dload_path + '/' + sound_in[i]    
+                    sound_in[i] =  + '/' + sound_in[i]    
             if trans_form.cleaned_data['process'] == 'Convolution':
                 sound1 = Audio(sound_in[0])
-                print(sound1.title)
                 sound2 = Audio(sound_in[1])
-                #conv_sound = sound1.convolve(sound2)
-                #print(conv_sound.title())
+                conv_sound = sound1.convolve(sound2)
+                conv_sound.write_to_wav()
+                message2 = "Transformed file saved as" + conv_sound.title
+            if trans_form.cleaned_data['process'] == 'Pitch Shift':
+                sound = Audio(sound_in[0])
+                ps_sound = sound.pitchshift(num_in)
+                ps_sound.write_to_wav()
+            if trans_form.cleaned_data['process'] == 'Ring Modulation':
+                sound = Audio(sound_in[0])
+                rm_sound = sound.ringmod(num_in)
+                rm_sound.write_to_wav()      
 
 
     
