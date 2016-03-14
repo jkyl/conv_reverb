@@ -10,11 +10,14 @@ from io import StringIO
 import csv
 import os
 import sys
-# construct absolute path of API directory 
+# construct absolute path of API directory in the given machine
 API_path = os.path.abspath(__file__)[:-35] + 'API'
+# enable modules in API directory to be imported
 sys.path.insert(0, API_path)
 from API_backend import query_catalog, format_output, download_item
+# construct absolute path of conv_reverb directory in the given machine
 Transform_path = os.path.abspath(__file__)[:-35] + 'conv_reverb'
+# enable modules in conv_reverb directory to be imported
 sys.path.insert(0, Transform_path)
 from array_transforms import convolve, correlate, pitchshift, ringmod
 from audio import Audio  
@@ -26,6 +29,7 @@ Trans_aud_path = os.path.abspath(__file__)[:-35] + 'Web_Interface/output/transfo
 context = {}
 NOPREF_STR = '- - - - - - - - -'
 SOUND_FILES_DIR = os.path.join(os.path.dirname(__file__), '..', 'sound_files')
+#column names used in table of results 
 COLUMN_NAMES = dict(
         title ='Title',
         id ='ID',
@@ -80,6 +84,8 @@ class Transform_Input(forms.Form):
     process_ops = _build_dropdown(process_list)
     impulse_list = _build_dropdown(impulse_files)
     trans_aud_list = os.listdir(Trans_aud_path)
+    trans_aud_list.sort()
+    trans_aud_list.remove('README.txt')
     trans_aud_ops = _build_dropdown(trans_aud_list)
     process = forms.ChoiceField(label='Transformation', choices=process_ops, required=True)
     downloads = forms.MultipleChoiceField(label='Downloads', choices=download_list, required=False, widget= forms.CheckboxSelectMultiple)
@@ -89,6 +95,10 @@ class Transform_Input(forms.Form):
 
 #heavily modified from Gustav's ui/search/views.py home function     
 def home(request):
+    '''
+    Function to create objects of django forms and render them on the browser. Also, accesses user inputs and calls necessary functions 
+    to process inputs and return results on the browser webpage. 
+    '''
     res = None
     if request.method == 'GET' and 'Search' in request.GET:
         # create a form instance and populate it with data from the request:
@@ -153,21 +163,27 @@ def home(request):
                     sound_in[i] = Dload_path + '/' + sound_in[i]
                 else:
                     sound_in[i] = Trans_aud_path + '/' + sound_in[i]    
+            # execute convolution of user specified audio files
             if trans_form.cleaned_data['process'] == 'Convolution':
                 sound1 = Audio(sound_in[0])
                 sound2 = Audio(sound_in[1])
                 conv_sound = sound1.convolve(sound2)
+                new_trans = Trans_aud_path + '/' + conv_sound.title + '.wav'
                 conv_sound.write_to_wav()
-                message2 = "Transformed file saved as" + conv_sound.title
+                message2 = "Transformed file saved as " + conv_sound.title
+            # execute pitch shift of user specified audio file and percent
             if trans_form.cleaned_data['process'] == 'Pitch Shift':
                 sound = Audio(sound_in[0])
                 ps_sound = sound.pitchshift(num_in)
                 ps_sound.write_to_wav()
+                message2 = "Transformed file saved as " + ps_sound.title
+            # execute ring modulation of user specified audio file at desired frequency 
             if trans_form.cleaned_data['process'] == 'Ring Modulation':
                 sound = Audio(sound_in[0])
                 rm_sound = sound.ringmod(num_in)
-                rm_sound.write_to_wav()      
-
+                rm_sound.write_to_wav()
+                message2 = "Transformed file saved as " + rm_sound.title      
+            context['message2'] = message2
 
     
 

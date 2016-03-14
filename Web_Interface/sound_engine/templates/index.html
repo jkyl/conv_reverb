@@ -66,7 +66,8 @@
             <h2>Choose Sound Transformation</h2>
             </center>
             <br>
-            <p> For Convolution, choose only 2 sounds from the lists below <br>
+            <p> Instructions:<br>
+                For Convolution, choose only 2 sounds from the lists below <br>
                 For Pitch Shift or Ring Modulation choose 1 sound and input 1 number <br>
                 The number input for Ring Modulation will be treated as desired frequency in Hz <br>
                 The number input for Pitch Shift is treated as a percent with .5 representing 50% and 2 representing 200%. 
@@ -79,19 +80,11 @@
                 </table>
                 <input name= "Transform" type="submit" value="Transform" />
                 <br>
+                {{ message2 }}
                 <br>    
             </form>      
-        </div>
-
-
-        {% if err %}
-        <div class="error">
-            {{ err|safe }}
-        </div>
-        {% endif %}
-
-
-
-        
+            <p> To access the new transformed file in the sound processing options, restart the server.  
+            </p> 
+        </div>        
     </body>
 </html>
