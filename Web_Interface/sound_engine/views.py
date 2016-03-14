@@ -1,6 +1,7 @@
-'''
-Implement by calling python3 manage.py runserver from the Web_Interface directory
-'''
+#
+# Usage: python3 manage.py runserver from the Web_Interface directory
+#
+
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django import forms
@@ -19,7 +20,6 @@ from API_backend import query_catalog, format_output, download_item
 Transform_path = os.path.abspath(__file__)[:-35] + 'conv_reverb'
 # enable modules in conv_reverb directory to be imported
 sys.path.insert(0, Transform_path)
-from array_transforms import convolve, correlate, pitchshift, ringmod
 from audio import Audio  
 Dload_path = Transform_path + '/download_files'
 Impulse_path = Transform_path + '/impulses'
@@ -74,13 +74,13 @@ class Transform_Input(forms.Form):
     Django form class customized to provide the user with options for different sound transformations and choices for 
     different sound files and values to implement the sound transformations
     '''
-    download_files = os.listdir(Dload_path)
+    download_files = [a for a in os.listdir(Dload_path) if '.mp3' in a]
     download_files.sort()
     download_list = _build_dropdown(download_files)
     impulse_files = os.listdir(Impulse_path)
     impulse_files.sort()
     impulse_files.remove('README.txt')
-    process_list = ['Convolution', 'Pitch Shift', 'Ring Modulation']
+    process_list = ['Convolution', 'Pitch Shift', 'Ring Modulation', 'No Transformation']
     process_ops = _build_dropdown(process_list)
     impulse_list = _build_dropdown(impulse_files)
     trans_aud_list = os.listdir(Trans_aud_path)
@@ -140,8 +140,9 @@ def home(request):
                 message1 = "Download not possible without ID. Please enter aporee ID to download file"
             else:    
                 download = download_item(file_id)
+                os.system('cp ../conv_reverb/download_files/{} ../conv_reverb/download_files/\!JUST_DOWNLOADED.mp3'.format(download)) #### here's where we cp -jk
                 if download != None:
-                    message1 = "File " + download + " downloaded to conv_reverb/conv_reverb/download_files. Restart server to access this file for sound transformations."
+                    message1 = "File " + download + " downloaded to conv_reverb/conv_reverb/download_files."
                 else:
                     message1 = "Sorry, download failed: file size is too large"  
             context['message1'] = message1
@@ -171,22 +172,26 @@ def home(request):
                 new_trans = Trans_aud_path + '/' + conv_sound.title + '.wav'
                 conv_sound.write_to_wav()
                 conv_sound.plot_fft_spectrum()
-                message2 = "Transformed file saved as " + conv_sound.title
+                message2 = "Transformed file saved as \"{}.wav\"".format(conv_sound.title)
             # execute pitch shift of user specified audio file and percent
             if trans_form.cleaned_data['process'] == 'Pitch Shift':
                 sound = Audio(sound_in[0])
                 ps_sound = sound.pitchshift(num_in)
                 ps_sound.write_to_wav()
                 ps_sound.plot_fft_spectrum()
-                message2 = "Transformed file saved as " + ps_sound.title
+                message2 = "Transformed file saved as \"{}.wav\"".format(ps_sound.title)
             # execute ring modulation of user specified audio file at desired frequency 
             if trans_form.cleaned_data['process'] == 'Ring Modulation':
                 sound = Audio(sound_in[0])
                 rm_sound = sound.ringmod(num_in)
                 rm_sound.write_to_wav()
                 ps_sound.plot_fft_spectrum()
-                message2 = "Transformed file saved as " + rm_sound.title
-            
+                message2 = "Transformed file saved as \"{}.wav\"".format(rm_sound.title)
+            if trans_form.cleaned_data['process'] == 'No Transformation':
+                sound = Audio(sound_in[0])
+                sound.write_to_wav()
+                sound.plot_fft_spectrum()
+                message2 = "Transformed file saved as \"{}.wav\"".format(sound.title)
             context['message2'] = message2
 
     

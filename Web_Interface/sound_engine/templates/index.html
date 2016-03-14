@@ -66,11 +66,15 @@
             <h2>Choose Sound Transformation</h2>
             </center>
             <br>
-            <p> Instructions:<br>
-                For Convolution, choose only 2 sounds from the lists below <br>
-                For Pitch Shift or Ring Modulation choose 1 sound and input 1 number <br>
-                The number input for Ring Modulation will be treated as desired frequency in Hz <br>
-                The number input for Pitch Shift is treated as a percent with .5 representing 50% and 2 representing 200%. 
+        <p> Instructions:<br>
+	  <ul>
+	        <li> The temporary file "!JUST_DOWNLOADED" is the file that you just downloaded. It will be saved the next time the server starts.
+                <li>For convolution, choose any 2 sounds from the lists below.
+                <li>For ring modulation, choose one sound and input a frequency in Hz.
+                <li>For pitch shift, choose one sound and input a decimal number by which to shift (1.0 leaves the pitch unchanged, 0.5 slows it down by half, and so on).
+		<li>If no transformation is desired, just choose the sound you want. 
+	        <li>Then hit "Transform" - your transformed audio and a spectrogram will be available for download below.
+	</ul>
             </p>
         </div>    
         <div class="frame">    
@@ -83,7 +87,6 @@
                 {{ message2 }}
                 <br>    
             </form>      
-            <p> To access the new transformed file in the sound processing options, restart the server.  
             </p> 
         </div>
 <p>
