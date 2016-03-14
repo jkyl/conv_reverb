@@ -67,7 +67,7 @@ def write_stereo_arrays_to_wav(stereo_array, title):
     norm = np.int16(32767 * stereo_array/float(np.max(np.abs(stereo_array))))
     if norm.shape[0] == 2:
         norm = norm.swapaxes(0, 1)
-    write('output/wavfiles/' + title +'.wav', 44100, norm)
+    write('../conv_reverb/download_files/' + title +'.wav', 44100, norm)
 
 
 def get_fft(a, step_size):
