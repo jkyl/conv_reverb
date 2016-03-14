@@ -1,7 +1,7 @@
 #
 # PYTHON 3
 #
-# This script has the necessary functions to communicated with the 
+# This script has the necessary functions to communicate with the 
 # Internet Archive API to query their database and download files.
 #
 # All code in this script represents original code.
@@ -14,7 +14,7 @@ import re
 import internetarchive as ia
 
 MAX_SIZE = 20 * (10 ** 6) # max size of sound file in megabytes
-MAX_NUM_RESULTS = 30 # sets a max number of result to return from API search
+MAX_NUM_RESULTS = 20 # sets a max number of result to return from API search
 SOUND_DIR = '../conv_reverb/download_files/'
 
 
@@ -64,9 +64,11 @@ def download_item(identifier):
 
     if f.size <= MAX_SIZE:
         f.download(SOUND_DIR + f_name)
+        return f.name
     else:
         print('File size is', f.size, 'bytes')
         print('File size exceeds', MAX_SIZE, 'bytes')
+        return None 
 
 
 def format_output(query_results):
@@ -148,6 +150,3 @@ if __name__ == "__main__":
     # download_item downloads the .mp3 file associated
     # with the identifier
     download_item('aporee_2039_2931')
-    
-
-    

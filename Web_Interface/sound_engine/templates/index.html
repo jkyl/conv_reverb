@@ -17,52 +17,19 @@
         </div>
         <div class="frame">
             <form method="get">
-                {% csrf_token %}
                 <table class="form">
                 {{ query_API }}
                 </table>
-                <input type="submit" value="Search" />
+                <input name="Search" type="submit" value="Search" />
             </form>
+        </div>
             <hr />
             <center>
             <h2>Choose from Results</h2>
             </center>
-            <form method="get">
-                {% csrf_token %}
-                <table class="form">
-
-                </table>
-                <input type="submit" value="Submit" />
-            </form>
-            <hr />
-            <center>
-            <h2>Select Sound Transformations</h2>
-            </center>
-            <form method="get">
-                {% csrf_token %}
-                <table class="form">
-                {{ form2 }}
-                </table>
-                <input type="submit" value="Search" />
-            </form>
-        </div>
-
-        {% if args %}
-        <div class="args">
-            <pre>{{ args }}</pre>
-        </div>
-        {% endif %}
-
-        {% if err %}
-        <div class="error">
-            {{ err|safe }}
-        </div>
-        {% endif %}
-
-
-
         <div class="frame">
             {% if result != None %}
+            <p class="num_results">Results: {{ num_results }}</p>
             <div class="results">
                 <table class="courses">
                     <tr>
@@ -79,8 +46,55 @@
                     {% endfor %}
                 </table>
             </div>
-            <p class="num_results">Results: {{ num_results }}</p>
             {% endif %}
         </div>
+        <div class="frame">    
+            <form method="get">
+                <table class="form">
+                {{ resform }}
+                </table>
+                <input name="Download" type="submit" value="Download" />
+                <br>
+                <br>
+                {{ message1 }}
+                <br>
+                <br>
+            </form>
+        </div>    
+            <hr />
+            <center>
+            <h2>Choose Sound Transformation</h2>
+            </center>
+            <br>
+        <p> Instructions:<br>
+	  <ul>
+	        <li> The temporary file "!JUST_DOWNLOADED" is the file that you just downloaded. It will be saved the next time the server starts.
+                <li>For convolution, choose any 2 sounds from the lists below.
+                <li>For ring modulation, choose one sound and input a frequency in Hz.
+                <li>For pitch shift, choose one sound and input a decimal number by which to shift (1.0 leaves the pitch unchanged, 0.5 slows it down by half, and so on).
+		<li>If no transformation is desired, just choose the sound you want. 
+	        <li>Then hit "Transform" - your transformed audio and a spectrogram will be available for download below.
+	</ul>
+            </p>
+        </div>    
+        <div class="frame">    
+            <form method="get">        
+                <table class="form">
+                {{ transform }}
+                </table>
+                <input name= "Transform" type="submit" value="Transform" />
+                <br>
+                {{ message2 }}
+                <br>    
+            </form>      
+            </p> 
+        </div>
+<p>
+  <ul>
+    <li><a href="../static/temp.wav" target="_blank">Transformed file</a>
+    <li><a href="../static/temp.png" target="_blank">Spectgrogram</a>
+  </ul> 
+</p>
+	<br>
     </body>
 </html>

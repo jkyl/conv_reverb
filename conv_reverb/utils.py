@@ -37,7 +37,7 @@ def audio_obj_to_arrays(obj):
 
 def plot_waveform(a, title):
     '''
-    Plots the stereo arrays in purple. Saves as output/waveforms/title/.png
+    Plots the stereo arrays in purple. Saves as Web_Interface/output/waveforms/title.png
     '''
     x_in_secs = np.arange(len(a[0]))/44100.
     plt.close('all')
@@ -55,7 +55,7 @@ def plot_waveform(a, title):
     ax2.axes.get_yaxis().set_visible(False)
     plt.xlabel('Seconds')
     #plt.xticks(np.arange(0, round(x_in_secs[-1]), round(x_in_secs[-1]/10.)))
-    plt.savefig('output/waveforms/' + title)
+    plt.savefig('../Web_Interface/output/waveforms/' + title + '.png')
     
     
     
@@ -67,7 +67,8 @@ def write_stereo_arrays_to_wav(stereo_array, title):
     norm = np.int16(32767 * stereo_array/float(np.max(np.abs(stereo_array))))
     if norm.shape[0] == 2:
         norm = norm.swapaxes(0, 1)
-    write('output/wavfiles/' + title +'.wav', 44100, norm)
+    write('../Web_Interface/output/transformed_wavs/' + title + '.wav', 44100, norm)
+    write('../Web_Interface/static/temp.wav', 44100, norm)
 
 
 def get_fft(a, step_size):
@@ -86,13 +87,13 @@ def get_fft(a, step_size):
     '''
     pad = step_size - (a.size % step_size)
     zerod = np.append(a, np.zeros(pad))
-    outer = zerod.reshape(zerod.size / step_size, step_size)
-    inner = zerod[(step_size / 2):(-step_size / 2)]\
-            .reshape((zerod.size - step_size) / step_size, step_size)
+    outer = zerod.reshape(zerod.size // step_size, step_size)
+    inner = zerod[(step_size // 2):(-step_size // 2)]\
+            .reshape((zerod.size - step_size) // step_size, step_size)
     interleaved = np.empty([outer.shape[0] + inner.shape[0], outer.shape[1]])
     interleaved[::2,:] = outer; interleaved[1::2,:] = inner
     windowed = blackman(step_size) * interleaved
-    coeffs = fft(windowed)[:, :(step_size / 2) + 1]
+    coeffs = fft(windowed)[:, :(step_size // 2) + 1]
     power_units = np.abs(np.multiply(coeffs, np.conj(coeffs)))
     power_units = power_units/power_units.max()
     power_units[np.where(power_units < 1e-13)] = 1e-13
@@ -111,10 +112,10 @@ def plot_fft(spectrum, title):
     x_axis = np.linspace(0, (n_bins - 1) * n_windows / 44100., n_windows)
     y_axis = np.linspace(0, 22050., n_bins)
     X, Y = np.meshgrid(x_axis, y_axis)
-    #plt.close('all')
+    plt.close('all')
     ax = plt.gca()
     ax.set_yscale('symlog')
-    im = ax.pcolormesh(X, Y, spectrum, cmap = 'inferno')
+    im = ax.pcolormesh(X, Y, spectrum, cmap = 'gist_heat')
     plt.title(title)
     plt.xlim(0, x_axis.max())
     plt.ylim(y_axis[1], 22050)
@@ -125,5 +126,6 @@ def plot_fft(spectrum, title):
     cax = divider.append_axes("right", size="5%", pad=0.05)
     plt.colorbar(im, cax=cax, ticks = np.arange(0, -140, -20),
                  label = 'Power (dB)')
-    plt.savefig('output/spectra/' + title + '.png')
+    plt.savefig('../Web_Interface/output/spectra/' + title + '.png')
+    plt.savefig('../Web_Interface/static/temp.png')
 

@@ -16,7 +16,11 @@ Including another URLconf
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
+#from sound_engine import views
+
 urlpatterns = [
     url(r'^$','sound_engine.views.home', name='home'),
+    url(r'^$','sound_engine.views.SearchResults', name='SearchResults'),
+    url(r'^$','../static/temp.wav', name = 'send_file')
 ]
 

@@ -13,7 +13,7 @@ class Audio:
         if not fname is None:
             self._segment = utils.read_audio_file_to_obj(fname)
             self._array = utils.audio_obj_to_arrays(self._segment)
-            self._title = ''.join(''.join(fname.split('/')[1:]).split('.')[:-1])
+            self._title = fname.split('/')[-1].split('.')[0]
         else:
             self._array = None
             self._title = 'Untitled'
