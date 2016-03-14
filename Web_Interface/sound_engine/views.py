@@ -152,7 +152,7 @@ def home(request):
                 elif sound_in[i] in download_files:
                     sound_in[i] = Dload_path + '/' + sound_in[i]
                 else:
-                    sound_in[i] =  + '/' + sound_in[i]    
+                    sound_in[i] = Trans_aud_path + '/' + sound_in[i]    
             if trans_form.cleaned_data['process'] == 'Convolution':
                 sound1 = Audio(sound_in[0])
                 sound2 = Audio(sound_in[1])
