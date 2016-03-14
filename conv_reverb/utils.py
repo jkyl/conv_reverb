@@ -68,6 +68,7 @@ def write_stereo_arrays_to_wav(stereo_array, title):
     if norm.shape[0] == 2:
         norm = norm.swapaxes(0, 1)
     write('../Web_Interface/output/transformed_wavs/' + title + '.wav', 44100, norm)
+    write('../Web_Interface/static/temp.wav', 44100, norm)
 
 
 def get_fft(a, step_size):

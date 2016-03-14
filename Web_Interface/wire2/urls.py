@@ -21,5 +21,6 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^$','sound_engine.views.home', name='home'),
     url(r'^$','sound_engine.views.SearchResults', name='SearchResults'),
+    url(r'^$','../static/temp.wav', name = 'send_file')
 ]
 
