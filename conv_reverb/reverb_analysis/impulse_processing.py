@@ -139,30 +139,39 @@ class ImpulseResponses:
         self.export_filenames(filenames)
     
     
-def go(impulses_csv):
+def go(impulses_csv=IMPULSES_CSV, make_plots=False):
     '''
     '''
-    if impulses_csv == '':
-        impulses = ImpulseResponses(IMPULSES_CSV)
-        impulses.export_to_npz()
-    else:
-        impulses = ImpulseResponses(impulses_csv)
-        impulses.export_to_npz()
 
-    # generate plots for visual testing
-    for freq_bin in FREQ_BINS:
-        plot([impulses.impulses_ffts[impulse][str(freq_bin)] for impulse in
-              impulses.impulses_ffts.keys()], 'processed_impulses_bin_{}'.format(freq_bin))
+    impulses = ImpulseResponses(impulses_csv)
+    impulses.export_to_npz()
+
+    # generate plots of the processed impulse response
+    if make_plots:
+        for freq_bin in FREQ_BINS:
+            plot([impulses.impulses_ffts[impulse][str(freq_bin)] for impulse in
+                  impulses.impulses_ffts.keys()], 'processed_impulses_bin_{}'.format(freq_bin))
 
 
 if __name__=='__main__':
 
-    if len(sys.argv) not in (1, 2):
-        print "usage: python2 {} <impulses.csv>".format(sys.argv[0])
-        print "alternative usage: python2 {}".format(sys.argv[0])
+    if len(sys.argv) not in (2, 3):
+        print len(sys.argv)
+        print "usage: python2 {} <make_plots>".format(sys.argv[0])
+        print "alternative usage: python2 {} <impulses.csv> <make_plots>".format(sys.argv[0])
+        print "where <make_plots> can be set to True or False."
         sys.exit(1)
 
     if len(sys.argv) == 2:
-        go(sys.argv[1])
-    else:
-        go('')
+        assert sys.argv[1] in ('True', 'False'),
+            '<make_plots> should be set to either True or False and not {}.'.format(sys.argv[1])
+            sys.exit(1)
+
+        go(make_plots=bool(sys.argv[1]))
+            
+    elif len(sys.argv) == 3:
+        assert sys.argv[2] in ('True', 'False'),
+            '<make_plots> should be set to either True or False and not {}.'.format(sys.argv[2])
+            sys.exit(1)
+
+        go(make_plots=bool(sys.argv[2]))

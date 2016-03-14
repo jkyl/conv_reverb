@@ -14,7 +14,7 @@ import numpy as np
 # Project modules
 import audio
 import k_neighbors
-from k_neighbors import FREQ_BINS, FFT_WINDOW_SIZE, MIN_LENGTH, plot
+from k_neighbors import FREQ_BINS, FFT_WINDOW_SIZE, MIN_LENGTH, K_NEIGHBORS, plot
 from impulse_processing import PROCESSED_IMPULSES_DIR, PROCESSED_IMPULSES_CSV
 
 MIN_LENGTH = MIN_LENGTH * 2 # minimum pre_processed freq_fft time length for
@@ -243,30 +243,51 @@ class ReverbAudio:
         return reverb_signature
                     
 
-def go(audio_fname, impulses_fname=PROCESSED_IMPULSES_CSV):
+def go(audio_fname, impulses_fname=PROCESSED_IMPULSES_CSV, k=K_NEIGHBORS, make_plots=False):
     '''
     '''
     impulses = ProcessedImpulses(impulses_fname)
     reverb = ReverbAudio(audio_fname)
     analysis = k_neighbors.KNeighbors(impulses.impulses, reverb.reverb_signature)
-#    return analysis.analysis
-    print analysis.analysis
+#    return analysis.do_analysis(k=k, make_plots=make_plots)
+    print analysis.do_analysis(k=k, make_plots=make_plots)
 
-    # generate plots for visual testing
-#    for freq_bin in FREQ_BINS:
-#        reverb_signature = reverb.reverb_signature[str(freq_bin)]
-#        if reverb_signature[0] != None:
-#            plot([reverb_signature], reverb.audio.title + '_bin_' + str(freq_bin))
+    # generate plots of the reverb signature at each frequency bin
+    if make_plots:
+        for freq_bin in FREQ_BINS:
+            reverb_signature = reverb.reverb_signature[str(freq_bin)]
+            if reverb_signature[0] != None:
+                plot([reverb_signature], reverb.audio.title + '_bin_' + str(freq_bin))
 
 
 if __name__=='__main__':
 
-    if len(sys.argv) not in (2, 3):
-        print "usage: python2 {} <audio_file>".format(sys.argv[0])
-        print "alternative usage: python2 {} <audio_file> <impulses.csv>".format(sys.argv[0])
+    if len(sys.argv) not in (4, 5):
+        print "usage: python2 {} <audio_file> <k_neighbors> <make_plots>".format(sys.argv[0])
+        print "alternative usage: python2 {} <audio_file> <impulses.csv> <k_neighbors> <make_plots>".format(sys.argv[0])
+        print "where <k_neighbors> is an integer number of neighbors for the analysis and,"
+        print "where <make_plots> can be set to True or False."
         sys.exit(1)
 
-    if len(sys.argv) == 3:
-        go(sys.argv[1], impulses_fname=sys.argv[2])
-    else:
-        go(sys.argv[1])
+
+    if len(sys.argv) == 4:
+        assert type(sys.argv[2]) is IntType,
+            '<k_neighbors> should be a positive integer and not {}'.format(sys.argv[2])
+            sys.exit(1)
+
+        assert sys.argv[3] in ('True', 'False'),
+            '<make_plots> should be set to either True or False and not {}.'.format(sys.argv[3])
+            sys.exit(1)
+            
+        go(sys.argv[1], k=int(sys.argv[2]), make_plots=bool(sys.argv[3]))
+        
+    elif len(sys.argv) == 5:
+        assert type(sys.argv[3]) is IntType,
+            '<k_neighbors> should be a positive integer and not {}'.format(sys.argv[3])
+            sys.exit(1)
+
+        assert sys.argv[4] in ('True', 'False'),
+            '<make_plots> should be set to either True or False and not {}.'.format(sys.argv[4])
+            sys.exit(1)
+        
+        go(sys.argv[1], impulses_fname=sys.argv[2], k=int(sys.argv[3]), make_plots=bool(sys.argv[4]))

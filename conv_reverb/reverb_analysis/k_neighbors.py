@@ -22,13 +22,7 @@ FREQ_BINS = [5,10,15,20,25] # frequency bins for which the reverb
                             # which analysis is conducted
 MEAN_THRESHOLD = 0.97 # proportion about which reverb_mean can fluctuate from reverb_impulse
                       # or vice versa
-
-# NOTES
-#
-# make it work with 'k' neighbors
-# make sure you are implementing the 'k' neighbors analysis right
-# normalize position based on center of mass from cluster of initial points
-# do analysis should return a dictionary of the top three most likely spaces
+K_NEIGHBORS = 3 # default number of k-neighbors to analyze
 
 
 class KNeighbors:
@@ -40,7 +34,6 @@ class KNeighbors:
         self.__def_val = None
         self.__impulses = impulses
         self.__reverb = reverb
-        self.__analysis = self.do_analysis()
 
     @property
     def def_val(self):
@@ -59,12 +52,6 @@ class KNeighbors:
         '''
         '''
         return self.__reverb
-
-    @property
-    def analysis(self):
-        '''
-        '''
-        return self.__analysis
     
     
     def process_ffts(self, reverb, impulse, cluster_size=CLUSTER_SIZE, step_size=1):
@@ -118,7 +105,7 @@ class KNeighbors:
         return dist
 
 
-    def k_neighbors(self, reverb, impulse, k=3):
+    def k_neighbors(self, reverb, impulse, k=K_NEIGHBORS):
         '''
         '''
         if reverb[0] == self.def_val or impulse[0] == self.def_val:
@@ -171,7 +158,7 @@ class KNeighbors:
         return results
     
 
-    def do_analysis(self, cluster_size=CLUSTER_SIZE, k=3, num_results=3):
+    def do_analysis(self, cluster_size=CLUSTER_SIZE, k=K_NEIGHBORS, num_results=3, make_plots=False):
         '''
         Performs k nearest neighbors analysis and returns the three most
         likely impulses to generate the reverb signature.
@@ -190,9 +177,10 @@ class KNeighbors:
                                                     self.impulses[impulse_name][str(freq_bin)],\
                                                     cluster_size=cluster_size)
                 result = self.k_neighbors(reverb, impulse, k=k)
-
-                # plotting for visual testing
-                if reverb[0] != self.def_val:
+                
+                # generate plots for the superposition of reverb_signature with impulse
+                # at each frequency for visual testing
+                if make_plots and reverb[0] != self.def_val:
                     plot([reverb, impulse], impulse_name + '_bin_' + str(freq_bin))
                 
                 if result != self.def_val:
