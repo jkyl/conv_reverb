@@ -33,28 +33,11 @@ COLUMN_NAMES = dict(
         description ='Description',
 )
 
-def _load_column(filename, col=0):
-    """Loads single column from csv file"""
-    with open(filename) as f:
-        reader = csv.reader(f)
-        col = [row[0] for row in reader]
-        return col 
-
-def _load_res_column(filename, col=0):
-    """Load column from resource directory"""
-    return _load_column(os.path.join(SOUND_FILES_DIR, filename), col=col)
-
-
 def _build_dropdown(options):
     '''
     Converts a list to (value, caption) tuples
     '''
     return [(x, x) if x is not None else ('', NOPREF_STR) for x in options]
-
-
-IMPULSE = _build_dropdown(_load_res_column('impulses.csv'))
-
-
 
 class SearchForm(forms.Form):
     '''
@@ -112,23 +95,11 @@ def home(request):
                 args['Creator'] = query_API.cleaned_data['Creator']
             if query_API.cleaned_data['Description']:
                 args['Description'] = query_API.cleaned_data['Description']
-            '''
-            From_date = query_API.cleaned_data['From_date']
-            if From_date:
-                args['From_day'] = From_date[2]
-                args['From_month'] = From_date[1]
-                args['From_year'] = From_date[0]
-            To_date = query_API.cleaned_data['To_date']
-            if To_date:
-                args['To_day'] = To_date[2]
-                args['To_month'] = To_date[1]
-                args['To_year'] = To_date[0]  
-            '''       
+            
             try:
                 res = query_catalog(args)
                 res = format_output(res)
                 resform = PickResForm()
-                print(resform) 
             except Exception as e:
                 print('Exception caught')
                 bt = traceback.format_exception(*sys.exc_info()[:3])
