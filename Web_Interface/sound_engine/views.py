@@ -170,19 +170,23 @@ def home(request):
                 conv_sound = sound1.convolve(sound2)
                 new_trans = Trans_aud_path + '/' + conv_sound.title + '.wav'
                 conv_sound.write_to_wav()
+                conv_sound.plot_fft_spectrum()
                 message2 = "Transformed file saved as " + conv_sound.title
             # execute pitch shift of user specified audio file and percent
             if trans_form.cleaned_data['process'] == 'Pitch Shift':
                 sound = Audio(sound_in[0])
                 ps_sound = sound.pitchshift(num_in)
                 ps_sound.write_to_wav()
+                ps_sound.plot_fft_spectrum()
                 message2 = "Transformed file saved as " + ps_sound.title
             # execute ring modulation of user specified audio file at desired frequency 
             if trans_form.cleaned_data['process'] == 'Ring Modulation':
                 sound = Audio(sound_in[0])
                 rm_sound = sound.ringmod(num_in)
                 rm_sound.write_to_wav()
-                message2 = "Transformed file saved as " + rm_sound.title      
+                ps_sound.plot_fft_spectrum()
+                message2 = "Transformed file saved as " + rm_sound.title
+            
             context['message2'] = message2
 
     

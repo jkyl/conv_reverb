@@ -112,7 +112,7 @@ def plot_fft(spectrum, title):
     x_axis = np.linspace(0, (n_bins - 1) * n_windows / 44100., n_windows)
     y_axis = np.linspace(0, 22050., n_bins)
     X, Y = np.meshgrid(x_axis, y_axis)
-    #plt.close('all')
+    plt.close('all')
     ax = plt.gca()
     ax.set_yscale('symlog')
     im = ax.pcolormesh(X, Y, spectrum, cmap = 'gist_heat')
@@ -127,4 +127,5 @@ def plot_fft(spectrum, title):
     plt.colorbar(im, cax=cax, ticks = np.arange(0, -140, -20),
                  label = 'Power (dB)')
     plt.savefig('../Web_Interface/output/spectra/' + title + '.png')
+    plt.savefig('../Web_Interface/static/temp.png')
 
