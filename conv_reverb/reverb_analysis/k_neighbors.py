@@ -72,9 +72,6 @@ class KNeighbors:
                 reverb_mean = np.mean(reverb_cluster)
                 impulse_mean = np.mean(impulse_cluster)
 
-#                print 'reverb_mean', reverb_mean ###
-#                print 'impulse_mean', impulse_mean ###
-
                 if reverb_mean > (MEAN_THRESHOLD * impulse_mean):
                     reverb = reverb[step_size:]
                 elif impulse_mean > (MEAN_THRESHOLD * reverb_mean):
@@ -87,8 +84,6 @@ class KNeighbors:
                 reverb = reverb[:len(impulse)]
             else:
                 impulse = impulse[:len(reverb)]
-
-#            print 'len reverb', len(reverb) ###
             
             if len(reverb) >= MIN_LENGTH:
                 return reverb, impulse
@@ -112,27 +107,51 @@ class KNeighbors:
         if reverb[0] == self.def_val or impulse[0] == self.def_val:
             return self.def_val
         else:
+            len_reverb = len(reverb)
             distances = []
 
-            for i in range(len(reverb)):
-                sub_distances = []
-                if i == 0:
-                    sub_distances.append(self.distance((reverb[i],i),
-                                                       (impulse[i],i)))
-                    sub_distances.append(self.distance((reverb[i],i),
-                                                       (impulse[i+1],i+1)))
-                elif i == len(reverb) - 1:
-                    break
-                else:
-                    sub_distances.append(self.distance((reverb[i],i),
-                                                       (impulse[i],i)))
-                    sub_distances.append(self.distance((reverb[i],i),
-                                                       (impulse[i+1],i+1)))
-                    sub_distances.append(self.distance((reverb[i],i),
-                                                       (impulse[i-1],i-1)))
-                distances.append(np.mean(sub_distances))
+            if k % 2 == 0:
+                is_even = True
+            else:
+                is_even = False
+            
+            for i in range(len_reverb):
+                point_1 = (i, reverb[i])
 
-            return np.mean(distances)
+                # first k/2 points
+                if i <= (k/2 - 1):
+                    for j in range(i+1)
+
+                # last k/2 - 1 points
+                elif i >= len_reverb - k/2:
+                    continue
+
+                # points in between
+                else:
+                    if is_even:                        
+                        for j in range(-k/2+1, k/2-1, 1):
+                            point_2 = (i+j, impulse[i+j])
+                            dist = self.distance(point_1, point_2)
+                            distances.append(dist)
+
+                        point_2_left = (i - k/2, impulse[i - k/2])
+                        point_2_right = (i + k/2, impulse[i + k/2])
+
+                        dist_left = self.distance(point_1, point_2_left)
+                        dist_right = self.distance(point_1, point_2_left)
+
+                        if dist_left < dist_right:
+                            distances.append(dist_left)
+                        else:
+                            distances.append(dist_right)
+
+                    else:
+                        for j in range(-k/2, k/2, 1):
+                            point_2 = (i+j, impulse[i+j])
+                            dist = self.distance(point_1, point_2)
+                            distances.append(dist)
+
+            return np.mean(distances)                
 
 
     def format_results(self, analysis, num_results=3):
@@ -180,7 +199,7 @@ class KNeighbors:
                 
                 # generate plots for the superposition of reverb_signature with impulse
                 # at each frequency for visual testing
-                if make_plots and reverb[0] != self.def_val:
+                if make_plots and reverb[0] != self.def_val and impulse[0] != self.def_val:
                     plot([reverb, impulse], impulse_name + '_bin_' + str(freq_bin))
                 
                 if result != self.def_val:

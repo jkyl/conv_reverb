@@ -207,7 +207,7 @@ class ReverbAudio:
             # make an initial guess for where the reverb is
             if len_fft >= GUESS_LENGTH:
                 reverb = freq_fft[-GUESS_LENGTH:]
-            elif len_fft > MIN_LENGTH:
+            elif len_fft >= MIN_LENGTH:
                 reverb = freq_fft[:]
             else:
                 reverb = np.array([self.def_val])
@@ -251,8 +251,7 @@ def go(audio_fname, impulses_fname=PROCESSED_IMPULSES_CSV, k=K_NEIGHBORS, make_p
     impulses = ProcessedImpulses(impulses_fname)
     reverb = ReverbAudio(audio_fname)
     analysis = k_neighbors.KNeighbors(impulses.impulses, reverb.reverb_signature)
-    return analysis.do_analysis(k=k, make_plots=make_plots)
-    print analysis.do_analysis(k=k, make_plots=make_plots)
+    analysis_results = analysis.do_analysis(k=k, make_plots=make_plots)
 
     # generate plots of the reverb signature at each frequency bin
     if make_plots:
@@ -260,6 +259,11 @@ def go(audio_fname, impulses_fname=PROCESSED_IMPULSES_CSV, k=K_NEIGHBORS, make_p
             reverb_signature = reverb.reverb_signature[str(freq_bin)]
             if reverb_signature[0] != None:
                 plot([reverb_signature], reverb.audio.title + '_bin_' + str(freq_bin))
+
+    print 'A lower value means a better match.'
+    print 'A value of 0.0 for k=1 means the match is exact.'
+    print analysis_results                
+    return analysis_results
 
 
 if __name__=='__main__':
