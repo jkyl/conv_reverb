@@ -46,7 +46,9 @@ if 'linux' in PLATFORM:
     out, err = unix_command('pip{} show matplotlib'.format(PIP_SUFFIX))
     if not 'Version: 1.5.1' in out:
         print('Installing matplotlib 1.5.1...')
-        unix_command('sudo -H apt-get -y install freetype*')
+        out, err = unix_command('sudo -H apt-get -y install freetype*')
+        print(out)
+        print(err)
         out, err = unix_command('sudo -H pip{} install --upgrade matplotlib'.format(PIP_SUFFIX))
         print(out)
         print(err)
