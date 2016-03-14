@@ -55,7 +55,7 @@ def plot_waveform(a, title):
     ax2.axes.get_yaxis().set_visible(False)
     plt.xlabel('Seconds')
     #plt.xticks(np.arange(0, round(x_in_secs[-1]), round(x_in_secs[-1]/10.)))
-    plt.savefig('output/waveforms/' + title)
+    plt.savefig('' + title)
     
     
     
@@ -114,7 +114,7 @@ def plot_fft(spectrum, title):
     #plt.close('all')
     ax = plt.gca()
     ax.set_yscale('symlog')
-    im = ax.pcolormesh(X, Y, spectrum, cmap = 'inferno')
+    im = ax.pcolormesh(X, Y, spectrum, cmap = 'gist_heat')
     plt.title(title)
     plt.xlim(0, x_axis.max())
     plt.ylim(y_axis[1], 22050)
