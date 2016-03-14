@@ -4,11 +4,18 @@
 # This script has the necessary functions to communicated with the 
 # Internet Archive API to query their database and download files.
 #
+# All code in this script represents original code.
+#
+# Documentation on how to use the official python wrapper for the API
+# (i.e. internetarchive 0.9.8) can be found in the link below
+# https://pypi.python.org/pypi/internetarchive/0.9.8
 
+import re
 import internetarchive as ia
 
 MAX_SIZE = 20 * (10 ** 6) # max size of sound file in megabytes
-SOUND_DIR = '../conv_reverb/aporee_files/'
+MAX_NUM_RESULTS = 30 # sets a max number of result to return from API search
+SOUND_DIR = '../conv_reverb/download_files/'
 
 
 def query_catalog(args_from_ui):
@@ -27,6 +34,9 @@ def query_catalog(args_from_ui):
     for arg in args_from_ui:
 
         keyword = args_from_ui[arg]
+
+        # several search terms need to be delimited
+        # with an openning " and a closing "
 #        if len(keyword.split(' ')) > 1:
 #            keyword = '"' + keyword  + '"'
         
@@ -53,6 +63,9 @@ def download_item(identifier):
         if f.name[-4:] == '.mp3':
             f_name = f.name
             break
+
+    assert f_name != '', 'No .mp3 file associated with item {}.\
+        Try a different item'.format(identifier)
     
     f = item.get_file(f_name)
 
@@ -77,8 +90,8 @@ def format_output(query_results):
     item_fields = []
     attribute_fields = ['ID', 'Title', 'Creator', 'Description']
 
-    # restrict query to 30 results
-    i = 30
+    # restrict query results to MAX_NUM_RESULTS
+    i = MAX_NUM_RESULTS
     for result in query_results:
         if i<= 0:
             break
@@ -90,9 +103,10 @@ def format_output(query_results):
 
     for item in items:
         keys = item.metadata.keys()
-
         identifier = item.metadata['identifier']
-        
+
+        # not all items have a key for each of the following
+        # so there is a need for checking
         if 'title' in keys:
             title = item.metadata['title']
         else:
@@ -105,6 +119,11 @@ def format_output(query_results):
 
         if 'description' in keys:
             description = item.metadata['description']
+
+            # remove html tag for line breaks
+            description = re.split('<br />', description)
+            description = " ".join(description)
+
         else:
             description = ''
 
@@ -117,11 +136,26 @@ def format_output(query_results):
 
 if __name__ == "__main__":
 
+    # example usage on querying the API and downloading files
+
+    # args_from_ui is in dictionary form where each key
+    # represents a search field.
+    # allowed search field can be found here
+    # https://archive.org/advancedsearch.php
     args_from_ui = {'title': 'berlin in snow'}
 #    args_from_ui = {'title': 'berlin', 'date': '2015-04-06'}
+
+    # query_catalog returns a search object which can
+    # be iterated over to get each item matching the search
     query_results = query_catalog(args_from_ui)
-    format_output(query_results)
-#    download_item('aporee_2039_2931')
+
+    # format_output returns a tuple containing the results
+    output = format_output(query_results)
+    print(output)
+
+    # download_item downloads the .mp3 file associated
+    # with the identifier
+    download_item('aporee_2039_2931')
     
 
     

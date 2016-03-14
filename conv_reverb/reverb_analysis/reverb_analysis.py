@@ -273,21 +273,17 @@ if __name__=='__main__':
     if len(sys.argv) == 4:
         assert type(sys.argv[2]) is IntType,
             '<k_neighbors> should be a positive integer and not {}'.format(sys.argv[2])
-            sys.exit(1)
 
         assert sys.argv[3] in ('True', 'False'),
             '<make_plots> should be set to either True or False and not {}.'.format(sys.argv[3])
-            sys.exit(1)
             
         go(sys.argv[1], k=int(sys.argv[2]), make_plots=bool(sys.argv[3]))
         
     elif len(sys.argv) == 5:
         assert type(sys.argv[3]) is IntType,
             '<k_neighbors> should be a positive integer and not {}'.format(sys.argv[3])
-            sys.exit(1)
 
         assert sys.argv[4] in ('True', 'False'),
             '<make_plots> should be set to either True or False and not {}.'.format(sys.argv[4])
-            sys.exit(1)
         
         go(sys.argv[1], impulses_fname=sys.argv[2], k=int(sys.argv[3]), make_plots=bool(sys.argv[4]))
