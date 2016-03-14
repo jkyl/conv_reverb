@@ -86,13 +86,13 @@ def get_fft(a, step_size):
     '''
     pad = step_size - (a.size % step_size)
     zerod = np.append(a, np.zeros(pad))
-    outer = zerod.reshape(zerod.size / step_size, step_size)
-    inner = zerod[(step_size / 2):(-step_size / 2)]\
-            .reshape((zerod.size - step_size) / step_size, step_size)
+    outer = zerod.reshape(zerod.size // step_size, step_size)
+    inner = zerod[(step_size // 2):(-step_size // 2)]\
+            .reshape((zerod.size - step_size) // step_size, step_size)
     interleaved = np.empty([outer.shape[0] + inner.shape[0], outer.shape[1]])
     interleaved[::2,:] = outer; interleaved[1::2,:] = inner
     windowed = blackman(step_size) * interleaved
-    coeffs = fft(windowed)[:, :(step_size / 2) + 1]
+    coeffs = fft(windowed)[:, :(step_size // 2) + 1]
     power_units = np.abs(np.multiply(coeffs, np.conj(coeffs)))
     power_units = power_units/power_units.max()
     power_units[np.where(power_units < 1e-13)] = 1e-13

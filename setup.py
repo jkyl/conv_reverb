@@ -11,17 +11,17 @@ unix_command('sudo python3 -m pip uninstall -y pip setuptools')
 unix_command('sudo python3 get-pip.py')
 
 print('Installing Internet Archive API...')
-unix_command('sudo pip install -Iv internetarchive==0.9.8')
+unix_command('sudo python3 -m pip install -Iv internetarchive==0.9.8')
 
 print('Installing Django...')
-unix_command('sudo pip install django')
+unix_command('sudo python3 -m pip install django')
 
 print('Installing PyDub...')
-if unix_command('pip show pydub')[0].decode('utf-8') != '':
-    print('PyDub already installed.')
-else:
-    unix_command('sudo pip install pydub')
-    
+unix_command('sudo python3 -m pip install pydub')
+
+print('Installing SciPy...')
+unix_command('sudo python3 -m pip install scipy')
+
 print('Checking dependencies...')
 if PLATFORM == 'darwin':
     out, err = unix_command('which brew')
@@ -36,13 +36,13 @@ if PLATFORM == 'darwin':
         print('Installing libav...')
         unix_command('sudo brew install libav --with-libvorbis --with-sdl --with-theora')
     
-    out, err = unix_command('pip show matplotlib')
+    out, err = unix_command('python3 -m pip show matplotlib')
     if not 'Version: 1' in out.decode('utf-8'):
         print('Installing matplotlib 1.4.3...')
-        unix_command('sudo pip uninstall -y python-dateutil')
-        unix_command('sudo pip uninstall -y matplotlib')
-        unix_command('sudo pip install python-dateutil==2.2')
-        unix_command('sudo pip install matplotlib==1.4.3')
+        unix_command('sudo python3 -m pip uninstall -y python-dateutil')
+        unix_command('sudo python3 -m pip uninstall -y matplotlib')
+        unix_command('sudo python3 -m pip install python-dateutil==2.2')
+        unix_command('sudo python3 -m pip install matplotlib==1.4.3')
     else:
         print('matplotlib version already > 1.')
 
@@ -52,11 +52,11 @@ if 'linux' in PLATFORM:
         print('Installing libav...')
         unix_command('sudo apt-get -y install libav-tools')
 
-    out, err = unix_command('pip show matplotlib')
+    out, err = unix_command('python3 -m pip show matplotlib')
     if not 'Version: 1' in out.decode('utf-8'):
         print('Installing matplotlib 1.4.3...')
         out, err = unix_command('sudo apt-get -y install freetype*')
-        out, err = unix_command('sudo pip install matplotlib==1.4.3')
+        out, err = unix_command('sudo python3 -m pip install matplotlib==1.4.3')
     else:
         print('matplotlib version already > 1.')
 
