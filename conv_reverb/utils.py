@@ -37,6 +37,7 @@ def audio_obj_to_arrays(obj):
 
 def plot_waveform(a, title):
     '''
+    Plots the stereo arrays in purple. Saves as output/waveforms/title/.png
     '''
     x_in_secs = np.arange(len(a[0]))/44100.
     plt.close('all')
@@ -71,6 +72,17 @@ def write_stereo_arrays_to_wav(stereo_array, title):
 
 def get_fft(a, step_size):
     '''
+    Zero-pads an array so that its a multiple of step_size. Splits it into
+    two sets of step_size'd windows - an "outer" and "inner". These two sets
+    overlap by step_size/2. Interleaves the two sets and applies a blackman
+    (cosine) envelope to each window. Takes the fft of each window and takes 
+    the fourier coefficients times their complex conjugate to get the power 
+    spectrum for each window. Applies a noise floor of -130dB to account for
+    the case where the magnitude of the fourier coefficient is zero (-inf on 
+    a log scale which we cannot plot). We chose -130dB because if 0dB causes
+    your ears to bleed, -130dB would be the quietest thing you could possibly 
+    hear. Then we take the log base 10 and swap the axes to be plt.imshow()
+    -able. 
     '''
     pad = step_size - (a.size % step_size)
     zerod = np.append(a, np.zeros(pad))
@@ -91,13 +103,15 @@ def get_fft(a, step_size):
 
 def plot_fft(spectrum, title):
     '''
+    Plots a spectrogram as obtained in the above function. These conventions
+    are mostly lifted straight from the matplotlib api. It's important that 
+    you have matplotlib 5.1 though in order to use the 'inferno' colormap. 
     '''
     n_bins, n_windows = spectrum.shape
     x_axis = np.linspace(0, (n_bins - 1) * n_windows / 44100., n_windows)
     y_axis = np.linspace(0, 22050., n_bins)
     X, Y = np.meshgrid(x_axis, y_axis)
-
-    plt.close('all')
+    #plt.close('all')
     ax = plt.gca()
     ax.set_yscale('symlog')
     im = ax.pcolormesh(X, Y, spectrum, cmap = 'inferno')

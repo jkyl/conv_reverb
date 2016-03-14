@@ -14,7 +14,7 @@ import numpy as np
 # Project modules
 import audio
 import k_neighbors
-from k_neighbors import FREQ_BINS, FFT_WINDOW_SIZE, MIN_LENGTH, plot
+from k_neighbors import FREQ_BINS, FFT_WINDOW_SIZE, MIN_LENGTH, K_NEIGHBORS, plot
 from impulse_processing import PROCESSED_IMPULSES_DIR, PROCESSED_IMPULSES_CSV
 
 MIN_LENGTH = MIN_LENGTH * 2 # minimum pre_processed freq_fft time length for
@@ -191,7 +191,7 @@ class ReverbAudio:
         return np.mean(stds) < STD_THRESHOLD
         
 
-    def extract_reverb_signature(self, cluster_size=CLUSTER_SIZE):
+    def extract_reverb_signature(self, cluster_size=CLUSTER_SIZE, step_size=CLUSTER_SIZE):
         '''
         Extracts a reverb signature.
         '''
@@ -205,7 +205,7 @@ class ReverbAudio:
             # make an initial guess for where the reverb is
             if len_fft >= GUESS_LENGTH:
                 reverb = freq_fft[-GUESS_LENGTH:]
-            elif len_fft >= MIN_LENGTH:
+            elif len_fft > MIN_LENGTH:
                 reverb = freq_fft[:]
             else:
                 reverb = np.array([self.def_val])
@@ -217,21 +217,23 @@ class ReverbAudio:
             
             while len_guess >= 2 * cluster_size:
 
-                len_guess += -cluster_size
+                len_guess += -step_size
                 
                 cluster_1 = reverb[i:i+cluster_size]
                 cluster_2 = reverb[i+cluster_size:i+(2*cluster_size)]
 
-                mean_1 = abs(np.mean(cluster_1))
-                mean_2 = abs(np.mean(cluster_2))
+                mean_1 = np.mean(cluster_1) 
+                mean_2 = np.mean(cluster_2)
 
-                if mean_1 < (MEAN_THRESHOLD * mean_2):
+                if (MEAN_THRESHOLD * mean_1) < mean_2:
                     if len_guess > MIN_LENGTH:
-                        reverb = reverb[i+cluster_size:]
+                        reverb = reverb[i+step_size:]
                         i = 0
                         continue
+                    else:
+                        break
 
-                i += cluster_size
+                i += step_size
 
             if reverb[0] != self.def_val and self.little_spread(reverb):
                 reverb_signature[str(freq_bin)] = reverb
@@ -241,30 +243,51 @@ class ReverbAudio:
         return reverb_signature
                     
 
-def go(audio_fname, impulses_fname=PROCESSED_IMPULSES_CSV):
+def go(audio_fname, impulses_fname=PROCESSED_IMPULSES_CSV, k=K_NEIGHBORS, make_plots=False):
     '''
     '''
     impulses = ProcessedImpulses(impulses_fname)
     reverb = ReverbAudio(audio_fname)
     analysis = k_neighbors.KNeighbors(impulses.impulses, reverb.reverb_signature)
-#    return analysis.analysis
-    print analysis.analysis
+#    return analysis.do_analysis(k=k, make_plots=make_plots)
+    print analysis.do_analysis(k=k, make_plots=make_plots)
 
-    # generate plots for visual testing
-#    for freq_bin in FREQ_BINS:
-#        reverb_signature = reverb.reverb_signature[str(freq_bin)]
-#        if reverb_signature[0] != None:
-#            plot([reverb_signature], reverb.audio.title + '_bin_' + str(freq_bin))
+    # generate plots of the reverb signature at each frequency bin
+    if make_plots:
+        for freq_bin in FREQ_BINS:
+            reverb_signature = reverb.reverb_signature[str(freq_bin)]
+            if reverb_signature[0] != None:
+                plot([reverb_signature], reverb.audio.title + '_bin_' + str(freq_bin))
 
 
 if __name__=='__main__':
 
-    if len(sys.argv) not in (2, 3):
-        print "usage: python2 {} <audio_file>".format(sys.argv[0])
-        print "alternative usage: python2 {} <audio_file> <impulses.csv>".format(sys.argv[0])
+    if len(sys.argv) not in (4, 5):
+        print "usage: python2 {} <audio_file> <k_neighbors> <make_plots>".format(sys.argv[0])
+        print "alternative usage: python2 {} <audio_file> <impulses.csv> <k_neighbors> <make_plots>".format(sys.argv[0])
+        print "where <k_neighbors> is an integer number of neighbors for the analysis and,"
+        print "where <make_plots> can be set to True or False."
         sys.exit(1)
 
-    if len(sys.argv) == 3:
-        go(sys.argv[1], impulses_fname=sys.argv[2])
-    else:
-        go(sys.argv[1])
+
+    if len(sys.argv) == 4:
+        assert type(sys.argv[2]) is IntType,
+            '<k_neighbors> should be a positive integer and not {}'.format(sys.argv[2])
+            sys.exit(1)
+
+        assert sys.argv[3] in ('True', 'False'),
+            '<make_plots> should be set to either True or False and not {}.'.format(sys.argv[3])
+            sys.exit(1)
+            
+        go(sys.argv[1], k=int(sys.argv[2]), make_plots=bool(sys.argv[3]))
+        
+    elif len(sys.argv) == 5:
+        assert type(sys.argv[3]) is IntType,
+            '<k_neighbors> should be a positive integer and not {}'.format(sys.argv[3])
+            sys.exit(1)
+
+        assert sys.argv[4] in ('True', 'False'),
+            '<make_plots> should be set to either True or False and not {}.'.format(sys.argv[4])
+            sys.exit(1)
+        
+        go(sys.argv[1], impulses_fname=sys.argv[2], k=int(sys.argv[3]), make_plots=bool(sys.argv[4]))
