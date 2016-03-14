@@ -22,6 +22,7 @@
                 </table>
                 <input name="Search" type="submit" value="Search" />
             </form>
+        </div>
             <hr />
             <center>
             <h2>Choose from Results</h2>
@@ -46,23 +47,44 @@
                 </table>
             </div>
             {% endif %}
-        </div>    
+        </div>
+        <div class="frame">    
             <form method="get">
                 <table class="form">
                 {{ resform }}
                 </table>
                 <input name="Download" type="submit" value="Download" />
+                <br>
+                <br>
+                {{ message1 }}
+                <br>
+                <br>
             </form>
+        </div>    
             <hr />
             <center>
-            <h2>Select Sound Transformations</h2>
-            </center>
+            <h2>Choose Sound Transformation</h2>
+        <div class="frame">    
             <form method="get">
-                <table class="form">
-                {{ form2 }}
-                </table>
-                <input type="submit" value="Search" />
+                <input name="Convolution" type="submit" value= "Convolution"/> <input name="Correlation" type="submit" value="Correlation"/> <input name = "Pitch" type="submit" value="Pitch Shift"/> <input name="Ring" type="submit" value="Ring Modulation"/>
             </form>
+            </center>
+            <br>
+        </div>    
+        <div class="frame">    
+            <form method="get">        
+                <table class="form">
+                {{ message2 }}
+                {{ transform }}
+                {{ transform2 }}
+                </table>
+                <input name= "{{ name1 }}" type="submit" value="Transform" />
+                <br>
+                <br>
+                <p> Try another transformation by clicking a sound transformation button above!<br>
+                    To use the newly transformed file in a transformation restart the server.
+                </p>    
+            </form>      
         </div>
 
 

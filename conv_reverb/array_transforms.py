@@ -4,7 +4,7 @@ from scipy.signal import fftconvolve
 
 def convolve(a, b):
     '''
-    Computes the FFT convolution between two arrays, seperately for each 
+    Computes the Fast Fourier Transform convolution between two arrays, seperately for each 
     stereo channel. This way the spatialiazation of the original audio is 
     preserved in the convolution. Outputs one numpy array of the convolution 
     waveform of a and b, with shape (n_chans, n_samps). 

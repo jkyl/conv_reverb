@@ -1,7 +1,7 @@
 #
 # PYTHON 3
 #
-# This script has the necessary functions to communicated with the 
+# This script has the necessary functions to communicate with the 
 # Internet Archive API to query their database and download files.
 #
 
@@ -58,9 +58,11 @@ def download_item(identifier):
 
     if f.size <= MAX_SIZE:
         f.download(SOUND_DIR + f_name)
+        return f.name
     else:
         print('File size is', f.size, 'bytes')
         print('File size exceeds', MAX_SIZE, 'bytes')
+        return None 
 
 
 def format_output(query_results):
@@ -120,6 +122,7 @@ if __name__ == "__main__":
     args_from_ui = {'title': 'berlin in snow'}
 #    args_from_ui = {'title': 'berlin', 'date': '2015-04-06'}
     query_results = query_catalog(args_from_ui)
+    print(query_results)
     format_output(query_results)
 #    download_item('aporee_2039_2931')
     
