@@ -1,6 +1,5 @@
 '''
 Implement by calling python3 manage.py runserver from the Web_Interface directory
-Running python 2.7 results in API backend errors
 '''
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -19,7 +18,7 @@ Transform_path = os.path.abspath(__file__)[:-35] + 'conv_reverb'
 sys.path.insert(0, Transform_path)
 from array_transforms import convolve, correlate, pitchshift, ringmod
 from audio import Audio  
-Dload_path = Transform_path + '/aporee_files'
+Dload_path = Transform_path + '/download_files'
 Impulse_path = Transform_path + '/impulses'
 
  
@@ -69,13 +68,14 @@ class Transform_Input(forms.Form):
     download_list = _build_dropdown(download_files)
     impulse_files = os.listdir(Impulse_path)
     impulse_files.sort()
+    impulse_files.remove('README.txt')
     process_list = ['Convolution', 'Pitch Shift', 'Ring Modulation']
     process_ops = _build_dropdown(process_list)
     impulse_list = _build_dropdown(impulse_files)
-    process = forms.ChoiceField(label='Transformation', choices=process_ops)
-    downloads = forms.MultipleChoiceField(label='Downloads from archive.org', choices=download_list, required=False, widget= forms.CheckboxSelectMultiple)
+    process = forms.ChoiceField(label='Transformation', choices=process_ops, required=True)
+    downloads = forms.MultipleChoiceField(label='Downloads', choices=download_list, required=False, widget= forms.CheckboxSelectMultiple)
     impulses = forms.MultipleChoiceField(label='U Chicago Impulse Responses', choices=impulse_list, required=False, widget= forms.CheckboxSelectMultiple)
-    num = forms.FloatField(label='Enter Number', min_value=0.0)     
+    num = forms.FloatField(label='Enter Number', min_value=0.0, required=False)     
      
 def home(request):
     res = None
@@ -125,44 +125,29 @@ def home(request):
                     message1 = "Sorry, download failed: file size is too large"  
             context['message1'] = message1
     
-    trans_form = trans
+    trans_form = Transform_Input()
+    
+    if request.method == 'GET' and 'Transform' in request.GET:
+        trans_form = Transform_Input(request.GET)
+        impulse_files = os.listdir(Impulse_path)
+        download_files = os.listdir(Dload_path)
+        if trans_form.is_valid():
+            sound_in = trans_form.cleaned_data['downloads'] + trans_form.cleaned_data['impulses']
+            num_in = trans_form.cleaned_data['num']
+            for i in range(len(sound_in)):
+                if sound_in[i] in impulse_files:
+                    sound_in[i] = Impulse_path + '/' + sound_in[i] 
+                else:
+                    sound_in[i] = Dload_path + '/' + sound_in[i]    
+            if trans_form.cleaned_data['process'] == 'Convolution':
+                sound1 = Audio(sound_in[0])
+                print(sound1.title)
+                sound2 = Audio(sound_in[1])
+                #conv_sound = sound1.convolve(sound2)
+                #print(conv_sound.title())
 
-    #generate form when user selects Convolution 
-    if request.method == 'GET' and 'Convolution' in request.GET:
-        conv_form = SoundChoice(request.GET)
-        context['transform'] = conv_form
-        message2 = 'Check any 2 sounds from the lists below:'
-        context['message2'] = message2
-        name1 = 'convolve'
-        context['name1'] = name1
-    if request.method == 'GET' and 'convolve' in request.GET:
-        if conv_form.is_valid():
-            sound = conv_form.cleaned_data['downloads']
-            print(sound)
-            sound2 = conv_form.cleaned_data['impulses']
-            print(sound2)
-    #generate form when user selects Correlation    
-    if request.method == 'GET' and 'Correlation' in request.GET:
-        cor_form = SoundChoice(request.GET)
-        context['transform'] = cor_form
-        message2 = 'Choose any 2 sounds from the lists below:'
-        context['message2'] = message2
-        name1 = 'correlate'
-        context['name1'] = name1
-    if request.method == 'GET' and 'correlate' in request.GET:
-        x = 1               
-    if request.method == 'GET' and 'Pitch' in request.GET:
-        pitch_form = SoundChoice(request.GET)
-        pitch_form2 = NumInput(request.GET)
-        context['transform'] = pitch_form
-        context['transform2'] = pitch_form2
-        message2 = 'Choose any 1 sound from the lists below:'
-        context['message2'] = message2
-        name1 = 'pitch'
-        context['name1'] = name1
-    if request.method == 'GET' and 'Ring' in request.GET:
-        print('ring')    
 
+    
 
 
     # Handle different responses of res
@@ -180,10 +165,9 @@ def home(request):
         context['num_results'] = len(result)
         context['columns'] = [COLUMN_NAMES.get(col, col) for col in columns]
         
-    message3 = "To try another transformation click a sound transformation button above. Or, go back to our Search feature to get new sounds!"
-    context['message3'] = message3
     context['query_API'] = query_API
     context['resform'] = resform
+    context['transform'] = trans_form
     return render(request, 'index.html', context)
 
    
