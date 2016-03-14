@@ -7,12 +7,14 @@ def unix_command(string):
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     return p.communicate()
 
-    
+print('Installing pip...')
+unix_command('sudo python get-pip.py')
+
 print('Installing PyDub...')
 if unix_command('pip show pydub')[0].decode('utf-8') != '':
     print('PyDub already installed.')
 else:
-    unix_command('sudo pip{} install pydub'.format(PIP_SUFFIX))
+    unix_command('sudo pip install pydub')
     
 print('Checking dependencies...')
 if PLATFORM == 'darwin':
