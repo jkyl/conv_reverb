@@ -135,7 +135,18 @@ class KNeighbors:
 
                 # last k/2 - 1 points
                 elif i >= len_reverb - k/2:
-                    continue
+                    sub_k = (2*(len_reverb-i-1) + 1)
+
+                    if sub_k > k:
+                        if is_even:
+                            sub_k = k - 1
+                        else:
+                            sub_k = k
+
+                    for j in range(-sub_k/2, sub_k/2 + 1, 1):
+                        point_2 = (i+j, impulse[i+j])
+                        dist = self.distance(point_1, point_2)
+                        distances.append(dist)
 
                 # points in between
                 else:
