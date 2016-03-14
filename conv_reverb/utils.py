@@ -37,7 +37,7 @@ def audio_obj_to_arrays(obj):
 
 def plot_waveform(a, title):
     '''
-    Plots the stereo arrays in purple. Saves as output/waveforms/title/.png
+    Plots the stereo arrays in purple. Saves as Web_Interface/output/waveforms/title.png
     '''
     x_in_secs = np.arange(len(a[0]))/44100.
     plt.close('all')
@@ -55,7 +55,7 @@ def plot_waveform(a, title):
     ax2.axes.get_yaxis().set_visible(False)
     plt.xlabel('Seconds')
     #plt.xticks(np.arange(0, round(x_in_secs[-1]), round(x_in_secs[-1]/10.)))
-    plt.savefig('' + title)
+    plt.savefig('../Web_Interface/output/waveforms/' + title + '.png')
     
     
     
@@ -67,7 +67,7 @@ def write_stereo_arrays_to_wav(stereo_array, title):
     norm = np.int16(32767 * stereo_array/float(np.max(np.abs(stereo_array))))
     if norm.shape[0] == 2:
         norm = norm.swapaxes(0, 1)
-    write('output/wavfiles/' + title +'.wav', 44100, norm)
+    write('../Web_Interface/output/transformed_wavs/' + title + '.wav', 44100, norm)
 
 
 def get_fft(a, step_size):
@@ -125,5 +125,5 @@ def plot_fft(spectrum, title):
     cax = divider.append_axes("right", size="5%", pad=0.05)
     plt.colorbar(im, cax=cax, ticks = np.arange(0, -140, -20),
                  label = 'Power (dB)')
-    plt.savefig('output/spectra/' + title + '.png')
+    plt.savefig('../Web_Interface/output/spectra/' + title + '.png')
 
