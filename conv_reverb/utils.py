@@ -60,7 +60,7 @@ def plot_waveform(a, title):
     
     
     
-def write_stereo_arrays_to_wav(stereo_array, title, dry = False):
+def write_stereo_arrays_to_wav(stereo_array, title, dry = False, custom = None):
     '''
     Normalizes the convolved waveform and swaps the axes to the way the scipy
     writer likes it. Writes as a .wav to the specified filepath. 
@@ -69,11 +69,13 @@ def write_stereo_arrays_to_wav(stereo_array, title, dry = False):
     if norm.shape[0] == 2:
         norm = norm.swapaxes(0, 1)
     write('../Web_Interface/output/transformed_wavs/' + title + '.wav', 44100, norm)
-    if dry == True:
-        write('../Web_Interface/static/temp_dry.wav', 44100, norm)
+    if not custom == None:
+        if dry == True:
+            write('../Web_Interface/static/temp_dry.wav', 44100, norm)
+        else:
+            write('../Web_Interface/static/temp_wet.wav', 44100, norm)
     else:
-        write('../Web_Interface/static/temp_wet.wav', 44100, norm)
-
+        write(custom, 44100, norm)
 
 def get_fft(a, step_size):
     '''
