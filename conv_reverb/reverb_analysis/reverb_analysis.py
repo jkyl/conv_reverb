@@ -260,19 +260,19 @@ def go(audio_fname, impulses_fname=PROCESSED_IMPULSES_CSV, k=K_NEIGHBORS, make_p
             if reverb_signature[0] != None:
                 plot([reverb_signature], reverb.audio.title + '_bin_' + str(freq_bin))
 
-    print 'A lower value means a better match.'
-    print 'A value of 0.0 for k=1 means the match is exact.'
-    print analysis_results                
+    print('A lower value means a better match.')
+    print('A value of 0.0 for k=1 means the match is exact.')
+    print(analysis_results)
     return analysis_results
 
 
 if __name__=='__main__':
 
     if len(sys.argv) not in (4, 5):
-        print "usage: python2 {} <audio_file> <k_neighbors> <make_plots>".format(sys.argv[0])
-        print "alternative usage: python2 {} <audio_file> <impulses.csv> <k_neighbors> <make_plots>".format(sys.argv[0])
-        print "where <k_neighbors> is an integer number of neighbors for the analysis and,"
-        print "where <make_plots> can be set to True or False."
+        print("usage: python2 {} <audio_file> <k_neighbors> <make_plots>".format(sys.argv[0]))
+        print("alternative usage: python2 {} <audio_file> <impulses.csv> <k_neighbors> <make_plots>".format(sys.argv[0]))
+        print("where <k_neighbors> is an integer number of neighbors for the analysis and,")
+        print("where <make_plots> can be set to True or False.")
         sys.exit(1)
 
 

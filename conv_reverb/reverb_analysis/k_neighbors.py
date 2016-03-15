@@ -119,7 +119,7 @@ class KNeighbors:
                 point_1 = (i, reverb[i])
 
                 # first k/2 points
-                if i <= (k/2 - 1):
+                if i <= (k//2 - 1):
                     sub_k = (2*i + 1)
 
                     if sub_k > k:
@@ -128,13 +128,13 @@ class KNeighbors:
                         else:
                             sub_k = k
 
-                    for j in range(-sub_k/2, sub_k/2 + 1, 1):
+                    for j in range(-sub_k//2, sub_k//2 + 1, 1):
                         point_2 = (i+j, impulse[i+j])
                         dist = self.distance(point_1, point_2)
                         distances.append(dist)
 
                 # last k/2 - 1 points
-                elif i >= len_reverb - k/2:
+                elif i >= len_reverb - k//2:
                     sub_k = (2*(len_reverb-i-1) + 1)
 
                     if sub_k > k:
@@ -143,7 +143,7 @@ class KNeighbors:
                         else:
                             sub_k = k
 
-                    for j in range(-sub_k/2, sub_k/2 + 1, 1):
+                    for j in range(-sub_k//2, sub_k//2 + 1, 1):
                         point_2 = (i+j, impulse[i+j])
                         dist = self.distance(point_1, point_2)
                         distances.append(dist)
@@ -151,13 +151,13 @@ class KNeighbors:
                 # points in between
                 else:
                     if is_even:                        
-                        for j in range(-k/2+1, k/2, 1):
+                        for j in range(-k//2+1, k//2, 1):
                             point_2 = (i+j, impulse[i+j])
                             dist = self.distance(point_1, point_2)
                             distances.append(dist)
 
-                        point_2_left = (i - k/2, impulse[i - k/2])
-                        point_2_right = (i + k/2, impulse[i + k/2])
+                        point_2_left = (i - k//2, impulse[i - k//2])
+                        point_2_right = (i + k//2, impulse[i + k//2])
 
                         dist_left = self.distance(point_1, point_2_left)
                         dist_right = self.distance(point_1, point_2_left)
@@ -168,7 +168,7 @@ class KNeighbors:
                             distances.append(dist_right)
 
                     else:
-                        for j in range(-k/2, k/2 + 1, 1):
+                        for j in range(-k//2, k//2 + 1, 1):
                             point_2 = (i+j, impulse[i+j])
                             dist = self.distance(point_1, point_2)
                             distances.append(dist)
@@ -244,13 +244,13 @@ def get_nice_colors(n_colors):
     of colors to generate. Using this function should result in the same colors
     shown in the assignment writeup.
     '''
-    return cm.Accent([1 - (i/float(n_colors)) for i in range(n_colors)])
+    return cm.Accent([1 - (i/n_colors) for i in range(n_colors)])
 
     
 def plot(ffts, title):
     '''
     '''
-    num_freq_bins = (FFT_WINDOW_SIZE / 2) + 1
+    num_freq_bins = (FFT_WINDOW_SIZE // 2) + 1
     
     plt.cla()
     ax = plt.axes()
@@ -275,7 +275,7 @@ def plot(ffts, title):
     
 if __name__=='__main__':
 
-    print "This script contains the class and methods to perform k nearest neighbors analysis."
-    print "The script is called within reverb_analysis.py"
+    print("This script contains the class and methods to perform k nearest neighbors analysis.")
+    print("The script is called within reverb_analysis.py")
 
         

@@ -163,10 +163,9 @@ def go(impulses_csv=IMPULSES_CSV, make_plots=False):
 if __name__=='__main__':
 
     if len(sys.argv) not in (2, 3):
-        print len(sys.argv)
-        print "usage: python2 {} <make_plots>".format(sys.argv[0])
-        print "alternative usage: python2 {} <impulses.csv> <make_plots>".format(sys.argv[0])
-        print "where <make_plots> can be set to True or False."
+        print("usage: python2 {} <make_plots>".format(sys.argv[0]))
+        print("alternative usage: python2 {} <impulses.csv> <make_plots>".format(sys.argv[0]))
+        print("where <make_plots> can be set to True or False.")
         sys.exit(1)
 
     if len(sys.argv) == 2:
