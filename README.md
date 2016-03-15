@@ -114,13 +114,13 @@ $ python reverb_analysis.py <audio_file> <k_neighbors> <make_plots>
 where <code>\<audio_file></code> is the filename (and filepath) of an audio file you want to analyze, <code>\<k_neighbors></code> is a positive integer number of neighbors for the analysis and, <code>\<make_plots></code> can be set to <code>True</code> or <code>False</code>. The plots help visualize how the analysis is carried out and why a certain space was recognized over another. These plots are saved to <code>/conv_reverb/reverb_analysis/output/plots</code>.
 
 #### Correlation analysis
-We implemented yet another method for analysing a wet sound using cross-correlation. In <code>/conv_reverb/</code>, run
+We implemented another method for analysing a wet sound using cross-correlation. In <code>/conv_reverb/</code>, run
 
 ```sh
 $ python test_correlation.py <audio_file (defaults to samples/avril.aif)>
 ```
 
-to test the accuracy of this method. Internally the dry sound is convolved with each of our impulse responses in turn, and then correlated with the remaining impulse responses. The correlation waveform with the highest root-mean-square (RMS) is counted as the winner. In order to remove bias towards intrinsically more powerful impulse responses, the input waveforms are normalized to have the same RMS, then mean-subtracted and normalized to a standard deviation of 1. This method is 85% succesful on <code>avril.aif</code>, meaning that 85% of the time, the algorithm can distinguish between the impulse response with which the dry sound was convolved, and a red herring impulse response. All of this is done without performing a deconvolution, or simply bookkeeping.
+to test the accuracy of this method. Internally the dry sound is convolved with each of our impulse responses in turn, and then correlated with the remaining impulse responses. The correlation waveform with the highest root-mean-square (RMS) is counted as the winner. In order to remove bias towards intrinsically more powerful impulse responses, the input waveforms are normalized to have the same RMS, then mean-subtracted and normalized to a standard deviation of 1. This method is 85% succesful on <code>avril.aif</code>, meaning that 85% of the time, the algorithm can distinguish between the impulse response with which the dry sound was convolved, and a red herring impulse response. All of this is done without performing a deconvolution or simply bookkeeping.
 
 This method can also be called from an audio object. Suppose you've recorded a sound in a building off-campus, and you want to know which UChicago space the off-campus space most resembles, acoustically. In python you would run:
 ```python
