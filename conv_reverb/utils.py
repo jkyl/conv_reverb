@@ -68,8 +68,8 @@ def write_stereo_arrays_to_wav(stereo_array, title, dry = False, custom = None):
     norm = np.int16(32767. * stereo_array / float(np.max(np.abs(stereo_array))))
     if norm.shape[0] == 2:
         norm = norm.swapaxes(0, 1)
-    write('../Web_Interface/output/transformed_wavs/' + title + '.wav', 44100, norm)
     if custom == None:
+        write('../Web_Interface/output/transformed_wavs/' + title + '.wav', 44100, norm)
         if dry == True:
             write('../Web_Interface/static/temp_dry.wav', 44100, norm)
         else:
