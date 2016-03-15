@@ -21,6 +21,9 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^$','sound_engine.views.home', name='home'),
     url(r'^$','sound_engine.views.SearchResults', name='SearchResults'),
-    url(r'^$','../static/temp.wav', name = 'send_file')
+    url(r'^$','../static/temp_wet.wav', name = 'wet_wav'),
+    url(r'^$','../static/temp_dry.wav', name = 'dry_wav'),
+    url(r'^$','../static/temp_wet.png', name = 'wet_png'),
+    url(r'^$','../static/temp_dry.png', name = 'dry_png'),
 ]
 
