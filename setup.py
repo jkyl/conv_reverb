@@ -50,9 +50,7 @@ if 'linux' in PLATFORM:
     if 'is not installed' in err.decode('utf-8'):
         print('Installing libav...')
         unix_command('sudo apt-get -y install libav-tools')
-    print('Installing matplotlib...'
+    print('Installing matplotlib...')
     out, err = unix_command('sudo apt-get install python3-matplotlib')
-    else:
-        print('matplotlib version already > 1.')
 
 print('Complete.')
