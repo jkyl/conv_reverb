@@ -156,6 +156,7 @@ def home(request):
         trans_aud_list = os.listdir(Trans_aud_path)
         if trans_form.is_valid():
             sound_in = trans_form.cleaned_data['downloads'] + trans_form.cleaned_data['impulses'] + trans_form.cleaned_data['trans']
+            print(sound_in)
             num_in = trans_form.cleaned_data['num']
             for i in range(len(sound_in)):
                 if sound_in[i] in impulse_files:
@@ -163,7 +164,8 @@ def home(request):
                 elif sound_in[i] in download_files:
                     sound_in[i] = Dload_path + '/' + sound_in[i]
                 else:
-                    sound_in[i] = Trans_aud_path + '/' + sound_in[i]    
+                    sound_in[i] = Trans_aud_path + '/' + sound_in[i]
+            print(sound_in)
             # execute convolution of user specified audio files
             if trans_form.cleaned_data['process'] == 'Convolution':
                 sound1 = Audio(sound_in[0])
@@ -185,13 +187,15 @@ def home(request):
                 sound = Audio(sound_in[0])
                 rm_sound = sound.ringmod(num_in)
                 rm_sound.write_to_wav()
-                ps_sound.plot_fft_spectrum()
+                rm_sound.plot_fft_spectrum()
                 message2 = "Transformed file saved as \"{}.wav\"".format(rm_sound.title)
+                
             if trans_form.cleaned_data['process'] == 'No Transformation':
                 sound = Audio(sound_in[0])
                 sound.write_to_wav()
                 sound.plot_fft_spectrum()
                 message2 = "Transformed file saved as \"{}.wav\"".format(sound.title)
+                
             context['message2'] = message2
 
     
