@@ -57,7 +57,7 @@ and proceed to opening a browser window at the local host. This will initialize 
 
 ### Part 2 &mdash; API backend
 
-To run part 2 as a stand-alone script, please proceed to <code>API/</code> and open the script <code>API_backend.py</code> and inspect the bottom of the document which shows how to query the database and download files.
+To run part 2 as a stand-alone script (although this is not intended), please proceed to <code>API/</code> and open the script <code>API_backend.py</code> and inspect the bottom of the document which shows how to query the database and download files.
 
 After making your desired modifications the script can be run with,
 
