@@ -101,14 +101,14 @@ Please proceed to the directory <code>conv_reverb/reverb_analysis/</code> where 
 ```sh
 $ python impulse_processing.py <make_plots>
 ```
-where \<make_plots> can be set to either <code>True</code> or <code>False</code>. The plots help visualize the processed impulses and are saved to <code>/conv_reverb/reverb_analysis/output/plots</code>.
+where <code>\<make_plots></code> can be set to either <code>True</code> or <code>False</code>. The plots help visualize the processed impulses and are saved to <code>/conv_reverb/reverb_analysis/output/plots</code>.
 
 2. Running the <code>reverb_analysis.py</code> script will perform a k-nearest neighbors approach to analyzing the reverb signature present in a <em>wet</em> audio file. It will return (and print) a dictionary with the three most likely spaces to produce the reverb and their associated match. A lower value means a better match. A value of 0.0 for k=1 means the match is exact. For this algorithm, consider it successful if it is able to return the correct impulse space among those three top results.
 
 ```sh
 $ python reverb_analysis.py <audio_file> <k_neighbors> <make_plots>
 ```
-where /<audio_file> is the filename (and filepath) of an audio file you want to analyze, /<k_neighbors> is a positive integer number of neighbors for the analysis and, /<make_plots> can be set to <code>True</code> or <code>False</code>. The plots help visualize how the analysis is carried out and why a certain space was recognized over another. These plots are saved to <code>/conv_reverb/reverb_analysis/output/plots</code>.
+where \<audio_file> is the filename (and filepath) of an audio file you want to analyze, \<k_neighbors> is a positive integer number of neighbors for the analysis and, \<make_plots> can be set to <code>True</code> or <code>False</code>. The plots help visualize how the analysis is carried out and why a certain space was recognized over another. These plots are saved to <code>/conv_reverb/reverb_analysis/output/plots</code>.
 
 ## Known issues
 
