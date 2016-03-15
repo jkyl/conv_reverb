@@ -21,8 +21,6 @@ unix_command('sudo python3 -m pip install pydub')
 
 print('Installing SciPy...')
 out, err = unix_command('sudo python3 -m pip install scipy==0.16.0')
-print(out)
-print(err)
 print('Checking dependencies...')
 if PLATFORM == 'darwin':
     out, err = unix_command('which brew')
