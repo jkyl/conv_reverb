@@ -1,10 +1,9 @@
 #
-# PYTHON 2.7
-#
 # This script is extracts the necessary information from the impulse responses
 # (IRs) and exports them to disk for further analysis.
 #
 # All code in this script represents original code unless otherwise specified.
+#
 
 import sys
 sys.path.append('../')
@@ -18,7 +17,7 @@ from k_neighbors import FREQ_BINS, FFT_WINDOW_SIZE, plot
 
 
 IMPULSES_DIR = '../impulses/'
-IMPULSES_CSV = IMPULSES_DIR + 'impulses.csv'
+IMPULSES_CSV = 'impulses.csv'
 PROCESSED_IMPULSES_DIR = 'output/processed_impulses/'
 PROCESSED_IMPULSES_CSV = PROCESSED_IMPULSES_DIR + 'processed_impulses.csv'
 
@@ -163,10 +162,9 @@ def go(impulses_csv=IMPULSES_CSV, make_plots=False):
 if __name__=='__main__':
 
     if len(sys.argv) not in (2, 3):
-        print len(sys.argv)
-        print "usage: python2 {} <make_plots>".format(sys.argv[0])
-        print "alternative usage: python2 {} <impulses.csv> <make_plots>".format(sys.argv[0])
-        print "where <make_plots> can be set to True or False."
+        print("usage: python3 {} <make_plots>".format(sys.argv[0]))
+        print("alternative usage: python3 {} <impulses.csv> <make_plots>".format(sys.argv[0]))
+        print("where <make_plots> can be set to True or False.")
         sys.exit(1)
 
     if len(sys.argv) == 2:
