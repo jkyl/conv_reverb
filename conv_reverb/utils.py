@@ -65,9 +65,7 @@ def write_stereo_arrays_to_wav(stereo_array, title):
     Normalizes the convolved waveform and swaps the axes to the way the scipy
     writer likes it. Writes as a .wav to the specified filepath. 
     '''
-    print(stereo_array)
     norm = np.int16(32767. * stereo_array / float(np.max(np.abs(stereo_array))))
-    print(norm)
     if norm.shape[0] == 2:
         norm = norm.swapaxes(0, 1)
     write('../Web_Interface/output/transformed_wavs/' + title + '.wav', 44100, norm)
