@@ -29,7 +29,7 @@ It will ask you for sudo privileges which you should provide. This script may ta
 
 ## How to run in OS X
 
-You can also run the project if you are running OS X. Just make sure to install the dependencies outlined above.
+You can also run the project if you are running OS X. You can also run the <code>setup.py</code> script as outlined above. Otherwise make sure to install the necessary dependencies. You will need [homebrew](http://brew.sh/) in order to install libav tools.
 
 ## Components of the project 
 
