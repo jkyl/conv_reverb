@@ -13,7 +13,7 @@ FILES
 array_transforms.py: Python script containing sound transformation functions.
 audio.py: Python script containing the Audio class and its methods.
 colormaps.py: Python script for using the perceptually uniform colormap 'inferno' without updating to MPL 1.5.
-example.py: Python script to illustrate functionality of convolution reverb engine.
+example.py: Python script to illustrate functionality of convolution reverb engine. 
 test_correlation.py: Python script to test the correlation method on impulse responses.
 utils.py: Python script containing different visualization and I/O functions.
 
