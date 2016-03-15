@@ -20,7 +20,7 @@ print('Installing PyDub...')
 unix_command('sudo python3 -m pip install pydub')
 
 print('Installing SciPy...')
-unix_command('sudo python3 -m pip install scipy')
+unix_command('sudo python3 -m pip install scipy==0.16.1')
 
 print('Checking dependencies...')
 if PLATFORM == 'darwin':

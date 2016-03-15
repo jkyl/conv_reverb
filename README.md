@@ -9,7 +9,7 @@ A Web interfaced convolution reverb engine. This project represents part of the 
   * Run <code>$ pip install -Iv internetarchive==0.9.8</code>
 * Django 1.9.1
 * PyDub 0.16.3
-* SciPy 0.17.0
+* SciPy 0.16.1
 * matplotlib 1.4.3
 * libav tools
   * In Ubuntu run <code>$ sudo apt-get -y install libav-tools</code>
@@ -89,6 +89,7 @@ d.plot_waveform()
 # write resulting sound transformation to file in disk
 d.write_to_wav()
 ```
+The convolution (mulitplication in the frequency domain) is performed with an FFT algorithm, O(NlogN). The spectrogram plotting method is meant to give a balance between resolution and speed. Towards this end we implemented a chain of overlapping [blackman windows](http://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.signal.blackman.html) atop the audio buffer. This way we get twice the time resolution per unit frequency resolution, as compared to non-overlapping windows.
 
 ### Part 4 &mdash; Reverb analysis
 
