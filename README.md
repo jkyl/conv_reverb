@@ -6,7 +6,7 @@ A Web interfaced convolution reverb engine. This project represents part of the 
 
 * Python 3.4 or above
 * [internetarchive 0.9.8](http://bit.ly/1U2HJjU)
-  * Run $ pip install -Iv internetarchive==0.9.8
+  * Run <code>$ pip install -Iv internetarchive==0.9.8</code>
 * Django 1.9.1
 * PyDub 0.16.3
 * SciPy 0.17.0
