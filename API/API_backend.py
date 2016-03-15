@@ -1,6 +1,4 @@
 #
-# PYTHON 3
-#
 # This script has the necessary functions to communicate with the 
 # Internet Archive API to query their database and download files.
 #
