@@ -1,10 +1,9 @@
 #
-# PYTHON 2.7
-#
 # This script has the classes necessary to perform reverb analysis in the frequency
 # domain.
 #
 # All code in this script represents original code unless otherwise specified.
+#
 
 import sys
 sys.path.append('../')
@@ -269,15 +268,15 @@ def go(audio_fname, impulses_fname=PROCESSED_IMPULSES_CSV, k=K_NEIGHBORS, make_p
 if __name__=='__main__':
 
     if len(sys.argv) not in (4, 5):
-        print("usage: python2 {} <audio_file> <k_neighbors> <make_plots>".format(sys.argv[0]))
-        print("alternative usage: python2 {} <audio_file> <impulses.csv> <k_neighbors> <make_plots>".format(sys.argv[0]))
+        print("usage: python3 {} <audio_file> <k_neighbors> <make_plots>".format(sys.argv[0]))
+        print("alternative usage: python3 {} <audio_file> <impulses.csv> <k_neighbors> <make_plots>".format(sys.argv[0]))
         print("where <k_neighbors> is an integer number of neighbors for the analysis and,")
         print("where <make_plots> can be set to True or False.")
         sys.exit(1)
 
 
     if len(sys.argv) == 4:
-        assert type(int(sys.argv[2])) is IntType,\
+        assert type(int(sys.argv[2])) is int,\
             '<k_neighbors> should be a positive integer and not {}'.format(sys.argv[2])
 
         assert sys.argv[3] in ('True', 'False'),\
@@ -286,7 +285,7 @@ if __name__=='__main__':
         go(sys.argv[1], k=int(sys.argv[2]), make_plots=bool(sys.argv[3]))
         
     elif len(sys.argv) == 5:
-        assert type(int(sys.argv[3])) is IntType,\
+        assert type(int(sys.argv[3])) is int,\
             '<k_neighbors> should be a positive integer and not {}'.format(sys.argv[3])
 
         assert sys.argv[4] in ('True', 'False'),\

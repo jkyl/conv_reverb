@@ -1,9 +1,8 @@
 #
-# PYTHON 2.7
-#
 # This script performs our own flavor of k nearest neighbors analysis.
 #
 # All code in this script represents original code unless otherwise specified.
+#
 
 import sys
 sys.path.append('../')
