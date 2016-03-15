@@ -41,7 +41,7 @@ if PLATFORM == 'darwin':
         unix_command('sudo python3 -m pip uninstall -y python-dateutil')
         unix_command('sudo python3 -m pip uninstall -y matplotlib')
         unix_command('sudo python3 -m pip install python-dateutil==2.2')
-        unix_command('sudo python3 -m pip install matplotlib==1.4.3')
+        unix_command('sudo python3 -m pip install matplotlib==1.4.1')
     else:
         print('matplotlib version already > 1.')
 
