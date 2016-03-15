@@ -138,7 +138,6 @@ class Audio:
         c = []; d = {}
         for i, e in enumerate(l):
             r = e.mono_array
-            #print('sum of rms: {}\nmean: {}\nstd: {}'.format(((r**2)**.5).sum(), r.mean(), r.std()))
             rms = ((r**2).sum()/r.size)**.5          
             r = r / rms
             r = r - r.mean()
