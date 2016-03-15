@@ -38,24 +38,28 @@ class ImpulseResponses:
     @property
     def impulse_fnames(self):
         '''
+        Getter.
         '''
         return self.__impulse_fnames
 
     @property
     def impulses_audio(self):
         '''
+        Getter.
         '''
         return self.__impulses_audio
 
     @property
     def impulses_ffts(self):
         '''
+        Getter.
         '''
         return self.__impulses_ffts
 
         
     def read_csv(self, impulses_csv):
         '''
+        Read the filenames for available impulses from csv.
         '''
         reader = csv.reader(open(impulses_csv))
         impulse_fnames = [row[0] for row in reader]
@@ -64,6 +68,7 @@ class ImpulseResponses:
     
     def get_audio(self, impulse_fnames):
         '''
+        For each available impulse in impulse_fnames, build an Audio object.
         '''
         impulses_audio = []
 
@@ -81,6 +86,8 @@ class ImpulseResponses:
     def filter_low_decibels(self, impulse_fft):
         '''
         Filter out low decibel points (below -80 dB) from end of impulse.
+        This is a less inteligent method than the method by the same name in
+        the ReverbAudio class.
         '''
         len_fft = len(impulse_fft)
         five_percent = len_fft / 20.
@@ -95,6 +102,8 @@ class ImpulseResponses:
 
     def get_ffts(self, impulses_audio):
         '''
+        For each impulse Audio object, get its respective FFT at the specified
+        frequency bins in FREQ_BINS.
         '''
         impulses_fft = {}
 
@@ -111,6 +120,7 @@ class ImpulseResponses:
     
     def export_filenames(self, filenames):
         '''
+        Export filenames of .npz files into a .csv file.
         '''
         with open(PROCESSED_IMPULSES_CSV, 'w') as csvfile:
             writer = csv.writer(csvfile)
@@ -121,6 +131,8 @@ class ImpulseResponses:
     
     def export_to_npz(self):
         '''
+        After processing the impulse Audio object, save it to .npz
+        for future usage.
         '''
         filenames = []
         
@@ -141,6 +153,7 @@ class ImpulseResponses:
     
 def go(impulses_csv=IMPULSES_CSV, make_plots=False):
     '''
+    
     '''
 
     impulses = ImpulseResponses(impulses_csv)
