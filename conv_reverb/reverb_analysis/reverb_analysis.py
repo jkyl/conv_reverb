@@ -272,6 +272,7 @@ if __name__=='__main__':
         print("alternative usage: python3 {} <audio_file> <impulses.csv> <k_neighbors> <make_plots>".format(sys.argv[0]))
         print("where <k_neighbors> is an integer number of neighbors for the analysis and,")
         print("where <make_plots> can be set to True or False.")
+        print("IMPORTANT: your sound file must be saved to either conv_reverb/samples or conv_reverb/download_files.")
         sys.exit(1)
 
 

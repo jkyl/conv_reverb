@@ -32,6 +32,8 @@ Subsequently run <code>test_reverb_analysis.py</code> which will produce an accu
 $ python test_reverb_analysis.py
 ```
 
+If you would like to run <code>reverb_analysis.py</code> with your own audio files, make sure you copy them to either <code>../samples/</code> or <code>../download_files/</code>.
+
 ## Accuracy of the reverb recognition analysis
 
 In order to test the accuracy of the reverb recognition analysis you can execute <code>test_reverb_analysis.py</code> as instructed above which has a verbose output and details its process.
