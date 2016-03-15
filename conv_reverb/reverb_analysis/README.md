@@ -26,13 +26,25 @@ Run <code>example.py</code> which will,
 $ python example.py
 ```
 
-## Accuracy of the reverb recognition analysis
-
-In order to test the accuracy of the reverb recognition analysis you can execute <code>test_reverb_analysis.py</code> which has a verbose output and details its process.
+Subsequently run <code>test_reverb_analysis.py</code> which will produce an accuracy rating for the algorithm at recognizing the correct reverb signature of a wet sound.
 
 ```sh
 $ python test_reverb_analysis.py
 ```
 
-In essence, it will check how accurate it is at successfully recognizing the reverb signature for sounds whose reverb was produced by the convolution reverb and for sounds that have a natural reverb signature (i.e. they were played and recorded within a space with reverb).
+## Accuracy of the reverb recognition analysis
+
+In order to test the accuracy of the reverb recognition analysis you can execute <code>test_reverb_analysis.py</code> as instructed above which has a verbose output and details its process.
+
+In essence, it will check how accurate it is at successfully recognizing the reverb signature for sounds whose reverb was produced by the convolution reverb and for sounds that have a natural reverb signature (i.e. they were played and recorded within a space with reverb). <em>If the correct reverb signature is present within the top three results, it will count that as successful hit.</em>
+
+The algorithm is more effective at recognizing the reverb if this was produced by the convolution reverb.
+
+At the moment it outputs an accuracy rating of ..., meaning that ...% of the time it recognizes the correct reverb signature within its top three choices.
+
+## How it works
+
+Because this procedure is unique to this project we walk you through an overall view of the reverb analysis algorithm.
+
+
 
