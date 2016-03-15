@@ -92,7 +92,7 @@ This matching can be visualized in the plot below. The data in green represents 
 
 ![Avril reverb signature only matched with Booth_atrium reverb at frequency bin 5](output/readme_plots/convolved_Booth_atrium_bin_5.png "Avril reverb signature only matched with Booth_atrium reverb at frequency bin 5")
 
-At this point and for every frequency specified against every impulse response, a k-nearest neighbor analysis can be performed. Running a k=3 analysis returns a most likely match with Booth_atrium out of 17 possible impulse response spaces. This happens to be the correct answer. The result represents the shortes mean distance between points. These results can be replicated by running the following command from the <code>reverb_analysis/</code> folder.
+At this point and for every frequency specified against every impulse response, a k-nearest neighbor analysis can be performed. Running a k=3 analysis returns a most likely match with **Booth_atrium** out of 17 possible impulse response spaces. This happens to be the correct answer. The result represents the shortest mean distance between k points. These results (including the plots) can be replicated by running the following command from the <code>reverb_analysis/</code> folder.
 
 ```sh
 $ python3 reverb_analysis.py ../output/wavfiles/avril_convolved_with_Booth_atrium.wav 3 True
