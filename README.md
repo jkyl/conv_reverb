@@ -81,7 +81,7 @@ b = audio.Audio('impulses/Booth_atrium.wav')
 c = audio.Audio('impulses/Rockefeller_center.wav')
 
 # apply sound transformations which can be chained one to another
-d = a.pitchshift(1.2).convolve(b).convolve(c).ringmod(7000)
+d = a.pitchshift(1.2).convolve(b).convolve(c).ringmod(7000).delay((.2, .5, .7))
 
 # plot a spectrogram
 d.plot_waveform()
@@ -89,7 +89,7 @@ d.plot_waveform()
 # write resulting sound transformation to file in disk
 d.write_to_wav()
 ```
-The convolution (mulitplication in the frequency domain) is performed with an FFT algorithm, O(NlogN). The spectrogram plotting method is meant to give a balance between resolution and speed. Towards this end we implemented a chain of overlapping [blackman windows](http://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.signal.blackman.html) atop the audio buffer. This way we get twice the time resolution per unit frequency resolution, as compared to non-overlapping windows.
+The convolution (mulitplication in the frequency domain) is performed with an FFT algorithm, <em>O(NlogN)</em>. The spectrogram plotting method is meant to give a balance between resolution and speed. Towards this end we implemented a chain of overlapping [blackman windows](http://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.signal.blackman.html) atop the audio buffer. This way we get twice the time resolution per unit frequency resolution, as compared to non-overlapping windows.
 
 ### Part 4 &mdash; Reverb analysis
 
