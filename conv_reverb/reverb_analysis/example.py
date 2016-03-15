@@ -1,6 +1,6 @@
 import os
 
-print("This is an examples script to showcase the reverb recognition analysis algorithm.")
+print("This is an example script to showcase the reverb recognition analysis algorithm.")
 
 file_name = 'avril_convolved_with_Booth_atrium.wav'
 file_path = '../samples/{}'.format(file_name)

@@ -205,7 +205,7 @@ class KNeighbors:
 
     def do_analysis(self, cluster_size=CLUSTER_SIZE, k=K_NEIGHBORS, num_results=3, make_plots=False):
         '''
-        Performs k nearest neighbors analysis and returns the three most
+        Performs k nearest neighbors analysis and returns num_results number of most
         likely impulses to generate the reverb signature.
         k defaults to 3.
         '''

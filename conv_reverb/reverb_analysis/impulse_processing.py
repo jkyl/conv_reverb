@@ -29,6 +29,8 @@ class ImpulseResponses:
 
     def __init__(self, impulses_csv):
         '''
+        Initializes instace of ImpulseResponses where impulses_csv points to
+        a .csv file with the names of impulses to be processed.
         '''
         self.__impulse_fnames = self.read_csv(impulses_csv)
         self.__impulses_audio = self.get_audio(self.impulse_fnames)
@@ -59,7 +61,7 @@ class ImpulseResponses:
         
     def read_csv(self, impulses_csv):
         '''
-        Read the filenames for available impulses from csv.
+        Read the filenames of impulses from csv.
         '''
         reader = csv.reader(open(impulses_csv))
         impulse_fnames = [row[0] for row in reader]
@@ -153,7 +155,8 @@ class ImpulseResponses:
     
 def go(impulses_csv=IMPULSES_CSV, make_plots=False):
     '''
-    
+    Initializes an ImpulseResponses object, processes impulses and exports them
+    to disk. Plots are generated if specified and saved to disk.
     '''
 
     impulses = ImpulseResponses(impulses_csv)

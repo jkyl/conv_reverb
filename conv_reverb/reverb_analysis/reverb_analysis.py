@@ -33,6 +33,8 @@ class ProcessedImpulses:
     '''
     def __init__(self, impulses_fname):
         '''
+        Inilializes instance of ProcessedImpulses where impulses_fname
+        is a .csv with the names of processed impulses.
         '''
         self.__fnames = self.build_fnames(impulses_fname)
         self.__impulses = self.import_impulses()
@@ -40,19 +42,21 @@ class ProcessedImpulses:
     @property
     def impulses(self):
         '''
-        Getter for impulses.
+        Getter.
         '''
         return self.__impulses
 
     @property
     def fnames(self):
         '''
+        Getter.
         '''
         return self.__fnames
 
     
     def build_fnames(self, impulses_fname):
         '''
+        Read the filenames of impulses from csv.
         '''
         reader = csv.reader(open(impulses_fname))
         fnames = [row[0] for row in reader]
@@ -61,6 +65,7 @@ class ProcessedImpulses:
     
     def import_impulses(self):
         '''
+        Import impulses saved as .npz to numpy arrays.
         '''
         impulses = {}
         for fname in self.fnames:
@@ -78,9 +83,14 @@ class ProcessedImpulses:
 
 class ReverbAudio:
     '''
+    Class to represent an audio file with a reverb signature.
+    In this class lie the methods necessary to extract the reverb signature
+    of an audio file.
     '''
     def __init__(self, audio_fname):
         '''
+        Inilializes instance of ReverbAudio where audio_fname
+        is a .csv with the names of an audio file with reverb.
         '''
         self.__def_val = None
         self.__audio = audio.Audio(audio_fname)
@@ -91,30 +101,35 @@ class ReverbAudio:
     @property
     def audio(self):
         '''
+        Getter.
         '''
         return self.__audio
     
     @property
     def fft(self):
         '''
+        Getter.
         '''
         return self.__fft
 
     @property
     def processed_fft(self):
         '''
+        Getter.
         '''
         return self.__processed_fft
 
     @property
     def reverb_signature(self):
         '''
+        Getter.
         '''
         return self.__reverb_signature
 
     @property
     def def_val(self):
         '''
+        Getter.
         '''
         return self.__def_val
 
@@ -122,6 +137,8 @@ class ReverbAudio:
     def filter_low_decibels(self, freq_fft, cluster_size=5, step_size=1):
         '''
         Filter out low decibel points (below -80 dB) from end of audio.
+        This method is more intelligent than the method by the same name 
+        in the ImpulseResponses class.
         '''
         len_fft = len(freq_fft)
         i = -cluster_size
@@ -150,6 +167,8 @@ class ReverbAudio:
     
     def process_fft(self):
         '''
+        For the frequency bins in FREQ_BINS, clean the FFT sprectrum
+        and assert it has the minimum length.
         '''
         processed_fft = {}
         
@@ -168,6 +187,10 @@ class ReverbAudio:
     
     def little_spread(self, freq_fft, cluster_size=3, step_size=1):
         '''
+        For a given freq_fft check that the data is not too spread
+        signifying an unclear or undefined reverb signal.
+        This is carried out by checking the standard deviation at different
+        time windows in the spectrum.
         '''        
         len_fft = len(freq_fft)
         _range = np.max(freq_fft) - np.min(freq_fft)
@@ -194,7 +217,7 @@ class ReverbAudio:
 
     def extract_reverb_signature(self, cluster_size=CLUSTER_SIZE, step_size=CLUSTER_SIZE):
         '''
-        Extracts a reverb signature.
+        Extracts a reverb signature for each FFT spectrum if there is a well defined one.
         '''
         reverb_signature = {}
 
@@ -246,6 +269,11 @@ class ReverbAudio:
 
 def go(audio_fname, impulses_fname=PROCESSED_IMPULSES_CSV, k=K_NEIGHBORS, make_plots=False):
     '''
+    Initializes a ProcessedImpulses object with the already processed impulses. 
+    Initializes a ReverbAudio object using the audio_fname and extracts a reverb signature.
+    Calls k_neihbors module to perform a k-nearest neighbors analysis between the impulses 
+    and the audio reverb signature.
+    Plots are generated if specified and saved to disk.
     '''
     impulses = ProcessedImpulses(impulses_fname)
     reverb = ReverbAudio(audio_fname)
