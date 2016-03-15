@@ -46,5 +46,10 @@ At the moment it outputs an accuracy rating of ..., meaning that ...% of the tim
 
 Because this procedure is unique to this project we walk you through an overall view of the reverb analysis algorithm.
 
+### Processing the impulse responses
+
+The impulse responses contain the most clear information about the reverb of a space. This reverb can be visualized as the decay of the intensity in a given frequency bin. We found that the reverb decay is most clear in the lowest frequency bin corresponding to frequencies in the hundreds of Hz.
+
+![Unprocessed impulse](/output/readme_plots/Booth_atrium_bin_0.png)
 
 
