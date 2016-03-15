@@ -4,16 +4,16 @@ Directory for reverb recognition analysis scripts and output files.
 
 ## Directories
 
-* output/: Directory containing exported reverb signature of impulse responses and generated plots.
+* <code>output/</code>: Directory containing exported reverb signature of impulse responses and generated plots.
 
 ## Files
 
-* example.py: Python script which automates impulse processing and showcases the reverb analysis.
-* impulse_processing.py: Python script to process and export reverb signature of impulse responses.
-* impulses.csv: Csv file containing a list of the impulses in ../impulses/.
-* k_neighbors.py: Python script that implements a k-nearest neighbors analysis for frequency spectra.
-* reverb_analysis.py: Python script that performs recognition of the reverb signature in a wet sound.
-* test_reverb_analysis.py: Python script that tests the accuracy of the reverb analysis algorithm.
+* <code>example.py</code>: Python script which automates impulse processing and showcases the reverb analysis.
+* <code>impulse_processing.py</code>: Python script to process and export reverb signature of impulse responses.
+* <code>impulses.csv</code>: Csv file containing a list of the impulses in <code>../impulses/</code>.
+* <code>k_neighbors.py</code>: Python script that implements a k-nearest neighbors analysis for frequency spectra.
+* <code>reverb_analysis.py</code>: Python script that performs recognition of the reverb signature in a wet sound.
+* <code>test_reverb_analysis.py</code>: Python script that tests the accuracy of the reverb analysis algorithm.
 
 ## tl;dr
 
