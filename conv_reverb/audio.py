@@ -53,13 +53,14 @@ class Audio:
         if array.shape[0] == 2:
             self._array = array
 
-    def write_to_wav(self, dry = False):
+    def write_to_wav(self, dry = False, custom = None):
         '''
         Calls the utility to write the stereo arrays to a stereo .wav file
         at output/wavfiles/[self.title].wav
         '''
         print(dry == True)
-        utils.write_stereo_arrays_to_wav(self._array, self._title, dry = dry)
+        utils.write_stereo_arrays_to_wav(self._array, self._title,
+                                         dry = dry, custom = custom)
 
     def plot_waveform(self):
         '''
