@@ -45,9 +45,9 @@ The project consists of four distinct components.
 <em>Each directory in the project contains a <code>README</code> file with more descriptive steps on its contents and execution procedure. But here is an overall guideline.</em>
 
 
-### Part 1 -- Web front
+### Part 1 &mdash; Web front
 
-To run part 1, please proceed to the folder Web_Interface/ and run,
+To run part 1, please proceed to the folder <code>Web_Interface/</code> and run,
 
 ```sh
 $ python manage.py runserver
@@ -55,7 +55,7 @@ $ python manage.py runserver
 and proceed to opening a browser window at the local host. This will initialize the Web interface server.
 
 
-### Part 2 -- API backend
+### Part 2 &mdash; API backend
 
 To run part 2 as a stand-alone script, please proceed to <code>API/</code> and open the script <code>API_backend.py</code> and inspect the bottom of the document which shows how to query the database and download files.
 
@@ -67,9 +67,9 @@ $ python API_backend.py
 Make sure you add a <code>print</code> statement to the results generated.
 
 
-### Part 3 -- Convolution reverb
+### Part 3 &mdash; Convolution reverb
 
-The convolution reverb engine provides a lot of flexibility when operating it from a standalone perspective using <code>ipython</code> or a Python script.
+The convolution reverb engine provides a lot of flexibility when operating it from a standalone perspective using <code>ipython</code> or a Python script. Please proceed to the <code>conv_reverb/</code> subfolder to find a more thorough <code>README</code> file.
 
 ```python
 import audio
@@ -88,26 +88,25 @@ d.plot_waveform()
 d.write_to_wav()
 ```
 
-Please proceed to the <code>conv_reverb/</code> subfolder to find a more thorough <code>README</code> file.
-
-Part 4 -- Reverb analysis
+### Part 4 &mdash; Reverb analysis
 
 The reverb analysis component is not connected in any way to the Web front end at the moment. For this reason, the only possible way of running it is through the terminal or by importing the module in a script.
 
-Please proceed to the directory <code>conv_reverb/reverb_analysis/</code> where you can run the following commands.
+Please proceed to the directory <code>conv_reverb/reverb_analysis/</code> where you can run the following commands. You can also find an example script on how to run this component.
 
 1. Running the <code>impulse_processing.py</code> script studies the reverb signature of the impulse response sound files in <code>conv_reverb/impulses/</code> and saves this signature to disk (<code>conv_reverb/reverb_analysis/output/processed_impulses/</code>) for faster analysis thereafter.
 
 ```sh
 $ python impulse_processing.py <make_plots>
 ```
-where \<make_plots>
+where \<make_plots> can be set to either <code>True</code> or <code>False</code>. The plots help visualize the processed impulses and are saved to <code>/conv_reverb/reverb_analysis/output/plots</code>.
 
-2. 
+2. Running the <code>reverb_analysis.py</code> script will perform a k-nearest neighbors approach to analyzing the reverb signature present in a <em>wet</em> audio file. It will return (and print) a dictionary with the three most likely spaces to produce the reverb and their associated match. A lower value means a better match. A value of 0.0 for k=1 means the match is exact. For this algorithm, consider it successful if it is able to return the correct impulse space among those three top results.
 
 ```sh
-$
+$ python reverb_analysis.py <audio_file> <k_neighbors> <make_plots>
 ```
+where /<audio_file> is the filename (and filepath) of an audio file you want to analyze, /<k_neighbors> is a positive integer number of neighbors for the analysis and, /<make_plots> can be set to <code>True</code> or <code>False</code>. The plots help visualize how the analysis is carried out and why a certain space was recognized over another. These plots are saved to <code>/conv_reverb/reverb_analysis/output/plots</code>.
 
 ## Known issues
 
