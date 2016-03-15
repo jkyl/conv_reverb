@@ -4,6 +4,7 @@ from scipy.interpolate import interp2d
 from scipy.fftpack import fft
 from scipy.signal import blackman
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+from colormaps import inferno
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
@@ -107,8 +108,7 @@ def get_fft(a, step_size):
 def plot_fft(spectrum, title):
     '''
     Plots a spectrogram as obtained in the above function. These conventions
-    are mostly lifted straight from the matplotlib api. It's important that 
-    you have matplotlib 5.1 though in order to use the 'inferno' colormap. 
+    are mostly lifted straight from the matplotlib api. 
     '''
     n_bins, n_windows = spectrum.shape
     x_axis = np.linspace(0, (n_bins - 1) * n_windows / 44100., n_windows)
@@ -117,7 +117,7 @@ def plot_fft(spectrum, title):
     plt.close('all')
     ax = plt.gca()
     ax.set_yscale('symlog')
-    im = ax.pcolormesh(X, Y, spectrum, cmap = 'gist_heat')
+    im = ax.pcolormesh(X, Y, spectrum, cmap = inferno)
     plt.title(title)
     plt.xlim(0, x_axis.max())
     plt.ylim(y_axis[1], 22050)
