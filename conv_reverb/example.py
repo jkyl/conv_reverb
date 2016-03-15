@@ -14,7 +14,7 @@ print('Loading in {}...'.format(fname))
 a = Audio('samples/avril.aif')
 
 print('\n{} is now inside an Audio object - you can read and write its time-series data.'.format(a.title))
-print('\nBy default, it writes to both ./download_files/{}.wav and ../Web_Interface/static/temp.wav.'.format(a.title))
+print('\nBy default, it writes to both ./download_files/{}.wav and ../Web_Interface/static/temp_wet.wav.'.format(a.title))
 print('\nYou can also write to a directory of your choice with the optional "custom" arg in write_to_wav().')
 print('\nOn a mac, you can play audio from the command line with afplay. On ubuntu, you\'ll have to download vlc or another audio player.')
 print('\nWriting now...')

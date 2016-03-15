@@ -2,6 +2,24 @@
 
 A Web interfaced convolution reverb engine. This project represents part of the requirements for CMSC 12200 at the Univerity of Chicago.
 
+Jonathan Kyl, Esteban Zacharzewski, and Mayukh Sen
+
+## How to run in a CMSC 121 VM
+
+<em>These instructions are based on a fresh CMSC 121 virtual machine.</em>
+
+To automatically install the dependencies outlined below please run <code>setup.py</code>.
+
+```sh
+$ python setup.py
+```
+
+It will ask you for sudo privileges which you should provide. This script may take a couple of minutes to run. It will print output of its current installation step.
+
+## How to run in OS X
+
+You can also run the project if you are running OS X. You can also run the <code>setup.py</code> script as outlined above. Otherwise make sure to install the necessary dependencies. You will need [homebrew](http://brew.sh/) in order to install libav tools; this script will attempt to install brew for you if it does not detect it.
+
 ## List of dependencies needed
 
 * Python 3.4 or above
@@ -15,21 +33,7 @@ A Web interfaced convolution reverb engine. This project represents part of the 
   * In Ubuntu run <code>$ sudo apt-get -y install libav-tools</code>
   * In OS X run <code>$ brew install ffmpeg --with-libvorbis --with-ffplay --with-theora</code>
 
-## How to run in a CMSC 121 VM
 
-<em>These instructions are based on a fresh CMSC 121 virtual machine.</em>
-
-To automatically install the dependencies outlined above please run <code>setup.py</code> as instructed below.
-
-```sh
-$ python setup.py
-```
-
-It will ask you for sudo privileges which you should provide. This script may take a couple of minutes to run. It will print output of its current installation step.
-
-## How to run in OS X
-
-You can also run the project if you are running OS X. You can also run the <code>setup.py</code> script as outlined above. Otherwise make sure to install the necessary dependencies. You will need [homebrew](http://brew.sh/) in order to install libav tools; this script will attempt to install brew for you if it does not detect it.
 
 ## Components of the project 
 
