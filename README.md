@@ -71,6 +71,8 @@ Make sure you add a <code>print</code> statement to the results generated.
 
 The convolution reverb engine provides a lot of flexibility when operating it from a standalone perspective using <code>ipython</code> or a Python script. Please proceed to the <code>conv_reverb/</code> subfolder to find a more thorough <code>README</code> file.
 
+Below is a brief example script on how to use the convolution reverb engine.
+
 ```python
 import audio
 
