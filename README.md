@@ -108,7 +108,7 @@ where <code>\<make_plots></code> can be set to either <code>True</code> or <code
 ```sh
 $ python reverb_analysis.py <audio_file> <k_neighbors> <make_plots>
 ```
-where \<audio_file> is the filename (and filepath) of an audio file you want to analyze, \<k_neighbors> is a positive integer number of neighbors for the analysis and, \<make_plots> can be set to <code>True</code> or <code>False</code>. The plots help visualize how the analysis is carried out and why a certain space was recognized over another. These plots are saved to <code>/conv_reverb/reverb_analysis/output/plots</code>.
+where <code>\<audio_file></code> is the filename (and filepath) of an audio file you want to analyze, <code>\<k_neighbors></code> is a positive integer number of neighbors for the analysis and, <code>\<make_plots></code> can be set to <code>True</code> or <code>False</code>. The plots help visualize how the analysis is carried out and why a certain space was recognized over another. These plots are saved to <code>/conv_reverb/reverb_analysis/output/plots</code>.
 
 ## Known issues
 
