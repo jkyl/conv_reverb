@@ -3,6 +3,7 @@ from audio import Audio
 
 if len(sys.argv) != 2:
     print('Usage: python3 example.py [file type .mp3, .wav, .aif, .ogg, etc.]')
+    sys.exit()
 fname = sys.argv[1]
 
 print('\nExample script for the audio class.\n\n{}'.format('~'*40))
@@ -23,10 +24,10 @@ b = Audio('impulses/Booth_atrium.wav')
 c = a.convolve(b)
 c.write_to_wav()
 
-print('\nThe convolution has been written to ./download_files and its title has been formatted to reflect the transformation. If you use pitch shifting or ring modulation, these steps are the same except for the method you call and the args you give.\n')
+print('\nThe convolution has been written to ./download_files and its title has been formatted to reflect the transformation. You can also save to a custom directory with the optional "custom" argument in write_to_wav(). If you use pitch shifting, ring modulation, or delay, these steps are the same except for the method you call and the args you give.\n')
 
 c.plot_fft_spectrum()
 
-print('\nThe running-windowed spectrogram of the convolution has also been written to ../Web_Interface/static/temp.png. If you enable MPL inline or interactive mode, you can see it without navigating there. Take a look if you please. Also, the "FutureWarning" is a MPL bug that has no effect on the plot.')
+print('The running-windowed spectrogram of the convolution has been displayed onscreen and has also been written to ../Web_Interface/static/temp_wet.png. You can also view it on screen with either plt.ion() or %matplotlib inline. Take a look if you please.')
 
 print('{}\n\nPlease check out test_correlation.py for a demonstration of one way we can determine the origin of a wet sound.\n\nBest,\nW.I.R.E. team.'.format('~'*40))
