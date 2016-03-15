@@ -42,7 +42,7 @@ In essence, it will check how accurate it is at successfully recognizing the rev
 
 The algorithm is more effective at recognizing the reverb if this was produced by the convolution reverb.
 
-At the moment it outputs an accuracy rating of ..., meaning that ...% of the time it recognizes the correct reverb signature within its top three choices.
+At the moment it outputs an accuracy rating of 18% for convolution reverbs, meaning that 18% of the time it recognizes the correct reverb signature within its top three choices. The accuracy rating for real reverb sounds is 12%. We believe these values can be improved on later iterations of this software.
 
 ## How it works
 
