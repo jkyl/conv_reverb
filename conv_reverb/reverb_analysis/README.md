@@ -50,6 +50,10 @@ Because this procedure is unique to this project we walk you through an overall 
 
 The impulse responses contain the most clear information about the reverb of a space. This reverb can be visualized as the decay of the intensity in a given frequency bin. We found that the reverb decay is most clear in the lowest frequency bin corresponding to frequencies in the hundreds of Hz.
 
-![Unprocessed impulse](output/readme_plots/Booth_atrium_bin_0.png "Frequency bin 0 of Booth_atrium")
+Below is an image of the spectrum of Booth_atrium in the 10th frequency bin. The x-axis is time and the y-axis is decibels.
+![Unprocessed impulse](output/readme_plots/Booth_atrium_bin_10.png "Frequency bin 10 of Booth_atrium")
+
+This needs to be processed to get rid of the meaningless points below -80 dB. <code>impulse_processing.py</code> does this automatically for every impulse at the desired frequency bins.
+![Processed impulse](output/readme_plots/Booth_atriumbin_10.png "Frequency bin 10 of Booth_atrium")
 
 
