@@ -119,7 +119,20 @@ We implemented yet another method for analysing a wet sound using cross-correlat
 $ python test_correlation.py <audio_file (defaults to samples/avril.aif)>
 ```
 
-to test the accuracy of this method. Internally the dry sound is convolved with each of our impulse responses in turn, and then correlated with the remaining impulse responses. The correlation waveform with the highest root-mean-square (RMS) is counted as the winner. In order to remove bias towards intrinsically more powerful impulse responses, the input waveforms are normalized to have the same RMS, then mean-subtracted and normalized to a standard deviation of 1. This method is 85% succesful on <code>avril.aif</code>, meaning that 85% of the time, the algorithm can distinguish between the impulse response with which the dry sound was convolved, and a red herring impulse response. All of this is done without performing a deconvolution, or simply bookkeeping. 
+to test the accuracy of this method. Internally the dry sound is convolved with each of our impulse responses in turn, and then correlated with the remaining impulse responses. The correlation waveform with the highest root-mean-square (RMS) is counted as the winner. In order to remove bias towards intrinsically more powerful impulse responses, the input waveforms are normalized to have the same RMS, then mean-subtracted and normalized to a standard deviation of 1. This method is 85% succesful on <code>avril.aif</code>, meaning that 85% of the time, the algorithm can distinguish between the impulse response with which the dry sound was convolved, and a red herring impulse response. All of this is done without performing a deconvolution, or simply bookkeeping.
+
+This method can also be called from an audio object. Suppose you've recorded a sound in a building off-campus, and you want to know which UChicago space the off-campus space most resembles, acoustically. In python you would run:
+```python
+import os
+from audio import Audio
+
+a = Audio('~/Desktop/My_Wet_Sound.wav')
+dir = os.listdir('impulses/')
+l = [Audio('impulses/' + f) for f in dir if '.wav' in f]
+a.correlate(l)
+```
+
+which outputs a dictionary of all of our impulse responses along with the RMS's of their corresponding correlation waveforms. 
 
 ## Known issues
 
