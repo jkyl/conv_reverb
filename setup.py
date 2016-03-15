@@ -51,6 +51,6 @@ if 'linux' in PLATFORM:
         print('Installing libav...')
         unix_command('sudo apt-get -y install libav-tools')
     print('Installing matplotlib...')
-    out, err = unix_command('sudo apt-get install python3-matplotlib')
+    out, err = unix_command('sudo apt-get -y install python3-matplotlib')
 
 print('Complete.')
