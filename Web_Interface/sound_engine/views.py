@@ -80,7 +80,7 @@ class Transform_Input(forms.Form):
     impulse_files = os.listdir(Impulse_path)
     impulse_files.sort()
     impulse_files.remove('README.txt')
-    process_list = ['Convolution', 'Pitch Shift', 'Ring Modulation', 'None']
+    process_list = ['Convolution', 'Pitch Shift', 'Ring Modulation', 'Delay', 'None']
     process_ops = _build_dropdown(process_list)
     impulse_list = _build_dropdown(impulse_files)
     trans_aud_list = os.listdir(Trans_aud_path)
@@ -88,7 +88,12 @@ class Transform_Input(forms.Form):
     trans_aud_list.remove('README.txt')
     trans_aud_ops = _build_dropdown(trans_aud_list)
     process = forms.ChoiceField(label='Transformation', choices=process_ops, required=True)
-    num = forms.FloatField(label='Enter Number', min_value=0.0, required=False)  
+    ps_percent = forms.FloatField(label='Pitch shift amount (decimal)', min_value=0.0, required=False)
+    mod_freq = forms.FloatField(label='Ring modulation frequency (Hz)', min_value=0.0, required=False)
+    del_time = forms.FloatField(label='Delay time (seconds)',min_value=0.0, required=False)
+    dry_wet = forms.FloatField(label='Delay amount (decimal)',max_value = 1.0, required=False)
+    feedback = forms.FloatField(label='Delay feedback (decimal)',max_value = 0.95, required=False)
+    
     downloads = forms.MultipleChoiceField(label='Downloads', choices=download_list, required=False, widget= forms.CheckboxSelectMultiple)
     impulses = forms.MultipleChoiceField(label='U Chicago Impulse Responses', choices=impulse_list, required=False, widget= forms.CheckboxSelectMultiple)
     trans = forms.MultipleChoiceField(label='Previously Transformed Audio', choices=trans_aud_ops, required=False, widget= forms.CheckboxSelectMultiple)
@@ -159,7 +164,11 @@ def home(request):
         if trans_form.is_valid():
             sound_in = trans_form.cleaned_data['downloads'] + trans_form.cleaned_data['impulses'] + trans_form.cleaned_data['trans']
             print(sound_in)
-            num_in = trans_form.cleaned_data['num']
+            ps_percent = trans_form.cleaned_data['ps_percent']
+            mod_freq = trans_form.cleaned_data['mod_freq']
+            del_time = trans_form.cleaned_data['del_time']
+            dry_wet = trans_form.cleaned_data['dry_wet']
+            feedback = trans_form.cleaned_data['feedback']
             for i in range(len(sound_in)):
                 if sound_in[i] in impulse_files:
                     sound_in[i] = Impulse_path + '/' + sound_in[i] 
@@ -191,7 +200,7 @@ def home(request):
             # execute pitch shift of user specified audio file and percent
             if trans_form.cleaned_data['process'] == 'Pitch Shift':
                 
-                ps_sound = sound.pitchshift(num_in)
+                ps_sound = sound.pitchshift(ps_percent)
                 ps_sound.write_to_wav()
                 ps_sound.plot_fft_spectrum()
                 message2 = "Transformed file saved as \"{}.wav\"".format(ps_sound.title)
@@ -199,10 +208,18 @@ def home(request):
             # execute ring modulation of user specified audio file at desired frequency 
             if trans_form.cleaned_data['process'] == 'Ring Modulation':
                 
-                rm_sound = sound.ringmod(num_in)
+                rm_sound = sound.ringmod(mod_freq)
                 rm_sound.write_to_wav()
                 rm_sound.plot_fft_spectrum()
                 message2 = "Transformed file saved as \"{}.wav\"".format(rm_sound.title)
+                
+            # execute ring modulation of user specified audio file at desired frequency 
+            if trans_form.cleaned_data['process'] == 'Delay':
+                
+                del_sound = sound.delay((del_time, dry_wet, feedback))
+                del_sound.write_to_wav()
+                del_sound.plot_fft_spectrum()
+                message2 = "Transformed file saved as \"{}.wav\"".format(del_sound.title)
             
 
     

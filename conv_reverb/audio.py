@@ -58,7 +58,6 @@ class Audio:
         Calls the utility to write the stereo arrays to a stereo .wav file
         at output/wavfiles/[self.title].wav
         '''
-        print(dry == True)
         utils.write_stereo_arrays_to_wav(self._array, self._title,
                                          dry = dry, custom = custom)
 
@@ -93,6 +92,18 @@ class Audio:
         rv = Audio()
         rv._set_array(conv)
         rv._set_title(self.title + ' convolved with ' + audio_obj.title)
+        return rv
+
+    def delay(self, t_dw_fb):
+        '''
+        
+        '''
+        time, dry_wet, feedback = t_dw_fb
+        delay = array_transforms.delay(self._array, time, dry_wet, feedback)
+        rv = Audio()
+        rv._set_array(delay)
+        rv._set_title(self.title + ' delayed by {}s, {}% wet, {}% feedback'\
+                      .format(time, int(100 * dry_wet), int(100 * feedback)))
         return rv
         
     def pitchshift(self, amt):

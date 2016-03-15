@@ -39,3 +39,21 @@ def ringmod(a, freq_hz):
     freq_samps = freq_hz / 44100.
     return np.array([np.multiply(chan, np.sin(np.arange(len(chan)) * freq_samps\
                                  )) for chan in a])
+
+def delay(a, time, dry_wet, feedback):
+    '''
+    '''
+    assert(feedback <= 0.95)
+    d = np.array([1.])
+    next_d = np.zeros(time * 44100.)
+    next_d[-1] = 1
+    d = np.concatenate((d, next_d))  
+    while (d[-1] * dry_wet) > 0.01:
+        next_d = np.zeros(time * 44100.)
+        next_d[-1] = d[-1] * feedback
+        d = np.concatenate((d, next_d))              
+    d[1:] = d[1:] * dry_wet
+    d = np.array([d, d])
+    return convolve(a, d)
+                           
+    
