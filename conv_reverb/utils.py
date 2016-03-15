@@ -33,7 +33,7 @@ def audio_obj_to_arrays(obj):
     numpy arrays.
     '''
     split = (obj.channels % 2 + 1) * obj.split_to_mono()
-    return np.array([s.get_array_of_samples() for s in split])
+    return np.array([s.get_array_of_samples() for s in split], dtype='int64')
 
 
 def plot_waveform(a, title):

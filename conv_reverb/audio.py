@@ -128,15 +128,23 @@ class Audio:
         advantage by having intrinsically higher power. 
         '''
         a = self.mono_array
-        a = a/(abs(a).sum()/a.size)
-        a = (a - a.mean())/a.std()
+        rms = ((a**2).sum()/a.size)**.5
+        a = a / rms
+        a = a - a.mean()
+        a = a / a.std()
         if not type(l) in (list, tuple):
             l = [l]
-        titles = [i.title for i in l]
-        l = [i.mono_array for i in l]
-        l = [i/(abs(i).sum()/i.size) for i in l]
-        l = [(i - i.mean())/i.std() for i in l]
-        c = [array_transforms.correlate(a, i) for i in l]
-        c = [abs(i).sum()/i.size for i in c]
-        d = {titles[i]: np.log10(c[i]/max(c)) for i in range(len(c))}
+            
+        c = []; d = {}
+        for i, e in enumerate(l):
+            r = e.mono_array
+            #print('sum of rms: {}\nmean: {}\nstd: {}'.format(((r**2)**.5).sum(), r.mean(), r.std()))
+            rms = ((r**2).sum()/r.size)**.5          
+            r = r / rms
+            r = r - r.mean()
+            r = r / r.std()
+            c.append(array_transforms.correlate(a, r))
+            rms = ((c[i]**2).sum()/c[i].size)**.5
+            d[e.title] = rms
+    
         return d
