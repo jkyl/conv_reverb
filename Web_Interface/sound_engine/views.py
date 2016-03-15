@@ -90,7 +90,7 @@ class Transform_Input(forms.Form):
     process = forms.ChoiceField(label='Transformation', choices=process_ops, required=True)
     downloads = forms.MultipleChoiceField(label='Downloads', choices=download_list, required=False, widget= forms.CheckboxSelectMultiple)
     impulses = forms.MultipleChoiceField(label='U Chicago Impulse Responses', choices=impulse_list, required=False, widget= forms.CheckboxSelectMultiple)
-    trans = forms.MultipleChoiceField(label='Transformed Audio', choices=trans_aud_ops, required=False, widget= forms.CheckboxSelectMultiple)
+    trans = forms.MultipleChoiceField(label='Previously Transformed Audio', choices=trans_aud_ops, required=False, widget= forms.CheckboxSelectMultiple)
     num = forms.FloatField(label='Enter Number', min_value=0.0, required=False)     
 
 #heavily modified from Gustav's ui/search/views.py home function     
