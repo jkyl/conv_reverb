@@ -113,10 +113,10 @@ $ python reverb_analysis.py <audio_file> <k_neighbors> <make_plots>
 where <code>\<audio_file></code> is the filename (and filepath) of an audio file you want to analyze, <code>\<k_neighbors></code> is a positive integer number of neighbors for the analysis and, <code>\<make_plots></code> can be set to <code>True</code> or <code>False</code>. The plots help visualize how the analysis is carried out and why a certain space was recognized over another. These plots are saved to <code>/conv_reverb/reverb_analysis/output/plots</code>.
 
 #### Correlation analysis
-We implemented yet another method for analysing a wet sound, using cross-correlation. In conv_reverb, run
+We implemented yet another method for analysing a wet sound using cross-correlation. In conv_reverb, run
 
 ```sh
-$ python test_correlation.py <dry sound, defaults to samples/avril.aif>
+$ python test_correlation.py <audio_file (defaults to samples/avril.aif)>
 ```
 
 to test the accuracy of this method. Internally, the dry sound is convolved with each of our impulse responses in turn, and then correlated with the remaining impulse responses. The correlation waveform with the highest RMS is counted as the winner. In order to remove bias towards intrinsically more powerful impulse responses, the input waveforms are normalized to have the same rms, then mean-subtracted and normalized to a standard deviation of 1. This method is 85% succesful on avril.aif, meaning that 85% of the time, the algorithm can distinguish between the impulse response that the dry sound was convolved with and an red herring, without performing a deconvolution or simply bookkeeping. 
