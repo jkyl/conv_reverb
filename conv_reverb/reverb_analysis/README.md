@@ -20,4 +20,14 @@ Directory for reverb recognition analysis scripts and output files.
 Run <code>example.py</code> which will,
 
 1. analyze the impulse responses in <code>../impulses/</code> using the <code>impulse_processing.py</code> script and export to disk their reverb signature,
-2. run one example usage of the <code>reverb_analysis.py</code> script and return result while also generating an array of plots which are not shown but are saved to disk to <code>output/plots/</code>
+2. run one usage example of the <code>reverb_analysis.py</code> script and return the results of the recogniztion algorithm while also generating a set of plots saved to disk to <code>output/plots/</code>.
+
+```sh
+$ python example.py
+```
+
+## Accuracy of the reverb recognition analysis
+
+```sh
+$ python test_reverb_analysis.py
+```

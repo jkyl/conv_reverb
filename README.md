@@ -57,7 +57,7 @@ and proceed to opening a browser window at the local host. This will initialize 
 
 ### Part 2 &mdash; API backend
 
-To run part 2 as a stand-alone script (although this is not intended), please proceed to <code>API/</code> and open the script <code>API_backend.py</code> and inspect the bottom of the document which shows how to query the database and download files.
+To run part 2 as a stand-alone script (<em>although this is not intended</em>), please proceed to <code>API/</code> and open the script <code>API_backend.py</code> and inspect the bottom of the document which shows how to query the database and download files.
 
 After making your desired modifications the script can be run with,
 
@@ -69,7 +69,7 @@ Make sure you add a <code>print</code> statement to the results generated.
 
 ### Part 3 &mdash; Convolution reverb
 
-The convolution reverb engine provides a lot of flexibility when operating it from a standalone perspective using <code>ipython</code> or a Python script. Please proceed to the <code>conv_reverb/</code> subfolder to find a more thorough <code>README</code> file.
+The convolution reverb engine provides a lot of flexibility when operating it from a standalone perspective using <code>ipython</code> or a Python script. Please proceed to the <code>conv_reverb/</code> subfolder and run <code>example.py</code> to showcase the engine.
 
 Below is a brief example script on how to use the convolution reverb engine.
 
@@ -94,7 +94,7 @@ d.write_to_wav()
 
 The reverb analysis component is not connected in any way to the Web front end at the moment. For this reason, the only possible way of running it is through the terminal or by importing the module in a script.
 
-Please proceed to the directory <code>conv_reverb/reverb_analysis/</code> where you can run the following commands. You can also find an example script on how to run this component.
+Please proceed to the directory <code>conv_reverb/reverb_analysis/</code> where you can run the following commands. You can also find an example script, <code>example.py</code>, which showcases the algorithm.
 
 #### Impulse processing
 Running the <code>impulse_processing.py</code> script studies the reverb signature of the impulse response sound files in <code>conv_reverb/impulses/</code> and saves this signature to disk (<code>conv_reverb/reverb_analysis/output/processed_impulses/</code>) for faster analysis thereafter.
