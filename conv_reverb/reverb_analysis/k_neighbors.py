@@ -27,9 +27,15 @@ K_NEIGHBORS = 3 # default number of k-neighbors to analyze
 
 class KNeighbors:
     '''
+    Class which contains the methods necessary to process impulses and a reverb and 
+    perform a k-nearest neighbors analysis to determine the impulse with the closest
+    match to the reverb.
     '''
     def __init__(self, impulses, reverb):
         '''
+        Initialize object instance where impulses is a dictionary of impulses at a range
+        of frequency bins, reverb is a dictionary of reverb signatures at a range of 
+        frequency bins for an audio file.
         '''
         self.__def_val = None
         self.__impulses = impulses
@@ -38,18 +44,21 @@ class KNeighbors:
     @property
     def def_val(self):
         '''
+        Getter.
         '''
         return self.__def_val
         
     @property
     def impulses(self):
         '''
+        Getter.
         '''
         return self.__impulses
 
     @property
     def reverb(self):
         '''
+        Getter.
         '''
         return self.__reverb
     
@@ -102,6 +111,10 @@ class KNeighbors:
 
     def k_neighbors(self, reverb, impulse, k=K_NEIGHBORS):
         '''
+        Perfrom a k-nearest neighbors analysis between a reverb signature
+        and an impulse response.
+        The analysis returns the mean distance from each point in the 
+        reverb signature to each k number of points in the impulse.
         '''
         if reverb[0] == self.def_val or impulse[0] == self.def_val:
             return self.def_val
@@ -177,14 +190,14 @@ class KNeighbors:
 
     def format_results(self, analysis, num_results=3):
         '''
+        Given a dictionary of analysis, return a dictionary of top num_results
+        with the minimum mean distance in k-neighbors analysis.
         '''
         assert num_results < len(analysis), \
             'Number of results should be {} or less'.format(len(analysis))
         
         min_results = [np.float('inf')] * num_results
-        best_impulses = [''] * num_results
-
-        
+        best_impulses = [''] * num_results        
         
         for impulse in analysis:
             # get the index of the largest min value            
@@ -206,8 +219,7 @@ class KNeighbors:
     def do_analysis(self, cluster_size=CLUSTER_SIZE, k=K_NEIGHBORS, num_results=3, make_plots=False):
         '''
         Performs k nearest neighbors analysis and returns num_results number of most
-        likely impulses to generate the reverb signature.
-        k defaults to 3.
+        likely impulses to generate the reverb signature. k defaults to 3.
         '''
         analysis = {}
         
@@ -252,6 +264,8 @@ def get_nice_colors(n_colors):
     
 def plot(ffts, title):
     '''
+    Given a list of ffts and a title generate plots and save to disk.
+    Plots are saved to output/plots/
     '''
     num_freq_bins = (FFT_WINDOW_SIZE // 2) + 1
     
