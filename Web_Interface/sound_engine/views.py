@@ -80,7 +80,7 @@ class Transform_Input(forms.Form):
     impulse_files = os.listdir(Impulse_path)
     impulse_files.sort()
     impulse_files.remove('README.txt')
-    process_list = ['Convolution', 'Pitch Shift', 'Ring Modulation', 'No Transformation']
+    process_list = ['Convolution', 'Pitch Shift', 'Ring Modulation', 'None']
     process_ops = _build_dropdown(process_list)
     impulse_list = _build_dropdown(impulse_files)
     trans_aud_list = os.listdir(Trans_aud_path)
@@ -140,7 +140,8 @@ def home(request):
                 message1 = "Download not possible without ID. Please enter aporee ID to download file"
             else:    
                 download = download_item(file_id)
-                os.system('cp ../conv_reverb/download_files/{} ../conv_reverb/download_files/\!JUST_DOWNLOADED.mp3'.format(download)) #### here's where we cp -jk
+                #### here's where we cp -jk ####
+                os.system('cp ../conv_reverb/download_files/{} ../conv_reverb/download_files/\!JUST_DOWNLOADED.mp3'.format(download)) 
                 if download != None:
                     message1 = "File " + download + " downloaded to conv_reverb/conv_reverb/download_files."
                 else:
@@ -165,38 +166,43 @@ def home(request):
                     sound_in[i] = Dload_path + '/' + sound_in[i]
                 else:
                     sound_in[i] = Trans_aud_path + '/' + sound_in[i]
+
+                    
             print(sound_in)
+            sound = Audio(sound_in[0])
+            print('saving dry')
+            sound.write_to_wav(dry = True)
+            print('saved')
+            sound.plot_fft_spectrum(dry = True)
+            message2 = "Dry file saved as \"{}.wav\"".format(sound.title)
+            context['message2'] = message2
+            
             # execute convolution of user specified audio files
             if trans_form.cleaned_data['process'] == 'Convolution':
-                sound1 = Audio(sound_in[0])
-                sound2 = Audio(sound_in[1])
-                conv_sound = sound1.convolve(sound2)
+                
+                sound1 = Audio(sound_in[1])
+                conv_sound = sound.convolve(sound1)
                 new_trans = Trans_aud_path + '/' + conv_sound.title + '.wav'
                 conv_sound.write_to_wav()
                 conv_sound.plot_fft_spectrum()
                 message2 = "Transformed file saved as \"{}.wav\"".format(conv_sound.title)
+                
             # execute pitch shift of user specified audio file and percent
             if trans_form.cleaned_data['process'] == 'Pitch Shift':
-                sound = Audio(sound_in[0])
+                
                 ps_sound = sound.pitchshift(num_in)
                 ps_sound.write_to_wav()
                 ps_sound.plot_fft_spectrum()
                 message2 = "Transformed file saved as \"{}.wav\"".format(ps_sound.title)
+                
             # execute ring modulation of user specified audio file at desired frequency 
             if trans_form.cleaned_data['process'] == 'Ring Modulation':
-                sound = Audio(sound_in[0])
+                
                 rm_sound = sound.ringmod(num_in)
                 rm_sound.write_to_wav()
                 rm_sound.plot_fft_spectrum()
                 message2 = "Transformed file saved as \"{}.wav\"".format(rm_sound.title)
-                
-            if trans_form.cleaned_data['process'] == 'No Transformation':
-                sound = Audio(sound_in[0])
-                sound.write_to_wav()
-                sound.plot_fft_spectrum()
-                message2 = "Transformed file saved as \"{}.wav\"".format(sound.title)
-                
-            context['message2'] = message2
+            
 
     
 

@@ -60,7 +60,7 @@ def plot_waveform(a, title):
     
     
     
-def write_stereo_arrays_to_wav(stereo_array, title):
+def write_stereo_arrays_to_wav(stereo_array, title, dry = False):
     '''
     Normalizes the convolved waveform and swaps the axes to the way the scipy
     writer likes it. Writes as a .wav to the specified filepath. 
@@ -69,7 +69,10 @@ def write_stereo_arrays_to_wav(stereo_array, title):
     if norm.shape[0] == 2:
         norm = norm.swapaxes(0, 1)
     write('../Web_Interface/output/transformed_wavs/' + title + '.wav', 44100, norm)
-    write('../Web_Interface/static/temp.wav', 44100, norm)
+    if dry == True:
+        write('../Web_Interface/static/temp_dry.wav', 44100, norm)
+    else:
+        write('../Web_Interface/static/temp_wet.wav', 44100, norm)
 
 
 def get_fft(a, step_size):
@@ -103,7 +106,7 @@ def get_fft(a, step_size):
     return decibels.swapaxes(0, 1)
     
 
-def plot_fft(spectrum, title):
+def plot_fft(spectrum, title, dry = False):
     '''
     Plots a spectrogram as obtained in the above function. These conventions
     are mostly lifted straight from the matplotlib api. 
@@ -113,6 +116,7 @@ def plot_fft(spectrum, title):
     y_axis = np.linspace(0, 22050., n_bins)
     X, Y = np.meshgrid(x_axis, y_axis)
     plt.close('all')
+    plt.figure(figsize = (20, 13))
     ax = plt.gca()
     ax.set_yscale('symlog')
     im = ax.pcolormesh(X, Y, spectrum, cmap = inferno)
@@ -127,5 +131,7 @@ def plot_fft(spectrum, title):
     plt.colorbar(im, cax=cax, ticks = np.arange(0, -140, -20),
                  label = 'Power (dB)')
     plt.savefig('../Web_Interface/output/spectra/' + title + '.png')
-    plt.savefig('../Web_Interface/static/temp.png')
-
+    if dry == True:
+        plt.savefig('../Web_Interface/static/temp_dry.png')
+    else:
+        plt.savefig('../Web_Interface/static/temp_wet.png')

@@ -53,12 +53,13 @@ class Audio:
         if array.shape[0] == 2:
             self._array = array
 
-    def write_to_wav(self):
+    def write_to_wav(self, dry = False):
         '''
         Calls the utility to write the stereo arrays to a stereo .wav file
         at output/wavfiles/[self.title].wav
         '''
-        utils.write_stereo_arrays_to_wav(self._array, self._title)
+        print(dry == True)
+        utils.write_stereo_arrays_to_wav(self._array, self._title, dry = dry)
 
     def plot_waveform(self):
         '''
@@ -74,13 +75,13 @@ class Audio:
         '''
         return utils.get_fft(self.mono_array, window_size_in_samples)
         
-    def plot_fft_spectrum(self, window_size_in_samples = 512):
+    def plot_fft_spectrum(self, window_size_in_samples = 512, dry = False):
         '''
         Calls the utility to plot the spectrogram with a beautiful MPL5
         colormap. 
         '''
         spectrum = self.get_fft(window_size_in_samples)
-        utils.plot_fft(spectrum, self._title)
+        utils.plot_fft(spectrum, self._title, dry = dry)
 
     def convolve(self, audio_obj):
         '''
