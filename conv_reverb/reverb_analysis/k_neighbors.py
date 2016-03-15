@@ -184,12 +184,16 @@ class KNeighbors:
         min_results = [np.float('inf')] * num_results
         best_impulses = [''] * num_results
 
+        
+        
         for impulse in analysis:
-            for i in range(num_results):
-                if analysis[impulse] < min_results[i]:
-                    min_results[i] = analysis[impulse]
-                    best_impulses[i] = impulse
-                    break
+            # get the index of the largest min value            
+            max_min = np.max(min_results)
+            max_min_i = np.where(min_results == max_min)[0][0]
+            
+            if analysis[impulse] < max_min:
+                min_results[max_min_i] = analysis[impulse]
+                best_impulses[max_min_i] = impulse
 
         results = {}
 
