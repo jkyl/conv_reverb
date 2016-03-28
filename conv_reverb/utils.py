@@ -108,7 +108,22 @@ def get_fft(a, step_size):
     return decibels.swapaxes(0, 1)
     
 
-def plot_fft(spectrum, title, dry = False):
+def running_window(a, step_size):
+    '''
+    '''
+    padded = np.append(np.append(np.zeros(step_size), a), np.zeros(step_size))
+    windows = []
+    for i in range(a.size + step_size):
+        windows.append(padded[i: i + step_size])
+    coeffs = fft(blackman(step_size) * np.array(windows)).swapaxes(0, 1)[:step_size//2 + 1]
+    power = np.array(coeffs)
+    power = (power * power.conj()).real
+    power = power / power.max()
+    power[np.where(power < 1e-13)] = 1e-13
+    return 10 * np.log10(power) 
+
+    
+def plot_fft(spectrum, title, dry = False, custom = None):
     '''
     Plots a spectrogram as obtained in the above function. These conventions
     are mostly lifted straight from the matplotlib api. 
@@ -133,7 +148,10 @@ def plot_fft(spectrum, title, dry = False):
     plt.colorbar(im, cax=cax, ticks = np.arange(0, -140, -20),
                  label = 'Power (dB)')
     plt.savefig('../Web_Interface/output/spectra/' + title + '.png')
-    if dry == True:
-        plt.savefig('../Web_Interface/static/temp_dry.png')
+    if not custom is None:
+        if dry == True:
+            plt.savefig('../Web_Interface/static/temp_dry.png')
+        else:
+            plt.savefig('../Web_Interface/static/temp_wet.png')
     else:
-        plt.savefig('../Web_Interface/static/temp_wet.png')
+        plt.savefig(custom)
